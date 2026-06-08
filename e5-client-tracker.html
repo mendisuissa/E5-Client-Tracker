@@ -1233,7 +1233,7 @@ async function initSharePoint() {
       auth: {
         clientId: SP_CONFIG.clientId,
         authority: `https://login.microsoftonline.com/${SP_CONFIG.tenantId}`,
-        redirectUri: window.location.href.split('?')[0].split('#')[0],
+        redirectUri: 'https://mendisuissa.github.io/E5-Client-Tracker/auth.html',
       },
       cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: false }
     });
