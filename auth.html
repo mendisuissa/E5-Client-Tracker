@@ -3,6 +3,8 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2/lib/msal-browser.min.js"></script>
 <script>
+const MAIN = 'https://mendisuissa.github.io/E5-Client-Tracker/e5-client-tracker.html';
+
 const app = new msal.PublicClientApplication({
   auth: {
     clientId: '9ff0156b-2d45-4649-97a6-fd8135147067',
@@ -10,8 +12,22 @@ const app = new msal.PublicClientApplication({
     redirectUri: 'https://mendisuissa.github.io/E5-Client-Tracker/auth.html'
   }
 });
-app.initialize().then(() => app.handleRedirectPromise()).catch(console.error);
+
+app.initialize()
+  .then(() => app.handleRedirectPromise())
+  .then(() => {
+    if (window.opener && window.opener !== window) {
+      // Desktop popup — MSAL closes automatically, fallback after 1.5s
+      setTimeout(() => { try { window.close(); } catch(e) {} }, 1500);
+    } else {
+      // Mobile / redirect flow — חזור לאפליקציה
+      window.location.replace(MAIN);
+    }
+  })
+  .catch(() => window.location.replace(MAIN));
 </script>
 </head>
-<body></body>
+<body style="font-family:sans-serif;text-align:center;padding-top:40px">
+  <p>מתחבר... ⏳</p>
+</body>
 </html>
