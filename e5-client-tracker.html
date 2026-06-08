@@ -1239,33 +1239,28 @@ async function initSharePoint() {
       auth: {
         clientId: SP_CONFIG.clientId,
         authority: `https://login.microsoftonline.com/${SP_CONFIG.tenantId}`,
-        redirectUri: isMobile() ? MAIN_URL : AUTH_URL,
+        redirectUri: MAIN_URL,
       },
       cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: false }
     });
     await _msal.initialize();
-    // Handle redirect response (mobile flow)
+    // Handle response from loginRedirect (all platforms)
     const response = await _msal.handleRedirectPromise();
     if (response) {
+      // Just came back from login — wait for user to click sync
+      setSyncStatus('idle');
+      toast('✅ נכנסת! לחץ שוב לסנכרון', 'success');
+      return;
+    }
+    // Existing session — auto-sync only on desktop
+    const accounts = _msal.getAllAccounts();
+    if (accounts.length > 0 && !isMobile()) {
       setSyncStatus('syncing');
       await ensureLists();
       await pullFromSP();
       setSyncStatus('ok');
-      toast('☁️ מחובר ל-SharePoint!', 'success');
-      return;
-    }
-    const accounts = _msal.getAllAccounts();
-    if (accounts.length > 0) {
-      if (isMobile()) {
-        // Mobile: don't auto-sync on load (prevents white screen loop)
-        // User taps sync button manually
-        setSyncStatus('idle');
-      } else {
-        setSyncStatus('syncing');
-        await ensureLists();
-        await pullFromSP();
-        setSyncStatus('ok');
-      }
+    } else if (accounts.length > 0) {
+      setSyncStatus('idle'); // mobile: show button, no auto-sync
     }
   } catch(e) {
     console.error('SP init error:', e);
@@ -1277,30 +1272,17 @@ async function spLogin() {
   if (!_msal) return;
   setSyncStatus('login');
   const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All', 'User.Read'];
+  // Clear ALL stale MSAL interaction state (localStorage + sessionStorage)
+  ['localStorage','sessionStorage'].forEach(store => {
+    Object.keys(window[store])
+      .filter(k => k.startsWith('msal.') || k.includes('interaction.status'))
+      .forEach(k => window[store].removeItem(k));
+  });
   try {
-    if (isMobile()) {
-      // Clear stale MSAL interaction state (causes user_cancelled on retry)
-      Object.keys(sessionStorage)
-        .filter(k => k.startsWith('msal.'))
-        .forEach(k => sessionStorage.removeItem(k));
-      await _msal.loginRedirect({ scopes, redirectUri: MAIN_URL });
-      return; // page navigates away
-    } else {
-      if (_interacting) { toast('כבר מתבצעת כניסה...'); return; }
-      _interacting = true;
-      try {
-        await _msal.loginPopup({ scopes });
-        setSyncStatus('syncing');
-        await ensureLists();
-        await pullFromSP();
-        setSyncStatus('ok');
-        toast('☁️ מחובר ל-SharePoint!', 'success');
-      } finally {
-        _interacting = false;
-      }
-    }
+    // Always use redirect — works on all platforms (desktop + mobile)
+    await _msal.loginRedirect({ scopes, redirectUri: MAIN_URL });
+    // Page navigates away — nothing below runs
   } catch(e) {
-    _interacting = false;
     console.error('SP login error:', e);
     setSyncStatus('error');
     toast('שגיאה בהתחברות: ' + (e.message||''), 'danger');
