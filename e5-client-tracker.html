@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E5 Client Tracker — מעקב יישום לקוחות</title>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<style>
+:root {
+  --primary:#0f3460; --primary-light:#1a5296; --primary-dark:#071d3b;
+  --ms-blue:#0078d4; --gold:#f59e0b; --gold-light:#fef3c7;
+  --bg:#f1f5f9; --surface:#fff; --border:#e2e8f0;
+  --text:#1e293b; --muted:#64748b;
+  --success:#16a34a; --warning:#d97706; --danger:#dc2626;
+  --p1:#6366f1; --p2:#0891b2; --p3:#dc2626; --p4:#7c3aed;
+  --p5:#0369a1; --p6:#7c2d8e; --p7:#1a4080;
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;direction:rtl;min-height:100vh;}
+
+/* ── TOP NAV ── */
+.topbar{background:var(--primary-dark);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+.topbar-brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1rem;}
+.topbar-brand .badge{background:var(--gold);color:#000;font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:10px;}
+.topbar-actions{display:flex;gap:8px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;font-size:.82rem;font-weight:600;border:none;cursor:pointer;transition:all .15s;}
+.btn-primary{background:var(--ms-blue);color:#fff;}
+.btn-primary:hover{background:#005a9e;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-gold:hover{background:#d97706;}
+.btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);}
+.btn-ghost:hover{background:rgba(255,255,255,.2);}
+.btn-sm{padding:5px 11px;font-size:.75rem;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{background:#b91c1c;}
+.btn-success{background:var(--success);color:#fff;}
+.btn-success:hover{background:#15803d;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--bg);}
+
+/* ── VIEWS ── */
+.view{display:none;padding:28px;max-width:1280px;margin:0 auto;}
+.view.active{display:block;}
+
+/* ── DASHBOARD ── */
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.dash-header h1{font-size:1.5rem;font-weight:800;color:var(--primary);}
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.stat-card .num{font-size:2rem;font-weight:800;color:var(--primary);}
+.stat-card .lbl{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;}
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;transition:all .2s;position:relative;}
+.client-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.12);transform:translateY(-2px);}
+.client-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.client-name{font-size:1.05rem;font-weight:700;color:var(--primary);}
+.client-mode-badge{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.mode-cloud{background:#d1fae5;color:#065f46;}
+.mode-hybrid{background:#fef3c7;color:#78350f;}
+.mode-comgmt{background:#dbeafe;color:#1e3a8a;}
+.client-meta{font-size:.78rem;color:var(--muted);margin-bottom:14px;}
+.client-meta span{margin-left:12px;}
+.overall-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.overall-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--ms-blue),var(--p1));transition:width .5s;}
+.overall-pct{font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:12px;}
+.pillar-mini-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.pillar-mini-bar{text-align:center;}
+.pillar-mini-bar .icon{font-size:.85rem;}
+.pillar-mini-bar .pct{font-size:.6rem;color:var(--muted);}
+.pillar-mini-bar .bar{height:4px;background:#e2e8f0;border-radius:2px;margin-top:2px;overflow:hidden;}
+.pillar-mini-bar .bar-fill{height:100%;border-radius:2px;transition:width .5s;}
+.card-actions{position:absolute;top:12px;left:12px;display:flex;gap:4px;opacity:0;transition:opacity .2s;}
+.client-card:hover .card-actions{opacity:1;}
+.empty-state{text-align:center;padding:80px 20px;color:var(--muted);}
+.empty-state .icon{font-size:4rem;margin-bottom:16px;}
+.empty-state h2{font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:8px;}
+
+/* ── CLIENT VIEW ── */
+.client-view-header{background:linear-gradient(135deg,var(--primary-dark),var(--primary-light));color:#fff;border-radius:var(--radius);padding:24px 28px;margin-bottom:24px;}
+.client-view-header .breadcrumb{font-size:.78rem;opacity:.7;margin-bottom:6px;cursor:pointer;}
+.client-view-header .breadcrumb:hover{opacity:1;}
+.client-view-header h1{font-size:1.5rem;font-weight:800;margin-bottom:8px;}
+.client-view-meta{display:flex;gap:20px;flex-wrap:wrap;font-size:.82rem;opacity:.85;}
+.client-view-meta span{display:flex;align-items:center;gap:4px;}
+.client-view-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.progress-overview{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;}
+.progress-overview h3{font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:14px;}
+.progress-big{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.progress-circle{width:72px;height:72px;border-radius:50%;background:conic-gradient(var(--ms-blue) 0deg, #e2e8f0 0deg);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:var(--primary);flex-shrink:0;}
+.progress-details{flex:1;}
+.progress-bar-main{height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-bottom:6px;}
+.progress-bar-main-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ms-blue),var(--p1));transition:width .5s;}
+.pillars-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+.pillar-progress-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 8px;text-align:center;}
+.pillar-progress-card .p-icon{font-size:1.4rem;}
+.pillar-progress-card .p-name{font-size:.62rem;font-weight:600;color:var(--muted);margin:4px 0;}
+.pillar-progress-card .p-pct{font-size:1rem;font-weight:800;}
+.pillar-progress-card .p-bar{height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden;margin-top:6px;}
+.pillar-progress-card .p-bar-fill{height:100%;border-radius:3px;transition:width .5s;}
+.pillar-tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:20px;overflow-x:auto;flex-wrap:wrap;}
+.pillar-tab{padding:9px 14px;border:none;background:none;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+.pillar-tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700;}
+.pillar-tab .tab-pct{font-size:.65rem;padding:1px 5px;border-radius:8px;background:var(--bg);}
+.pillar-tab.active .tab-pct{background:var(--accent, #dbeafe);color:var(--primary);}
+.checklist-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.checklist-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.checklist-header h3{font-size:.95rem;font-weight:700;color:var(--primary);}
+.checklist-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.checklist-item:last-child{border-bottom:none;}
+.checklist-item:hover{background:var(--bg);}
+.checklist-item.done{background:#f0fdf4;}
+.checklist-item.done:hover{background:#dcfce7;}
+.item-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.75rem;transition:all .15s;}
+.item-check.checked{background:var(--success);border-color:var(--success);color:#fff;}
+.item-body{flex:1;min-width:0;}
+.item-title{font-size:.86rem;font-weight:500;color:var(--text);}
+.item-title.done{text-decoration:line-through;color:var(--muted);}
+.item-meta{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.item-date{font-size:.72rem;color:var(--muted);}
+.item-assignee{font-size:.72rem;color:var(--muted);}
+.item-blocker{font-size:.72rem;color:var(--danger);font-weight:600;}
+.priority-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.priority-critical{background:var(--danger);}
+.priority-high{background:var(--warning);}
+.priority-medium{background:var(--ms-blue);}
+.priority-low{background:var(--muted);}
+.item-note-preview{font-size:.72rem;color:var(--muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
+
+/* ── ACTIVITY LOG ── */
+.log-timeline{padding:8px 0;}
+.log-entry{display:flex;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.log-entry:last-child{border-bottom:none;}
+.log-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;margin-top:2px;}
+.log-dot-done{background:#d1fae5;color:var(--success);}
+.log-dot-undone{background:#fee2e2;color:var(--danger);}
+.log-dot-note{background:#dbeafe;color:var(--ms-blue);}
+.log-body{flex:1;}
+.log-title{font-size:.86rem;font-weight:600;color:var(--text);}
+.log-meta{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.log-note{font-size:.8rem;color:var(--muted);font-style:italic;margin-top:4px;}
+.empty-log{text-align:center;padding:40px;color:var(--muted);font-size:.9rem;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:var(--radius);padding:28px;max-width:520px;width:100%;margin:20px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.25);}
+.modal h2{font-size:1.05rem;font-weight:800;color:var(--primary);margin-bottom:20px;}
+.modal-pillar-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;color:#fff;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:5px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-family:inherit;direction:rtl;transition:border .15s;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--ms-blue);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.form-group.blocker-group textarea{border-color:#fca5a5;}
+.form-group.blocker-group textarea:focus{border-color:var(--danger);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.priority-btns{display:flex;gap:6px;}
+.priority-btn{flex:1;padding:6px;border-radius:6px;border:2px solid transparent;cursor:pointer;font-size:.75rem;font-weight:700;text-align:center;background:var(--bg);color:var(--muted);transition:all .15s;}
+.priority-btn.sel-critical{background:#fee2e2;border-color:var(--danger);color:var(--danger);}
+.priority-btn.sel-high{background:#fffbeb;border-color:var(--warning);color:var(--warning);}
+.priority-btn.sel-medium{background:#dbeafe;border-color:var(--ms-blue);color:var(--ms-blue);}
+.priority-btn.sel-low{background:#f1f5f9;border-color:var(--muted);color:var(--muted);}
+.status-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;}
+.status-btn{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:600;border:none;background:var(--bg);color:var(--muted);transition:all .15s;}
+.status-btn.active-done{background:var(--success);color:#fff;}
+.status-btn.active-pending{background:var(--warning);color:#fff;}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px;}
+
+/* ── REPORT VIEW ── */
+.report-view{max-width:860px;margin:0 auto;}
+.report-header{background:linear-gradient(135deg,var(--primary-dark),var(--primary-light));color:#fff;border-radius:var(--radius);padding:32px 36px;margin-bottom:24px;}
+.report-header h1{font-size:1.8rem;font-weight:800;margin-bottom:4px;}
+.report-header .subtitle{opacity:.8;font-size:.9rem;}
+.report-badges{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.report-badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:4px 12px;font-size:.75rem;font-weight:600;}
+.report-exec{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.report-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;}
+.report-stat .n{font-size:1.8rem;font-weight:800;color:var(--primary);}
+.report-stat .l{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.report-pillar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;}
+.report-pillar-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.report-pillar-header .icon{font-size:1.3rem;}
+.report-pillar-header h3{font-size:.95rem;font-weight:700;flex:1;}
+.report-pillar-header .pct{font-size:1rem;font-weight:800;}
+.report-pbar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:12px;}
+.report-pbar-fill{height:100%;border-radius:4px;transition:width .5s;}
+.report-items{display:flex;flex-direction:column;gap:4px;}
+.report-item{display:flex;align-items:center;gap:8px;font-size:.82rem;}
+.report-item .ri-check{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0;}
+.report-item .ri-done{background:var(--success);color:#fff;}
+.report-item .ri-pend{background:#e2e8f0;color:var(--muted);}
+.report-item .ri-title{flex:1;}
+.report-item .ri-date{font-size:.7rem;color:var(--muted);}
+.report-blockers{background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:16px;margin-bottom:14px;}
+.report-blockers h3{font-size:.9rem;font-weight:700;color:var(--danger);margin-bottom:10px;}
+.blocker-item{font-size:.83rem;padding:6px 0;border-bottom:1px solid #fecaca;display:flex;gap:8px;}
+.blocker-item:last-child{border-bottom:none;}
+.report-timeline{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px;}
+.report-timeline h3{font-size:.95rem;font-weight:700;color:var(--primary);margin-bottom:12px;}
+.rt-item{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+.rt-item:last-child{border-bottom:none;}
+.rt-date{color:var(--muted);min-width:90px;}
+.report-actions{display:flex;gap:8px;margin-bottom:24px;}
+
+/* ── ALERTS / TOASTS ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:8px;font-size:.85rem;font-weight:600;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:var(--success);}
+.toast.danger{background:var(--danger);}
+
+/* ── ALERTS ── */
+.alert{padding:12px 16px;border-radius:8px;font-size:.84rem;border-right:4px solid;margin-bottom:16px;}
+.alert-info{background:#dbeafe;border-color:var(--ms-blue);color:#1e3a8a;}
+.alert-warning{background:#fffbeb;border-color:var(--warning);color:#92400e;}
+
+/* ── PHASE BANNER ── */
+.phase-filter{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.phase-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:.75rem;cursor:pointer;font-weight:500;color:var(--muted);transition:all .15s;}
+.phase-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* ── PRINT ── */
+@media print{
+  .topbar,.client-view-actions,.report-actions,.pillar-tabs,
+  .btn,.card-actions,.phase-filter{display:none!important;}
+  body{background:#fff;}
+  .view{padding:0;max-width:100%;}
+  .report-view{max-width:100%;}
+  .report-header{border-radius:0;}
+  .client-view-header{border-radius:0;}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .dash-stats{grid-template-columns:1fr 1fr;}
+  .pillars-grid{grid-template-columns:repeat(4,1fr);}
+  .report-exec{grid-template-columns:1fr 1fr;}
+  .view{padding:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <span>📊</span>
+    <span>E5 Client Tracker</span>
+    <span class="badge">PRO</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span id="sync-status" onclick="handleSyncClick()" style="font-size:.75rem;cursor:pointer;opacity:.85;transition:opacity .2s" title="סטטוס SharePoint Sync">☁️ לא מחובר</span>
+    <div class="topbar-actions" id="topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="showImport()">📥 ייבוא</button>
+      <button class="btn btn-gold btn-sm" onclick="showNewClient()">➕ לקוח חדש</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD VIEW ═══ -->
+<div class="view active" id="view-dashboard">
+  <div class="dash-header">
+    <h1>לקוחות — מעקב E5</h1>
+    <button class="btn btn-primary" onclick="showNewClient()">➕ לקוח חדש</button>
+  </div>
+  <div class="dash-stats" id="dash-stats"></div>
+  <div class="clients-grid" id="clients-grid"></div>
+</div>
+
+<!-- ═══ CLIENT VIEW ═══ -->
+<div class="view" id="view-client">
+  <div class="client-view-header" id="client-header"></div>
+  <div class="progress-overview" id="progress-overview"></div>
+  <div class="phase-filter" id="phase-filter">
+    <button class="phase-btn active" onclick="filterPhase(0,this)">כל השלבים</button>
+    <button class="phase-btn" onclick="filterPhase(1,this)">🔴 שלב 1 — Foundation</button>
+    <button class="phase-btn" onclick="filterPhase(2,this)">🟠 שלב 2 — Devices</button>
+    <button class="phase-btn" onclick="filterPhase(3,this)">🟡 שלב 3 — Threats</button>
+    <button class="phase-btn" onclick="filterPhase(4,this)">🟢 שלב 4 — Identity Adv.</button>
+    <button class="phase-btn" onclick="filterPhase(5,this)">🔵 שלב 5 — Purview</button>
+    <button class="phase-btn" onclick="filterPhase(6,this)">🟣 שלב 6 — Sentinel</button>
+  </div>
+  <div class="pillar-tabs" id="pillar-tabs"></div>
+  <div id="pillar-content"></div>
+</div>
+
+<!-- ═══ LOG VIEW ═══ -->
+<div class="view" id="view-log">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+    <div>
+      <span onclick="backToClient()" style="cursor:pointer;color:var(--muted);font-size:.82rem;">← חזור ללקוח</span>
+      <h2 id="log-title" style="font-size:1.3rem;font-weight:800;color:var(--primary);margin-top:4px;"></h2>
+    </div>
+    <button class="btn btn-danger btn-sm" onclick="clearLog()">🗑️ נקה לוג</button>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+    <div id="log-container" class="log-timeline"></div>
+  </div>
+</div>
+
+<!-- ═══ REPORT VIEW ═══ -->
+<div class="view" id="view-report">
+  <div class="report-view">
+    <div class="report-actions no-print">
+      <button class="btn btn-outline btn-sm" onclick="backToClient()">← חזור</button>
+      <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ הדפסה / PDF</button>
+      <button class="btn btn-ghost btn-sm" style="background:var(--primary);color:#fff" onclick="exportClientJSON()">📤 Export JSON</button>
+    </div>
+    <div id="report-content"></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: ITEM DETAIL ═══ -->
+<div class="modal-overlay" id="modal-item">
+  <div class="modal">
+    <div id="item-modal-pillar-badge" class="modal-pillar-badge"></div>
+    <h2 id="item-modal-title"></h2>
+    <div class="status-toggle">
+      <div class="status-btn" id="btn-status-done" onclick="setStatus('done')">✅ הושלם</div>
+      <div class="status-btn" id="btn-status-pending" onclick="setStatus('pending')">⏳ בתהליך</div>
+      <div class="status-btn" id="btn-status-na" onclick="setStatus('na')">➖ לא רלוונטי</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>📅 תאריך ביצוע</label>
+        <input type="date" id="item-date">
+      </div>
+      <div class="form-group">
+        <label>👤 אחראי</label>
+        <input type="text" id="item-assignee" placeholder="שם או צוות">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>🎯 עדיפות</label>
+      <div class="priority-btns">
+        <div class="priority-btn" data-p="critical" onclick="setPriority('critical')">🔴 קריטי</div>
+        <div class="priority-btn" data-p="high" onclick="setPriority('high')">🟠 גבוה</div>
+        <div class="priority-btn" data-p="medium" onclick="setPriority('medium')">🟡 בינוני</div>
+        <div class="priority-btn" data-p="low" onclick="setPriority('low')">⚫ נמוך</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>📝 הערות</label>
+      <textarea id="item-notes" placeholder="הערות, תיעוד, קישורים..."></textarea>
+    </div>
+    <div class="form-group blocker-group">
+      <label>🚧 Blocker (מה עוצר?)</label>
+      <textarea id="item-blocker" placeholder="אם יש חסם — תאר אותו כאן..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeItemModal()">ביטול</button>
+      <button class="btn btn-primary" onclick="saveItem()">💾 שמור</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: NEW CLIENT ═══ -->
+<div class="modal-overlay" id="modal-client">
+  <div class="modal">
+    <h2 id="client-modal-title">➕ לקוח חדש</h2>
+    <div class="form-group">
+      <label>🏢 שם הלקוח *</label>
+      <input type="text" id="nc-name" placeholder="Acme Corp">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>👤 איש קשר ראשי</label>
+        <input type="text" id="nc-contact" placeholder="John Smith">
+      </div>
+      <div class="form-group">
+        <label>🧑‍💼 יועץ מטפל</label>
+        <input type="text" id="nc-consultant" placeholder="שם היועץ">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>📅 תאריך התחלה</label>
+        <input type="date" id="nc-start">
+      </div>
+      <div class="form-group">
+        <label>🏁 יעד השלמה</label>
+        <input type="date" id="nc-target">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>🏗️ מצב פריסה</label>
+        <select id="nc-mode">
+          <option value="cloud">☁️ Fully Cloud</option>
+          <option value="hybrid">🔄 Hybrid</option>
+          <option value="comgmt">🔗 Co-Management</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>👥 מספר רישיונות E5</label>
+        <input type="number" id="nc-licenses" placeholder="250">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>📝 הערות כלליות</label>
+      <textarea id="nc-notes" placeholder="מידע נוסף, אתגרים, הקשר..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeClientModal()">ביטול</button>
+      <button class="btn btn-primary" onclick="saveClientForm()">💾 צור לקוח</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: IMPORT ═══ -->
+<div class="modal-overlay" id="modal-import">
+  <div class="modal">
+    <h2>📥 ייבוא נתונים</h2>
+    <div class="alert alert-warning">ייבוא ידרוס את כל הנתונים הקיימים. ייצא גיבוי לפני כן!</div>
+    <div class="form-group">
+      <label>בחר קובץ JSON</label>
+      <input type="file" id="import-file" accept=".json">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('modal-import').classList.remove('open')">ביטול</button>
+      <button class="btn btn-danger" onclick="doImport()">📥 ייבא (ידרוס הכל)</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA DEFINITIONS
+// ══════════════════════════════════════════════
+const PILLARS = [
+  {id:'p1',name:'זהות — Entra ID P2',icon:'🔐',color:'#6366f1',short:'Identity'},
+  {id:'p2',name:'מכשירים — Intune',icon:'💻',color:'#0891b2',short:'Devices'},
+  {id:'p3',name:'Endpoint — MDE P2',icon:'🛡️',color:'#dc2626',short:'Endpoint'},
+  {id:'p4',name:'דואר — MDO P2',icon:'📧',color:'#7c3aed',short:'Email'},
+  {id:'p5',name:'Cloud Apps — MDCA',icon:'☁️',color:'#0369a1',short:'Cloud Apps'},
+  {id:'p6',name:'מידע — Purview',icon:'🔍',color:'#7c2d8e',short:'Purview'},
+  {id:'p7',name:'SIEM — Sentinel',icon:'📊',color:'#1a4080',short:'Sentinel'},
+];
+
+const ITEMS = [
+  {id:'p1-mfa',pillar:'p1',title:'MFA מופעל ל-100% מהמשתמשים',priority:'critical',phase:1},
+  {id:'p1-legacy',pillar:'p1',title:'Legacy Authentication חסום ב-CA',priority:'critical',phase:1},
+  {id:'p1-device',pillar:'p1',title:'Compliant Device Required לאפליקציות ארגוניות',priority:'high',phase:2},
+  {id:'p1-signin-risk',pillar:'p1',title:'Sign-in Risk CA Policy מופעלת (P2)',priority:'high',phase:4},
+  {id:'p1-user-risk',pillar:'p1',title:'User Risk CA Policy מופעלת (P2)',priority:'high',phase:4},
+  {id:'p1-pim',pillar:'p1',title:'PIM מוגדר לכל Admin Roles',priority:'high',phase:1},
+  {id:'p1-reviews',pillar:'p1',title:'Access Reviews רבעוניים מוגדרים',priority:'medium',phase:4},
+  {id:'p1-passwordless',pillar:'p1',title:'Passwordless מוגדר (WHfB + Authenticator)',priority:'medium',phase:4},
+  {id:'p1-breakglass',pillar:'p1',title:'Break-Glass × 2 מוגדר ומבוקר',priority:'critical',phase:1},
+  {id:'p1-mdi',pillar:'p1',title:'MDI מחובר לכל Domain Controllers',priority:'high',phase:3},
+  {id:'p2-enroll',pillar:'p2',title:'100% מהמכשירים enrolled ב-Intune',priority:'critical',phase:2},
+  {id:'p2-compliance',pillar:'p2',title:'Compliance Policies מוגדרות לכל Platform',priority:'high',phase:2},
+  {id:'p2-block',pillar:'p2',title:'Non-compliant → Block access ל-CA',priority:'high',phase:2},
+  {id:'p2-autopilot',pillar:'p2',title:'Autopilot מוגדר למכשירים חדשים',priority:'medium',phase:2},
+  {id:'p2-updates',pillar:'p2',title:'Windows Update / Autopatch מוגדר',priority:'medium',phase:2},
+  {id:'p2-analytics',pillar:'p2',title:'Endpoint Analytics מופעל',priority:'low',phase:2},
+  {id:'p2-encrypt',pillar:'p2',title:'BitLocker/FileVault מופעל + escrow ל-Intune',priority:'high',phase:2},
+  {id:'p2-noadmin',pillar:'p2',title:'Local Admin הוסר מ-Standard Users',priority:'high',phase:2},
+  {id:'p2-mam',pillar:'p2',title:'iOS/Android MAM מוגדר ל-BYOD',priority:'medium',phase:2},
+  {id:'p3-mde',pillar:'p3',title:'MDE P2 מחובר לכל מכשיר (Windows + Mac + Linux)',priority:'critical',phase:2},
+  {id:'p3-tamper',pillar:'p3',title:'Tamper Protection מופעל',priority:'critical',phase:2},
+  {id:'p3-asr',pillar:'p3',title:'ASR Rules על Block Mode (אחרי Audit)',priority:'high',phase:3},
+  {id:'p3-cfa',pillar:'p3',title:'Controlled Folder Access מופעל',priority:'high',phase:3},
+  {id:'p3-netprot',pillar:'p3',title:'Network Protection מופעל',priority:'high',phase:3},
+  {id:'p3-tvm',pillar:'p3',title:'TVM — Exposure Score מכוסה שבועי',priority:'medium',phase:3},
+  {id:'p3-air',pillar:'p3',title:'AIR — Automated Remediation מאושר',priority:'medium',phase:3},
+  {id:'p3-live',pillar:'p3',title:'Live Response — מופעל לצוות SOC',priority:'low',phase:3},
+  {id:'p3-sensors',pillar:'p3',title:'MDI Sensors על כל Domain Controllers',priority:'high',phase:3},
+  {id:'p4-safelinks',pillar:'p4',title:'Safe Links — כל users',priority:'critical',phase:3},
+  {id:'p4-safeatt',pillar:'p4',title:'Safe Attachments — כל users + SharePoint',priority:'critical',phase:3},
+  {id:'p4-antiphish',pillar:'p4',title:'Anti-Phishing — Impersonation VIP מוגדר',priority:'high',phase:3},
+  {id:'p4-zap',pillar:'p4',title:'ZAP (Zero-hour Auto Purge) מופעל',priority:'high',phase:3},
+  {id:'p4-dmarc',pillar:'p4',title:'DKIM + DMARC + SPF מוגדרים',priority:'critical',phase:1},
+  {id:'p4-sim',pillar:'p4',title:'Attack Simulator — Simulation ראשון בוצע',priority:'medium',phase:3},
+  {id:'p4-training',pillar:'p4',title:'Training מוגדר אוטומטית לנופלים',priority:'medium',phase:3},
+  {id:'p4-explorer',pillar:'p4',title:'Threat Explorer — Analyst מכיר ועובד',priority:'low',phase:3},
+  {id:'p5-shadow',pillar:'p5',title:'Shadow IT Discovery מופעל (MDE Integration)',priority:'high',phase:3},
+  {id:'p5-sanction',pillar:'p5',title:'Sanctioned / Unsanctioned Apps מסומנות',priority:'high',phase:3},
+  {id:'p5-session',pillar:'p5',title:'MDCA Session Controls על ה-Apps הרגישים',priority:'medium',phase:3},
+  {id:'p5-block-dl',pillar:'p5',title:'Block Download על BYOD Devices',priority:'medium',phase:3},
+  {id:'p5-oauth',pillar:'p5',title:'OAuth App Governance מוגדר',priority:'medium',phase:3},
+  {id:'p5-anomaly',pillar:'p5',title:'Anomaly Detection Policies מופעלות',priority:'low',phase:3},
+  {id:'p6-labels',pillar:'p6',title:'Sensitivity Labels מפורסמות לכל הארגון',priority:'high',phase:5},
+  {id:'p6-autolabel',pillar:'p6',title:'Auto-Labeling Policy מוגדרת',priority:'medium',phase:5},
+  {id:'p6-dlp',pillar:'p6',title:'DLP Policies — Audit ואחר כך Enforce',priority:'high',phase:5},
+  {id:'p6-edlp',pillar:'p6',title:'Endpoint DLP מופעל',priority:'high',phase:5},
+  {id:'p6-irm',pillar:'p6',title:'Insider Risk Management — 3+ Policies',priority:'medium',phase:5},
+  {id:'p6-hr',pillar:'p6',title:'HR Connector מחובר (עזיבה / גיוס)',priority:'medium',phase:5},
+  {id:'p6-compl',pillar:'p6',title:'Communication Compliance — לפי רגולציה',priority:'low',phase:5},
+  {id:'p6-audit',pillar:'p6',title:'Audit Premium — 180 יום retention',priority:'high',phase:5},
+  {id:'p6-retention',pillar:'p6',title:'Retention Policies מוגדרות',priority:'medium',phase:5},
+  {id:'p7-workspace',pillar:'p7',title:'Sentinel Workspace מוגדר',priority:'high',phase:6},
+  {id:'p7-e5conn',pillar:'p7',title:'E5 Connector מחובר (Defender data חינם)',priority:'critical',phase:6},
+  {id:'p7-entra',pillar:'p7',title:'Entra ID Connector מחובר',priority:'high',phase:6},
+  {id:'p7-m365',pillar:'p7',title:'M365 / Purview Connector מחובר',priority:'high',phase:6},
+  {id:'p7-rules',pillar:'p7',title:'Analytics Rules מופעלות (לפחות 20)',priority:'high',phase:6},
+  {id:'p7-playbook',pillar:'p7',title:'Response Playbook לאירועים High-Severity',priority:'high',phase:6},
+  {id:'p7-ueba',pillar:'p7',title:'UEBA מופעל ב-Sentinel',priority:'medium',phase:6},
+  {id:'p7-ti',pillar:'p7',title:'Threat Intelligence Connector מחובר',priority:'medium',phase:6},
+  {id:'p7-hunting',pillar:'p7',title:'Weekly Threat Hunting Session',priority:'medium',phase:6},
+  {id:'p7-review',pillar:'p7',title:'Monthly Security Review + Secure Score',priority:'low',phase:6},
+  {id:'p7-pentest',pillar:'p7',title:'Quarterly Penetration Testing',priority:'low',phase:6},
+  {id:'p7-tabletop',pillar:'p7',title:'Annual Tabletop Exercise (IR Simulation)',priority:'low',phase:6},
+];
+
+// ══════════════════════════════════════════════
+//  STATE & STORAGE
+// ══════════════════════════════════════════════
+let APP = { clients: [], version: 2 };
+let currentClientId = null;
+let currentPillar = 'p1';
+let currentPhase = 0;
+let editingItemId = null;
+let editingItemStatus = 'pending';
+let editingItemPriority = 'medium';
+
+function save(syncClientId) {
+  localStorage.setItem('e5tracker_v2', JSON.stringify(APP));
+  if (syncClientId) pushClientToSP(syncClientId); // async fire-and-forget
+}
+function load() {
+  const raw = localStorage.getItem('e5tracker_v2');
+  if (raw) { try { APP = JSON.parse(raw); } catch(e) {} }
+}
+
+// ── CLIENT CRUD ──────────────────────────────
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function createClient(data) {
+  const c = {
+    id: genId(),
+    name: data.name,
+    contact: data.contact || '',
+    consultant: data.consultant || '',
+    startDate: data.startDate || '',
+    targetDate: data.targetDate || '',
+    mode: data.mode || 'cloud',
+    licenses: data.licenses || '',
+    notes: data.notes || '',
+    items: {},
+    activityLog: [],
+    createdAt: new Date().toISOString(),
+  };
+  // Init all items as pending
+  ITEMS.forEach(item => {
+    c.items[item.id] = {
+      status: 'pending',
+      date: '',
+      assignee: '',
+      notes: '',
+      blocker: '',
+      priority: item.priority,
+    };
+  });
+  APP.clients.push(c);
+  save(c.id); // also push new client to SharePoint if connected
+  return c;
+}
+
+function getClient(id) { return APP.clients.find(c => c.id === id); }
+
+function deleteClient(id) {
+  const c = getClient(id);
+  if (c?._spItemId) deleteClientFromSP(c._spItemId); // async cleanup in SP
+  APP.clients = APP.clients.filter(cl => cl.id !== id);
+  save();
+}
+
+// ── PROGRESS CALC ────────────────────────────
+function getPillarProgress(client, pillarId) {
+  const items = ITEMS.filter(i => i.pillar === pillarId);
+  const done = items.filter(i => client.items[i.id]?.status === 'done').length;
+  const relevant = items.filter(i => client.items[i.id]?.status !== 'na').length;
+  return { done, total: relevant, pct: relevant ? Math.round(done/relevant*100) : 0 };
+}
+
+function getOverallProgress(client) {
+  const relevant = ITEMS.filter(i => client.items[i.id]?.status !== 'na').length;
+  const done = ITEMS.filter(i => client.items[i.id]?.status === 'done').length;
+  return { done, total: relevant, pct: relevant ? Math.round(done/relevant*100) : 0 };
+}
+
+function getBlockers(client) {
+  return ITEMS.filter(i => client.items[i.id]?.blocker?.trim());
+}
+
+// ── ACTIVITY LOG ─────────────────────────────
+function logActivity(clientId, itemId, action, note) {
+  const c = getClient(clientId);
+  if (!c) return;
+  c.activityLog.unshift({
+    id: genId(),
+    timestamp: new Date().toISOString(),
+    itemId,
+    action, // 'done' | 'undone' | 'note' | 'blocker'
+    note: note || '',
+  });
+  // Keep max 200 entries
+  if (c.activityLog.length > 200) c.activityLog = c.activityLog.slice(0, 200);
+  save();
+}
+
+// ══════════════════════════════════════════════
+//  VIEWS
+// ══════════════════════════════════════════════
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+}
+
+function showDashboard() {
+  currentClientId = null;
+  renderDashboard();
+  showView('dashboard');
+  document.getElementById('topbar-actions').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="showImport()">📥 ייבוא</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportAllJSON()">📤 ייצוא הכל</button>
+    <button class="btn btn-gold btn-sm" onclick="showNewClient()">➕ לקוח חדש</button>`;
+}
+
+function showClient(clientId) {
+  currentClientId = clientId;
+  currentPillar = 'p1';
+  currentPhase = 0;
+  renderClientView();
+  showView('client');
+  const c = getClient(clientId);
+  document.getElementById('topbar-actions').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="showDashboard()">← כל הלקוחות</button>
+    <button class="btn btn-ghost btn-sm" onclick="showLog('${clientId}')">📋 לוג פעילות</button>
+    <button class="btn btn-ghost btn-sm" onclick="showReport('${clientId}')">📄 דוח התקדמות</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportClientJSON()">📤 Export JSON</button>
+    <button class="btn btn-gold btn-sm" onclick="editClient('${clientId}')">✏️ ערוך</button>`;
+}
+
+function backToClient() {
+  if (currentClientId) showClient(currentClientId);
+  else showDashboard();
+}
+
+function showLog(clientId) {
+  currentClientId = clientId;
+  const c = getClient(clientId);
+  document.getElementById('log-title').textContent = c.name + ' — לוג פעילות';
+  renderLog(c);
+  showView('log');
+}
+
+function showReport(clientId) {
+  currentClientId = clientId;
+  renderReport(getClient(clientId));
+  showView('report');
+}
+
+// ── DASHBOARD ────────────────────────────────
+function renderDashboard() {
+  // Stats
+  const total = APP.clients.length;
+  const doneCount = APP.clients.reduce((s,c) => s + getOverallProgress(c).done, 0);
+  const totalItems = APP.clients.reduce((s,c) => s + getOverallProgress(c).total, 0);
+  const blockers = APP.clients.reduce((s,c) => s + getBlockers(c).length, 0);
+  const avgPct = total ? Math.round(APP.clients.reduce((s,c)=>s+getOverallProgress(c).pct,0)/total) : 0;
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card"><div class="num">${total}</div><div class="lbl">לקוחות פעילים</div></div>
+    <div class="stat-card"><div class="num">${avgPct}%</div><div class="lbl">ממוצע התקדמות</div></div>
+    <div class="stat-card"><div class="num">${doneCount}</div><div class="lbl">פריטים הושלמו</div></div>
+    <div class="stat-card"><div class="num" style="color:var(--danger)">${blockers}</div><div class="lbl">Blockers פתוחים</div></div>`;
+
+  const grid = document.getElementById('clients-grid');
+  if (!APP.clients.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="icon">🏢</div>
+      <h2>אין לקוחות עדיין</h2>
+      <p>לחץ "לקוח חדש" כדי להתחיל לעקוב אחרי פרויקט E5</p>
+      <button class="btn btn-primary" style="margin-top:16px" onclick="showNewClient()">➕ הוסף לקוח ראשון</button>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = APP.clients.map(c => {
+    const ov = getOverallProgress(c);
+    const modeClass = c.mode === 'cloud' ? 'mode-cloud' : c.mode === 'hybrid' ? 'mode-hybrid' : 'mode-comgmt';
+    const modeLabel = c.mode === 'cloud' ? '☁️ Fully Cloud' : c.mode === 'hybrid' ? '🔄 Hybrid' : '🔗 Co-Mgmt';
+    const blockers = getBlockers(c).length;
+    const lastActivity = c.activityLog[0];
+    const lastStr = lastActivity ? timeAgo(lastActivity.timestamp) : 'אין פעילות';
+    const pillarsHtml = PILLARS.map(p => {
+      const pp = getPillarProgress(c, p.id);
+      return `<div class="pillar-mini-bar">
+        <div class="icon">${p.icon}</div>
+        <div class="pct">${pp.pct}%</div>
+        <div class="bar"><div class="bar-fill" style="width:${pp.pct}%;background:${p.color}"></div></div>
+      </div>`;
+    }).join('');
+    return `<div class="client-card" onclick="showClient('${c.id}')">
+      <div class="card-actions">
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();editClient('${c.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();confirmDelete('${c.id}')">🗑️</button>
+      </div>
+      <div class="client-card-header">
+        <div>
+          <div class="client-name">${c.name}</div>
+          <div class="client-meta"><span>👤 ${c.consultant || '—'}</span><span>📅 ${c.startDate || '—'}</span>${c.licenses?`<span>👥 ${c.licenses}</span>`:''}</div>
+        </div>
+        <span class="client-mode-badge ${modeClass}">${modeLabel}</span>
+      </div>
+      <div class="overall-bar"><div class="overall-bar-fill" style="width:${ov.pct}%"></div></div>
+      <div class="overall-pct">${ov.pct}% הושלם — ${ov.done}/${ov.total} פריטים${blockers ? ` <span style="color:var(--danger);margin-right:8px">⚠️ ${blockers} Blockers</span>` : ''}</div>
+      <div class="pillar-mini-bars">${pillarsHtml}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:10px;border-top:1px solid var(--border);padding-top:8px">🕐 פעילות אחרונה: ${lastStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── CLIENT VIEW ──────────────────────────────
+function renderClientView() {
+  const c = getClient(currentClientId);
+  if (!c) return;
+  const ov = getOverallProgress(c);
+  const blockers = getBlockers(c).length;
+  const modeLabel = c.mode === 'cloud' ? '☁️ Fully Cloud' : c.mode === 'hybrid' ? '🔄 Hybrid' : '🔗 Co-Management';
+
+  // Header
+  document.getElementById('client-header').innerHTML = `
+    <div class="breadcrumb" onclick="showDashboard()">← כל הלקוחות</div>
+    <h1>${c.name}</h1>
+    <div class="client-view-meta">
+      <span>🏗️ ${modeLabel}</span>
+      ${c.consultant ? `<span>🧑‍💼 ${c.consultant}</span>` : ''}
+      ${c.contact ? `<span>👤 ${c.contact}</span>` : ''}
+      ${c.licenses ? `<span>👥 ${c.licenses} משתמשים</span>` : ''}
+      ${c.startDate ? `<span>📅 התחלה: ${c.startDate}</span>` : ''}
+      ${c.targetDate ? `<span>🏁 יעד: ${c.targetDate}</span>` : ''}
+    </div>`;
+
+  // Progress overview
+  const pillarsHtml = PILLARS.map(p => {
+    const pp = getPillarProgress(c, p.id);
+    return `<div class="pillar-progress-card">
+      <div class="p-icon">${p.icon}</div>
+      <div class="p-name">${p.short}</div>
+      <div class="p-pct" style="color:${p.color}">${pp.pct}%</div>
+      <div class="p-bar"><div class="p-bar-fill" style="width:${pp.pct}%;background:${p.color}"></div></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('progress-overview').innerHTML = `
+    <h3>📊 סקירת התקדמות</h3>
+    <div class="progress-big">
+      <div class="progress-circle" style="background:conic-gradient(var(--ms-blue) ${ov.pct*3.6}deg, #e2e8f0 ${ov.pct*3.6}deg)">
+        ${ov.pct}%
+      </div>
+      <div class="progress-details">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:6px">${ov.done} מתוך ${ov.total} פריטים הושלמו</div>
+        <div class="progress-bar-main"><div class="progress-bar-main-fill" style="width:${ov.pct}%"></div></div>
+        <div style="font-size:.8rem;color:var(--muted)">${ov.total - ov.done} פריטים נותרו${blockers ? ` · <span style="color:var(--danger)">⚠️ ${blockers} Blockers פתוחים</span>` : ''}</div>
+      </div>
+    </div>
+    <div class="pillars-grid">${pillarsHtml}</div>`;
+
+  // Pillar tabs
+  document.getElementById('pillar-tabs').innerHTML = PILLARS.map(p => {
+    const pp = getPillarProgress(c, p.id);
+    return `<button class="pillar-tab ${p.id === currentPillar ? 'active' : ''}" onclick="switchPillar('${p.id}')">
+      ${p.icon} ${p.short} <span class="tab-pct">${pp.pct}%</span>
+    </button>`;
+  }).join('');
+
+  renderPillarContent();
+}
+
+function switchPillar(pillarId) {
+  currentPillar = pillarId;
+  document.querySelectorAll('.pillar-tab').forEach(t => {
+    t.classList.toggle('active', t.textContent.includes(PILLARS.find(p=>p.id===pillarId).short));
+  });
+  renderPillarContent();
+}
+
+function filterPhase(phase, btn) {
+  currentPhase = phase;
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPillarContent();
+}
+
+function buildItemRow(item, c) {
+  const data = c.items[item.id] || {};
+  const isDone = data.status === 'done';
+  const isNA = data.status === 'na';
+  const blocker = data.blocker?.trim();
+  const pClass = 'priority-' + (data.priority || item.priority);
+  return `<div class="checklist-item ${isDone ? 'done' : ''} ${isNA ? 'na-item' : ''}" onclick="openItemModal('${item.id}')">
+    <div class="item-check ${isDone ? 'checked' : ''}">${isDone ? '✓' : isNA ? '—' : ''}</div>
+    <div class="priority-dot ${pClass}"></div>
+    <div class="item-body">
+      <div class="item-title ${isDone ? 'done' : ''}">${item.title}</div>
+      <div class="item-meta">
+        ${isDone && data.date ? `<span class="item-date">📅 ${data.date}</span>` : ''}
+        ${data.assignee ? `<span class="item-assignee">👤 ${data.assignee}</span>` : ''}
+        ${blocker ? `<span class="item-blocker">🚧 ${blocker.substring(0,40)}${blocker.length>40?'...':''}</span>` : ''}
+        ${data.notes && !blocker ? `<span class="item-note-preview">📝 ${data.notes.substring(0,50)}</span>` : ''}
+        ${isNA ? `<span style="font-size:.72rem;color:var(--muted)">לא רלוונטי</span>` : ''}
+      </div>
+    </div>
+    <div style="font-size:.7rem;color:var(--muted);margin-right:auto;padding-right:8px">שלב ${item.phase}</div>
+    <div style="color:var(--muted);font-size:.85rem">›</div>
+  </div>`;
+}
+
+function renderPillarContent() {
+  const c = getClient(currentClientId);
+  if (!c) return;
+
+  // ── Phase filter active: show ALL pillars for this phase ──
+  if (currentPhase > 0) {
+    const phaseItems = ITEMS.filter(i => i.phase === currentPhase);
+    if (!phaseItems.length) {
+      document.getElementById('pillar-content').innerHTML =
+        '<div style="padding:30px;text-align:center;color:var(--muted)">אין פריטים בשלב זה</div>';
+      return;
+    }
+    // Group by pillar
+    const groups = {};
+    phaseItems.forEach(i => { (groups[i.pillar] = groups[i.pillar] || []).push(i); });
+    const phaseNames = ['','Foundation','Devices','Threats','Identity Adv.','Purview','Sentinel'];
+    const totalDone = phaseItems.filter(i => c.items[i.id]?.status === 'done').length;
+    const html = `
+      <div style="margin-bottom:14px;padding:12px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:1rem;font-weight:700;color:var(--primary)">שלב ${currentPhase} — ${phaseNames[currentPhase]}</span>
+        <span style="font-size:.82rem;color:var(--muted)">${totalDone}/${phaseItems.length} הושלמו</span>
+        <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
+          <div style="width:${phaseItems.length?Math.round(totalDone/phaseItems.length*100):0}%;height:100%;background:var(--ms-blue);border-radius:3px"></div>
+        </div>
+        <span style="font-weight:700;color:var(--ms-blue)">${phaseItems.length?Math.round(totalDone/phaseItems.length*100):0}%</span>
+      </div>
+      ${Object.keys(groups).map(pillarId => {
+        const pillar = PILLARS.find(p => p.id === pillarId);
+        const items = groups[pillarId];
+        const done = items.filter(i => c.items[i.id]?.status === 'done').length;
+        const pct = items.length ? Math.round(done/items.length*100) : 0;
+        return `<div class="checklist-section" style="margin-bottom:14px">
+          <div class="checklist-header">
+            <h3>${pillar.icon} ${pillar.name}</h3>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:.82rem;color:var(--muted)">${done}/${items.length} הושלמו</span>
+              <div style="width:80px;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
+                <div style="width:${pct}%;height:100%;background:${pillar.color};border-radius:3px"></div>
+              </div>
+              <span style="font-size:.85rem;font-weight:700;color:${pillar.color}">${pct}%</span>
+            </div>
+          </div>
+          ${items.map(item => buildItemRow(item, c)).join('')}
+        </div>`;
+      }).join('')}`;
+    document.getElementById('pillar-content').innerHTML = html;
+    return;
+  }
+
+  // ── Normal pillar view ──
+  const pillar = PILLARS.find(p => p.id === currentPillar);
+  const items = ITEMS.filter(i => i.pillar === currentPillar);
+  const pp = getPillarProgress(c, currentPillar);
+  const itemsHtml = items.map(item => buildItemRow(item, c)).join('');
+
+  document.getElementById('pillar-content').innerHTML = `
+    <div class="checklist-section">
+      <div class="checklist-header">
+        <h3>${pillar.icon} ${pillar.name}</h3>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:.82rem;color:var(--muted)">${pp.done}/${pp.total} הושלמו</span>
+          <div style="width:80px;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden">
+            <div style="width:${pp.pct}%;height:100%;background:${pillar.color};border-radius:3px"></div>
+          </div>
+          <span style="font-size:.85rem;font-weight:700;color:${pillar.color}">${pp.pct}%</span>
+        </div>
+      </div>
+      ${itemsHtml}
+    </div>`;
+}
+
+// ── ACTIVITY LOG ─────────────────────────────
+function renderLog(c) {
+  if (!c.activityLog || !c.activityLog.length) {
+    document.getElementById('log-container').innerHTML = '<div class="empty-log">📭 אין פעילות עדיין. התחל לסמן פריטים!</div>';
+    return;
+  }
+  const html = c.activityLog.map(entry => {
+    const item = ITEMS.find(i => i.id === entry.itemId);
+    const pillar = item ? PILLARS.find(p => p.id === item.pillar) : null;
+    const dotClass = entry.action === 'done' ? 'log-dot-done' : entry.action === 'undone' ? 'log-dot-undone' : 'log-dot-note';
+    const icon = entry.action === 'done' ? '✅' : entry.action === 'undone' ? '↩️' : entry.action === 'blocker' ? '🚧' : '📝';
+    const actionText = entry.action === 'done' ? 'הושלם' : entry.action === 'undone' ? 'בוטל' : entry.action === 'blocker' ? 'Blocker נוסף' : 'עודכן';
+    return `<div class="log-entry">
+      <div class="log-dot ${dotClass}">${icon}</div>
+      <div class="log-body">
+        <div class="log-title">${item ? item.title : entry.itemId} — <strong>${actionText}</strong></div>
+        <div class="log-meta">${pillar ? pillar.icon + ' ' + pillar.short + ' · ' : ''}${formatDate(entry.timestamp)}</div>
+        ${entry.note ? `<div class="log-note">${entry.note}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('log-container').innerHTML = html;
+}
+
+function clearLog() {
+  if (!confirm('למחוק את כל הלוג? פעולה זו אינה הפיכה.')) return;
+  const c = getClient(currentClientId);
+  c.activityLog = [];
+  save(currentClientId);
+  renderLog(c);
+  toast('לוג נוקה');
+}
+
+// ── REPORT ───────────────────────────────────
+function renderReport(c) {
+  const ov = getOverallProgress(c);
+  const blockerItems = getBlockers(c);
+  const modeLabel = c.mode === 'cloud' ? '☁️ Fully Cloud' : c.mode === 'hybrid' ? '🔄 Hybrid' : '🔗 Co-Management';
+  const today = new Date().toLocaleDateString('he-IL');
+
+  const pillarsHtml = PILLARS.map(p => {
+    const pp = getPillarProgress(c, p.id);
+    const pItems = ITEMS.filter(i => i.pillar === p.id);
+    const itemsHtml = pItems.map(item => {
+      const data = c.items[item.id] || {};
+      const isDone = data.status === 'done';
+      const isNA = data.status === 'na';
+      if (isNA) return '';
+      return `<div class="report-item">
+        <div class="ri-check ${isDone ? 'ri-done' : 'ri-pend'}">${isDone ? '✓' : ''}</div>
+        <div class="ri-title" style="${isDone ? 'text-decoration:line-through;color:var(--muted)' : ''}">${item.title}</div>
+        ${isDone && data.date ? `<div class="ri-date">${data.date}</div>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="report-pillar">
+      <div class="report-pillar-header">
+        <span class="icon">${p.icon}</span>
+        <h3>${p.name}</h3>
+        <span class="pct" style="color:${p.color}">${pp.pct}%</span>
+      </div>
+      <div class="report-pbar"><div class="report-pbar-fill" style="width:${pp.pct}%;background:${p.color}"></div></div>
+      <div class="report-items">${itemsHtml}</div>
+    </div>`;
+  }).join('');
+
+  const blockersHtml = blockerItems.length ? `
+    <div class="report-blockers">
+      <h3>🚧 Blockers פתוחים — ${blockerItems.length}</h3>
+      ${blockerItems.map(item => {
+        const data = c.items[item.id];
+        return `<div class="blocker-item"><strong>${item.title}:</strong> ${data.blocker}</div>`;
+      }).join('')}
+    </div>` : '';
+
+  const recentLog = (c.activityLog || []).slice(0, 10);
+  const timelineHtml = recentLog.length ? `
+    <div class="report-timeline">
+      <h3>📅 פעילות אחרונה</h3>
+      ${recentLog.map(entry => {
+        const item = ITEMS.find(i => i.id === entry.itemId);
+        const actionText = entry.action === 'done' ? 'הושלם' : entry.action === 'undone' ? 'בוטל' : 'עודכן';
+        return `<div class="rt-item">
+          <div class="rt-date">${formatDate(entry.timestamp, true)}</div>
+          <div>${item ? item.title : entry.itemId} — ${actionText}</div>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  document.getElementById('report-content').innerHTML = `
+    <div class="report-header">
+      <h1>${c.name} — דוח התקדמות E5</h1>
+      <div class="subtitle">יישום Microsoft 365 E5 · ${modeLabel}</div>
+      <div class="report-badges">
+        ${c.consultant ? `<span class="report-badge">🧑‍💼 ${c.consultant}</span>` : ''}
+        ${c.startDate ? `<span class="report-badge">📅 התחלה: ${c.startDate}</span>` : ''}
+        ${c.targetDate ? `<span class="report-badge">🏁 יעד: ${c.targetDate}</span>` : ''}
+        <span class="report-badge">🖨️ הופק: ${today}</span>
+      </div>
+    </div>
+    <div class="report-exec">
+      <div class="report-stat"><div class="n">${ov.pct}%</div><div class="l">התקדמות כוללת</div></div>
+      <div class="report-stat"><div class="n">${ov.done}</div><div class="l">פריטים הושלמו</div></div>
+      <div class="report-stat"><div class="n">${ov.total - ov.done}</div><div class="l">פריטים נותרו</div></div>
+      <div class="report-stat"><div class="n" style="color:${blockerItems.length?'var(--danger)':'var(--success)'}">${blockerItems.length}</div><div class="l">Blockers פתוחים</div></div>
+    </div>
+    ${blockersHtml}
+    ${pillarsHtml}
+    ${timelineHtml}
+    <div style="text-align:center;padding:20px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--border);margin-top:8px">
+      דוח זה הופק על ידי E5 Client Tracker · ${today}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════
+
+// ── Item Modal ───────────────────────────────
+function openItemModal(itemId) {
+  const c = getClient(currentClientId);
+  const item = ITEMS.find(i => i.id === itemId);
+  const data = c.items[itemId] || {};
+  const pillar = PILLARS.find(p => p.id === item.pillar);
+  editingItemId = itemId;
+  editingItemStatus = data.status || 'pending';
+  editingItemPriority = data.priority || item.priority;
+
+  document.getElementById('item-modal-title').textContent = item.title;
+  document.getElementById('item-modal-pillar-badge').textContent = pillar.icon + ' ' + pillar.name;
+  document.getElementById('item-modal-pillar-badge').style.background = pillar.color;
+  document.getElementById('item-date').value = data.date || '';
+  document.getElementById('item-assignee').value = data.assignee || '';
+  document.getElementById('item-notes').value = data.notes || '';
+  document.getElementById('item-blocker').value = data.blocker || '';
+
+  updateStatusBtns(editingItemStatus);
+  updatePriorityBtns(editingItemPriority);
+  document.getElementById('modal-item').classList.add('open');
+}
+
+function setStatus(s) { editingItemStatus = s; updateStatusBtns(s); }
+function updateStatusBtns(s) {
+  ['done','pending','na'].forEach(st => {
+    const btn = document.getElementById('btn-status-' + st);
+    btn.className = 'status-btn' + (s === st ? (st === 'done' ? ' active-done' : ' active-pending') : '');
+  });
+}
+
+function setPriority(p) { editingItemPriority = p; updatePriorityBtns(p); }
+function updatePriorityBtns(p) {
+  document.querySelectorAll('.priority-btn').forEach(btn => {
+    const bP = btn.getAttribute('data-p');
+    btn.className = 'priority-btn' + (bP === p ? ' sel-' + p : '');
+  });
+}
+
+function closeItemModal() { document.getElementById('modal-item').classList.remove('open'); }
+
+function saveItem() {
+  const c = getClient(currentClientId);
+  const itemId = editingItemId;
+  const prev = { ...c.items[itemId] };
+  const date = document.getElementById('item-date').value;
+  const assignee = document.getElementById('item-assignee').value;
+  const notes = document.getElementById('item-notes').value;
+  const blocker = document.getElementById('item-blocker').value;
+
+  c.items[itemId] = {
+    status: editingItemStatus,
+    date: editingItemStatus === 'done' && !date ? new Date().toISOString().split('T')[0] : date,
+    assignee,
+    notes,
+    blocker,
+    priority: editingItemPriority,
+  };
+
+  // Log changes
+  if (prev.status !== editingItemStatus) {
+    const action = editingItemStatus === 'done' ? 'done' : editingItemStatus === 'pending' ? 'undone' : 'note';
+    logActivity(currentClientId, itemId, action, notes || '');
+  } else if (blocker && prev.blocker !== blocker) {
+    logActivity(currentClientId, itemId, 'blocker', blocker);
+  } else if (notes && prev.notes !== notes) {
+    logActivity(currentClientId, itemId, 'note', notes);
+  }
+
+  save(currentClientId); // sync this client to SharePoint
+  closeItemModal();
+  renderClientView();
+  toast(editingItemStatus === 'done' ? '✅ פריט הושלם!' : '💾 נשמר', editingItemStatus === 'done' ? 'success' : '');
+}
+
+// ── Client Modal ──────────────────────────────
+let editingClientId = null;
+
+function showNewClient() {
+  editingClientId = null;
+  document.getElementById('client-modal-title').textContent = '➕ לקוח חדש';
+  ['nc-name','nc-contact','nc-consultant','nc-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('nc-start').value = new Date().toISOString().split('T')[0];
+  document.getElementById('nc-target').value = '';
+  document.getElementById('nc-mode').value = 'cloud';
+  document.getElementById('nc-licenses').value = '';
+  document.getElementById('modal-client').classList.add('open');
+}
+
+function editClient(clientId) {
+  editingClientId = clientId;
+  const c = getClient(clientId);
+  document.getElementById('client-modal-title').textContent = '✏️ עריכת לקוח';
+  document.getElementById('nc-name').value = c.name;
+  document.getElementById('nc-contact').value = c.contact || '';
+  document.getElementById('nc-consultant').value = c.consultant || '';
+  document.getElementById('nc-start').value = c.startDate || '';
+  document.getElementById('nc-target').value = c.targetDate || '';
+  document.getElementById('nc-mode').value = c.mode || 'cloud';
+  document.getElementById('nc-licenses').value = c.licenses || '';
+  document.getElementById('nc-notes').value = c.notes || '';
+  document.getElementById('modal-client').classList.add('open');
+}
+
+function closeClientModal() { document.getElementById('modal-client').classList.remove('open'); }
+
+function saveClientForm() {
+  const name = document.getElementById('nc-name').value.trim();
+  if (!name) { alert('שם הלקוח חובה'); return; }
+  const data = {
+    name,
+    contact: document.getElementById('nc-contact').value,
+    consultant: document.getElementById('nc-consultant').value,
+    startDate: document.getElementById('nc-start').value,
+    targetDate: document.getElementById('nc-target').value,
+    mode: document.getElementById('nc-mode').value,
+    licenses: document.getElementById('nc-licenses').value,
+    notes: document.getElementById('nc-notes').value,
+  };
+  if (editingClientId) {
+    const c = getClient(editingClientId);
+    Object.assign(c, data);
+    save(editingClientId); // sync updated client to SharePoint
+    toast('✏️ לקוח עודכן');
+    closeClientModal();
+    if (currentClientId === editingClientId) renderClientView();
+    else renderDashboard();
+  } else {
+    const c = createClient(data);
+    toast('✅ לקוח נוצר!', 'success');
+    closeClientModal();
+    showClient(c.id);
+  }
+}
+
+function confirmDelete(clientId) {
+  const c = getClient(clientId);
+  if (!confirm(`למחוק את "${c.name}"? פעולה זו אינה הפיכה.`)) return;
+  deleteClient(clientId);
+  renderDashboard();
+  toast('🗑️ לקוח נמחק', 'danger');
+}
+
+// ── Import / Export ───────────────────────────
+function exportAllJSON() {
+  const data = JSON.stringify(APP, null, 2);
+  download('e5-tracker-backup-' + todayStr() + '.json', data);
+  toast('📤 Exported!');
+}
+
+function exportClientJSON() {
+  const c = getClient(currentClientId);
+  const data = JSON.stringify({ clients: [c], version: APP.version }, null, 2);
+  download('e5-' + c.name.replace(/\s+/g,'-') + '-' + todayStr() + '.json', data);
+  toast('📤 Exported!');
+}
+
+function showImport() { document.getElementById('modal-import').classList.add('open'); }
+
+function doImport() {
+  const file = document.getElementById('import-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed.clients) {
+        APP = parsed;
+        save();
+        document.getElementById('modal-import').classList.remove('open');
+        showDashboard();
+        toast('📥 ייובא בהצלחה!', 'success');
+      } else alert('קובץ לא תקין');
+    } catch { alert('שגיאה בקריאת הקובץ'); }
+  };
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════════
+//  SHAREPOINT SYNC — PHASE 2
+// ══════════════════════════════════════════════
+
+// ─── CONFIG: מלא אחרי יצירת App Registration ───
+const SP_CONFIG = {
+  enabled: true,
+  clientId: '9ff0156b-2d45-4649-97a6-fd8135147067',
+  tenantId: '28ebea5a-2667-45d2-a777-e778cfdf7509',
+  siteHost: 'cloudedgelab.sharepoint.com',
+  sitePath: '/sites/e5tracker',
+  clientsListName: 'E5_Clients',
+  logListName: 'E5_ActivityLog',
+};
+
+let _msal = null, _siteId = null, _listId = null, _logListId = null;
+let _syncing = false;
+const _pendingSync = new Set(); // clientIds waiting to sync
+
+// ── Sync status UI ──────────────────────────────
+function setSyncStatus(state, extra) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const map = {
+    disabled: { icon: '☁️', text: 'לא מחובר', color: 'rgba(255,255,255,.5)' },
+    idle:     { icon: '☁️', text: 'התחבר ל-SharePoint', color: '#fff' },
+    login:    { icon: '🔐', text: 'התחבר...', color: '#fbbf24' },
+    syncing:  { icon: '🔄', text: 'מסנכרן...', color: '#7dd3fc' },
+    ok:       { icon: '✅', text: 'מסונכרן', color: '#86efac' },
+    error:    { icon: '❌', text: 'שגיאת Sync', color: '#fca5a5' },
+  };
+  const s = map[state] || map.disabled;
+  el.textContent = s.icon + ' ' + (extra || s.text);
+  el.style.color = s.color;
+  el.title = extra || s.text;
+}
+
+function handleSyncClick() {
+  if (!SP_CONFIG.enabled) {
+    alert('SharePoint Sync לא מוגדר עדיין.\n\nמלא את SP_CONFIG בקוד:\n• clientId\n• tenantId\n• enabled: true');
+    return;
+  }
+  const accounts = _msal?.getAllAccounts() || [];
+  if (!accounts.length) spLogin();
+  else { setSyncStatus('syncing'); syncAllPending(); }
+}
+
+// ── MSAL Init ───────────────────────────────────
+async function initSharePoint() {
+  if (!SP_CONFIG.enabled) { setSyncStatus('disabled'); return; }
+  setSyncStatus('idle');
+  try {
+    _msal = new msal.PublicClientApplication({
+      auth: {
+        clientId: SP_CONFIG.clientId,
+        authority: `https://login.microsoftonline.com/${SP_CONFIG.tenantId}`,
+        redirectUri: window.location.href.split('?')[0].split('#')[0],
+      },
+      cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: false }
+    });
+    await _msal.initialize();
+    await _msal.handleRedirectPromise();
+    const accounts = _msal.getAllAccounts();
+    if (accounts.length > 0) {
+      setSyncStatus('syncing');
+      await ensureLists();
+      await pullFromSP();
+      setSyncStatus('ok');
+    }
+  } catch(e) {
+    console.error('SP init error:', e);
+    setSyncStatus('error', e.message?.substring(0,40));
+  }
+}
+
+async function spLogin() {
+  if (!_msal) return;
+  setSyncStatus('login');
+  try {
+    await _msal.loginPopup({
+      scopes: ['https://graph.microsoft.com/Sites.ReadWrite.All', 'User.Read']
+    });
+    setSyncStatus('syncing');
+    await ensureLists();
+    await pullFromSP();
+    setSyncStatus('ok');
+    toast('☁️ מחובר ל-SharePoint!', 'success');
+  } catch(e) {
+    console.error('SP login error:', e);
+    setSyncStatus('error');
+    toast('שגיאה בהתחברות: ' + (e.message||''), 'danger');
+  }
+}
+
+// ── Graph helper ────────────────────────────────
+async function _token() {
+  const acc = _msal.getAllAccounts();
+  if (!acc.length) throw new Error('Not authenticated');
+  const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All'];
+  try {
+    return (await _msal.acquireTokenSilent({ scopes, account: acc[0] })).accessToken;
+  } catch {
+    return (await _msal.acquireTokenPopup({ scopes, account: acc[0] })).accessToken;
+  }
+}
+
+async function graph(method, path, body) {
+  const token = await _token();
+  const r = await fetch('https://graph.microsoft.com/v1.0' + path, {
+    method,
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (method === 'DELETE') return null;
+  const json = await r.json();
+  if (!r.ok) throw new Error(json?.error?.message || r.status);
+  return json;
+}
+
+// ── List setup ──────────────────────────────────
+async function _siteIdCached() {
+  if (_siteId) return _siteId;
+  const s = await graph('GET', `/sites/${SP_CONFIG.siteHost}:${SP_CONFIG.sitePath}`);
+  _siteId = s.id;
+  return _siteId;
+}
+
+async function ensureLists() {
+  const sid = await _siteIdCached();
+  const res = await graph('GET', `/sites/${sid}/lists?$select=id,displayName`);
+  const existing = {};
+  res.value.forEach(l => existing[l.displayName] = l.id);
+
+  // ── E5_Clients ──
+  if (!existing[SP_CONFIG.clientsListName]) {
+    toast('🔧 יוצר רשימות SharePoint...', '');
+    const l = await graph('POST', `/sites/${sid}/lists`, {
+      displayName: SP_CONFIG.clientsListName,
+      columns: [
+        { name: 'ClientId', text: {} },
+        { name: 'DataJson', text: { allowMultipleLines: true, linesForEditing: 20, maxLength: 65535 } },
+      ],
+      list: { template: 'genericList' }
+    });
+    _listId = l.id;
+    toast('✅ רשימה E5_Clients נוצרה', 'success');
+  } else {
+    _listId = existing[SP_CONFIG.clientsListName];
+  }
+
+  // ── E5_ActivityLog ──
+  if (!existing[SP_CONFIG.logListName]) {
+    const l = await graph('POST', `/sites/${sid}/lists`, {
+      displayName: SP_CONFIG.logListName,
+      columns: [
+        { name: 'ClientId', text: {} },
+        { name: 'ClientName', text: {} },
+        { name: 'ItemId', text: {} },
+        { name: 'Action', text: {} },
+        { name: 'Note', text: { allowMultipleLines: true } },
+        { name: 'ActionTimestamp', text: {} },
+        { name: 'UpdatedBy', text: {} },
+      ],
+      list: { template: 'genericList' }
+    });
+    _logListId = l.id;
+  } else {
+    _logListId = existing[SP_CONFIG.logListName];
+  }
+}
+
+// ── Pull from SharePoint → localStorage ─────────
+async function pullFromSP() {
+  const sid = await _siteIdCached();
+  const res = await graph('GET',
+    `/sites/${sid}/lists/${_listId}/items?$expand=fields($select=Title,ClientId,DataJson,id)&$top=500`);
+  const spClients = [];
+  for (const item of res.value) {
+    const f = item.fields;
+    if (!f?.DataJson) continue;
+    try {
+      const cd = JSON.parse(f.DataJson);
+      cd._spItemId = item.id;
+      spClients.push(cd);
+    } catch(e) { console.warn('Bad JSON for', f.Title); }
+  }
+  if (spClients.length > 0) {
+    // Merge: SP is source of truth
+    APP.clients = spClients;
+    save();
+    renderDashboard();
+    toast(`☁️ נטענו ${spClients.length} לקוחות מ-SharePoint`, 'success');
+  }
+}
+
+// ── Push single client → SharePoint ─────────────
+async function pushClientToSP(clientId) {
+  if (!SP_CONFIG.enabled || !_msal) return;
+  const accounts = _msal.getAllAccounts();
+  if (!accounts.length) { _pendingSync.add(clientId); return; }
+  const c = getClient(clientId);
+  if (!c) return;
+  setSyncStatus('syncing');
+  try {
+    const sid = await _siteIdCached();
+    if (!_listId) await ensureLists();
+    // Strip circular / large fields before saving
+    const payload = JSON.stringify(c);
+    const fields = { Title: c.name, ClientId: c.id, DataJson: payload };
+    if (c._spItemId) {
+      await graph('PATCH', `/sites/${sid}/lists/${_listId}/items/${c._spItemId}/fields`, fields);
+    } else {
+      const item = await graph('POST', `/sites/${sid}/lists/${_listId}/items`, { fields });
+      c._spItemId = item.fields?.id || item.id;
+      localStorage.setItem('e5tracker_v2', JSON.stringify(APP)); // update cached spItemId
+    }
+    // Log activity entries (last 3 unsent)
+    if (_logListId) {
+      const unsynced = (c.activityLog || []).filter(e => !e._spSynced).slice(0, 5);
+      for (const entry of unsynced) {
+        const item = ITEMS.find(i => i.id === entry.itemId);
+        await graph('POST', `/sites/${sid}/lists/${_logListId}/items`, {
+          fields: {
+            Title: c.name + ' — ' + (item?.title || entry.itemId),
+            ClientId: c.id,
+            ClientName: c.name,
+            ItemId: entry.itemId,
+            Action: entry.action,
+            Note: entry.note || '',
+            ActionTimestamp: entry.timestamp,
+            UpdatedBy: _msal.getAllAccounts()[0]?.username || '',
+          }
+        });
+        entry._spSynced = true;
+      }
+      save();
+    }
+    setSyncStatus('ok');
+  } catch(e) {
+    console.error('Push error:', e);
+    setSyncStatus('error', e.message?.substring(0,40));
+    _pendingSync.add(clientId);
+  }
+}
+
+async function deleteClientFromSP(spItemId) {
+  if (!SP_CONFIG.enabled || !_msal || !spItemId) return;
+  const accounts = _msal.getAllAccounts();
+  if (!accounts.length) return;
+  try {
+    const sid = await _siteIdCached();
+    if (!_listId) await ensureLists();
+    await graph('DELETE', `/sites/${sid}/lists/${_listId}/items/${spItemId}`);
+  } catch(e) { console.warn('SP delete error:', e); }
+}
+
+async function syncAllPending() {
+  const ids = [..._pendingSync];
+  _pendingSync.clear();
+  for (const id of ids) await pushClientToSP(id);
+  setSyncStatus('ok');
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+function download(filename, content) {
+  const a = document.createElement('a');
+  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(content);
+  a.download = filename;
+  a.click();
+}
+
+function timeAgo(iso) {
+  const diff = (Date.now() - new Date(iso)) / 1000;
+  if (diff < 60) return 'עכשיו';
+  if (diff < 3600) return Math.round(diff/60) + ' דק\'';
+  if (diff < 86400) return Math.round(diff/3600) + ' שעות';
+  if (diff < 604800) return Math.round(diff/86400) + ' ימים';
+  return new Date(iso).toLocaleDateString('he-IL');
+}
+
+function formatDate(iso, short) {
+  const d = new Date(iso);
+  if (short) return d.toLocaleDateString('he-IL');
+  return d.toLocaleDateString('he-IL') + ' ' + d.toLocaleTimeString('he-IL', {hour:'2-digit',minute:'2-digit'});
+}
+
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+load();
+showDashboard();
+initSharePoint(); // Phase 2: connect to SharePoint if SP_CONFIG.enabled = true
+</script>
+</body>
+</html>
