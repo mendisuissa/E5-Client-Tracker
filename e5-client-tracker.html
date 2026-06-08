@@ -1256,10 +1256,16 @@ async function initSharePoint() {
     }
     const accounts = _msal.getAllAccounts();
     if (accounts.length > 0) {
-      setSyncStatus('syncing');
-      await ensureLists();
-      await pullFromSP();
-      setSyncStatus('ok');
+      if (isMobile()) {
+        // Mobile: don't auto-sync on load (prevents white screen loop)
+        // User taps sync button manually
+        setSyncStatus('idle');
+      } else {
+        setSyncStatus('syncing');
+        await ensureLists();
+        await pullFromSP();
+        setSyncStatus('ok');
+      }
     }
   } catch(e) {
     console.error('SP init error:', e);
@@ -1273,8 +1279,9 @@ async function spLogin() {
   const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All', 'User.Read'];
   try {
     if (isMobile()) {
-      // Redirect flow — page navigates away and comes back
+      // Redirect directly to main app (skip auth.html on mobile)
       await _msal.loginRedirect({ scopes, redirectUri: MAIN_URL });
+      return; // page navigates away
     } else {
       if (_interacting) { toast('כבר מתבצעת כניסה...'); return; }
       _interacting = true;
@@ -1305,11 +1312,9 @@ async function _token() {
   try {
     return (await _msal.acquireTokenSilent({ scopes, account: acc[0] })).accessToken;
   } catch(e) {
+    // Mobile: never auto-redirect (causes white screen loop). User must click manually.
+    if (isMobile()) throw new Error('נדרשת כניסה מחדש — לחץ על כפתור הסנכרון');
     if (_interacting) throw new Error('Interaction already in progress');
-    if (isMobile()) {
-      await _msal.acquireTokenRedirect({ scopes, redirectUri: MAIN_URL });
-      throw new Error('Redirecting...'); // unreachable but satisfies linter
-    }
     _interacting = true;
     try {
       return (await _msal.acquireTokenPopup({ scopes, account: acc[0] })).accessToken;
