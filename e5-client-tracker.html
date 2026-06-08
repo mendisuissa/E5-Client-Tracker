@@ -1279,7 +1279,10 @@ async function spLogin() {
   const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All', 'User.Read'];
   try {
     if (isMobile()) {
-      // Redirect directly to main app (skip auth.html on mobile)
+      // Clear stale MSAL interaction state (causes user_cancelled on retry)
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('msal.'))
+        .forEach(k => sessionStorage.removeItem(k));
       await _msal.loginRedirect({ scopes, redirectUri: MAIN_URL });
       return; // page navigates away
     } else {
