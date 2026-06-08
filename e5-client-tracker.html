@@ -231,11 +231,84 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 }
 
 /* ── RESPONSIVE ── */
-@media(max-width:700px){
-  .dash-stats{grid-template-columns:1fr 1fr;}
-  .pillars-grid{grid-template-columns:repeat(4,1fr);}
+@media(max-width:768px){
+  /* Topbar */
+  .topbar{padding:0 12px;height:52px;}
+  .topbar-brand .badge{display:none;}
+  .topbar-actions{gap:4px;overflow-x:auto;max-width:60vw;scrollbar-width:none;}
+  .topbar-actions::-webkit-scrollbar{display:none;}
+  .btn-sm{padding:4px 9px;font-size:.7rem;}
+  #sync-status{font-size:.65rem;}
+
+  /* Views */
+  .view{padding:12px;}
+
+  /* Dashboard */
+  .dash-stats{grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-card{padding:12px;}
+  .stat-card .num{font-size:1.6rem;}
+  .dash-header h1{font-size:1.2rem;}
+  .clients-grid{grid-template-columns:1fr;}
+
+  /* Client card */
+  .card-actions{opacity:1;}
+
+  /* Client view header */
+  .client-view-header{padding:16px;}
+  .client-view-header h1{font-size:1.2rem;}
+  .client-view-meta{flex-direction:column;gap:3px;font-size:.75rem;}
+  .client-view-actions{gap:6px;}
+
+  /* Progress overview */
+  .progress-big{flex-direction:column;align-items:stretch;gap:10px;}
+  .progress-circle{width:60px;height:60px;font-size:.9rem;align-self:center;}
+  .pillars-grid{grid-template-columns:repeat(4,1fr);gap:6px;}
+  .pillar-progress-card{padding:8px 4px;}
+  .pillar-progress-card .p-icon{font-size:1.1rem;}
+  .pillar-progress-card .p-name{font-size:.55rem;}
+  .pillar-progress-card .p-pct{font-size:.85rem;}
+
+  /* Pillar tabs — horizontal scroll */
+  .pillar-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;gap:0;padding-bottom:2px;}
+  .pillar-tabs::-webkit-scrollbar{display:none;}
+  .pillar-tab{flex-shrink:0;padding:8px 10px;font-size:.75rem;}
+
+  /* Phase filter — horizontal scroll */
+  .phase-filter{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;padding-bottom:4px;}
+  .phase-filter::-webkit-scrollbar{display:none;}
+  .phase-btn{flex-shrink:0;font-size:.7rem;padding:4px 10px;}
+
+  /* Checklist */
+  .checklist-item{padding:10px 12px;gap:8px;}
+  .item-title{font-size:.82rem;}
+  .item-note-preview{max-width:100px;}
+  .checklist-header{padding:12px 14px;}
+  .checklist-header h3{font-size:.85rem;}
+
+  /* Modal — bottom sheet */
+  .modal-overlay{align-items:flex-end;}
+  .modal{margin:0;border-radius:var(--radius) var(--radius) 0 0;
+    max-height:92vh;width:100%;padding:20px 16px;}
+  .form-row{grid-template-columns:1fr;}
+
+  /* Report */
   .report-exec{grid-template-columns:1fr 1fr;}
-  .view{padding:16px;}
+  .report-header{padding:20px;}
+  .report-header h1{font-size:1.3rem;}
+  .report-view{max-width:100%;}
+
+  /* Log */
+  .log-entry{padding:10px 12px;gap:10px;}
+}
+
+@media(max-width:480px){
+  .pillars-grid{grid-template-columns:repeat(4,1fr);}
+  .pillar-mini-bars{gap:2px;}
+  .topbar-brand span:nth-child(2){font-size:.85rem;}
+  .progress-overview{padding:14px;}
+  .client-view-header{padding:14px 12px;}
 }
 </style>
 </head>
