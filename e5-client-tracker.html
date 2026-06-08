@@ -1207,12 +1207,13 @@ function setSyncStatus(state, extra) {
   const el = document.getElementById('sync-status');
   if (!el) return;
   const map = {
-    disabled: { icon: '☁️', text: 'לא מחובר', color: 'rgba(255,255,255,.5)' },
-    idle:     { icon: '☁️', text: 'התחבר ל-SharePoint', color: '#fff' },
-    login:    { icon: '🔐', text: 'התחבר...', color: '#fbbf24' },
-    syncing:  { icon: '🔄', text: 'מסנכרן...', color: '#7dd3fc' },
-    ok:       { icon: '✅', text: 'מסונכרן', color: '#86efac' },
-    error:    { icon: '❌', text: 'שגיאת Sync', color: '#fca5a5' },
+    disabled:  { icon: '☁️', text: 'לא מחובר', color: 'rgba(255,255,255,.5)' },
+    idle:      { icon: '☁️', text: 'התחבר ל-SharePoint', color: '#fff' },
+    connected: { icon: '🔗', text: 'מחובר — לחץ לסנכרון', color: '#86efac' },
+    login:     { icon: '🔐', text: 'התחבר...', color: '#fbbf24' },
+    syncing:   { icon: '🔄', text: 'מסנכרן...', color: '#7dd3fc' },
+    ok:        { icon: '✅', text: 'מסונכרן', color: '#86efac' },
+    error:     { icon: '❌', text: 'שגיאת Sync', color: '#fca5a5' },
   };
   const s = map[state] || map.disabled;
   el.textContent = s.icon + ' ' + (extra || s.text);
@@ -1226,8 +1227,22 @@ function handleSyncClick() {
     return;
   }
   const accounts = _msal?.getAllAccounts() || [];
-  if (!accounts.length) spLogin();
-  else { setSyncStatus('syncing'); syncAllPending(); }
+  if (!accounts.length) {
+    spLogin();
+  } else {
+    setSyncStatus('syncing');
+    (async () => {
+      try {
+        await ensureLists();
+        await pullFromSP();       // ← pull latest from SharePoint
+        await syncAllPending();   // ← push local changes
+        setSyncStatus('ok');
+      } catch(e) {
+        console.error('Sync error:', e);
+        setSyncStatus('error', e.message?.substring(0,40));
+      }
+    })();
+  }
 }
 
 // ── MSAL Init ───────────────────────────────────
@@ -1260,7 +1275,7 @@ async function initSharePoint() {
       await pullFromSP();
       setSyncStatus('ok');
     } else if (accounts.length > 0) {
-      setSyncStatus('idle'); // mobile: show button, no auto-sync
+      setSyncStatus('connected'); // mobile: authenticated, waiting for manual sync
     }
   } catch(e) {
     console.error('SP init error:', e);
