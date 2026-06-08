@@ -1193,8 +1193,14 @@ const SP_CONFIG = {
 };
 
 let _msal = null, _siteId = null, _listId = null, _logListId = null;
-let _syncing = false;
+let _syncing = false, _interacting = false;
 const _pendingSync = new Set(); // clientIds waiting to sync
+
+const MAIN_URL = 'https://mendisuissa.github.io/E5-Client-Tracker/e5-client-tracker.html';
+const AUTH_URL  = 'https://mendisuissa.github.io/E5-Client-Tracker/auth.html';
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
 // ── Sync status UI ──────────────────────────────
 function setSyncStatus(state, extra) {
@@ -1233,12 +1239,21 @@ async function initSharePoint() {
       auth: {
         clientId: SP_CONFIG.clientId,
         authority: `https://login.microsoftonline.com/${SP_CONFIG.tenantId}`,
-        redirectUri: 'https://mendisuissa.github.io/E5-Client-Tracker/auth.html',
+        redirectUri: isMobile() ? MAIN_URL : AUTH_URL,
       },
       cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: false }
     });
     await _msal.initialize();
-    await _msal.handleRedirectPromise();
+    // Handle redirect response (mobile flow)
+    const response = await _msal.handleRedirectPromise();
+    if (response) {
+      setSyncStatus('syncing');
+      await ensureLists();
+      await pullFromSP();
+      setSyncStatus('ok');
+      toast('☁️ מחובר ל-SharePoint!', 'success');
+      return;
+    }
     const accounts = _msal.getAllAccounts();
     if (accounts.length > 0) {
       setSyncStatus('syncing');
@@ -1255,16 +1270,27 @@ async function initSharePoint() {
 async function spLogin() {
   if (!_msal) return;
   setSyncStatus('login');
+  const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All', 'User.Read'];
   try {
-    await _msal.loginPopup({
-      scopes: ['https://graph.microsoft.com/Sites.ReadWrite.All', 'User.Read']
-    });
-    setSyncStatus('syncing');
-    await ensureLists();
-    await pullFromSP();
-    setSyncStatus('ok');
-    toast('☁️ מחובר ל-SharePoint!', 'success');
+    if (isMobile()) {
+      // Redirect flow — page navigates away and comes back
+      await _msal.loginRedirect({ scopes, redirectUri: MAIN_URL });
+    } else {
+      if (_interacting) { toast('כבר מתבצעת כניסה...'); return; }
+      _interacting = true;
+      try {
+        await _msal.loginPopup({ scopes });
+        setSyncStatus('syncing');
+        await ensureLists();
+        await pullFromSP();
+        setSyncStatus('ok');
+        toast('☁️ מחובר ל-SharePoint!', 'success');
+      } finally {
+        _interacting = false;
+      }
+    }
   } catch(e) {
+    _interacting = false;
     console.error('SP login error:', e);
     setSyncStatus('error');
     toast('שגיאה בהתחברות: ' + (e.message||''), 'danger');
@@ -1278,8 +1304,18 @@ async function _token() {
   const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All'];
   try {
     return (await _msal.acquireTokenSilent({ scopes, account: acc[0] })).accessToken;
-  } catch {
-    return (await _msal.acquireTokenPopup({ scopes, account: acc[0] })).accessToken;
+  } catch(e) {
+    if (_interacting) throw new Error('Interaction already in progress');
+    if (isMobile()) {
+      await _msal.acquireTokenRedirect({ scopes, redirectUri: MAIN_URL });
+      throw new Error('Redirecting...'); // unreachable but satisfies linter
+    }
+    _interacting = true;
+    try {
+      return (await _msal.acquireTokenPopup({ scopes, account: acc[0] })).accessToken;
+    } finally {
+      _interacting = false;
+    }
   }
 }
 
