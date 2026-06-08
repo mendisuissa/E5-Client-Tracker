@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2/lib/msal-browser.min.js"></script>
+<script>
+const app = new msal.PublicClientApplication({
+  auth: {
+    clientId: '9ff0156b-2d45-4649-97a6-fd8135147067',
+    authority: 'https://login.microsoftonline.com/28ebea5a-2667-45d2-a777-e778cfdf7509',
+    redirectUri: 'https://mendisuissa.github.io/E5-Client-Tracker/auth.html'
+  }
+});
+app.initialize().then(() => app.handleRedirectPromise()).catch(console.error);
+</script>
+</head>
+<body></body>
+</html>
