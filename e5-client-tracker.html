@@ -13,7 +13,7 @@
   --text:#1e293b; --muted:#64748b;
   --success:#16a34a; --warning:#d97706; --danger:#dc2626;
   --p1:#6366f1; --p2:#0891b2; --p3:#dc2626; --p4:#7c3aed;
-  --p5:#0369a1; --p6:#7c2d8e; --p7:#1a4080;
+  --p5:#0369a1; --p6:#7c2d8e; --p7:#1a4080; --p8:#047857;
   --radius:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -64,7 +64,7 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .overall-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:6px;}
 .overall-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--ms-blue),var(--p1));transition:width .5s;}
 .overall-pct{font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:12px;}
-.pillar-mini-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.pillar-mini-bars{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;}
 .pillar-mini-bar{text-align:center;}
 .pillar-mini-bar .icon{font-size:.85rem;}
 .pillar-mini-bar .pct{font-size:.6rem;color:var(--muted);}
@@ -91,7 +91,7 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .progress-details{flex:1;}
 .progress-bar-main{height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-bottom:6px;}
 .progress-bar-main-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ms-blue),var(--p1));transition:width .5s;}
-.pillars-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+.pillars-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;}
 .pillar-progress-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 8px;text-align:center;}
 .pillar-progress-card .p-icon{font-size:1.4rem;}
 .pillar-progress-card .p-name{font-size:.62rem;font-weight:600;color:var(--muted);margin:4px 0;}
@@ -520,6 +520,7 @@ const PILLARS = [
   {id:'p5',name:'Cloud Apps — MDCA',icon:'☁️',color:'#0369a1',short:'Cloud Apps'},
   {id:'p6',name:'מידע — Purview',icon:'🔍',color:'#7c2d8e',short:'Purview'},
   {id:'p7',name:'SIEM — Sentinel',icon:'📊',color:'#1a4080',short:'Sentinel'},
+  {id:'p8',name:'Conditional Access',icon:'🔒',color:'#047857',short:'CA Policies'},
 ];
 
 const ITEMS = [
@@ -649,6 +650,32 @@ const ITEMS = [
    guide:{portal:'external',steps:['הכן Scope document: IP ranges, domains, cloud assets','בחר penetration testing vendor (מאושר ע"י הנהלה)','Assumed breach test: ניתן להשתמש ב-Attack Simulation training כ-pre-test','בדוק Sentinel alerts מופעלים בזמן הtest (ודא visibility)','קבל דו"ח + patch ממצאים תוך 30 יום | Retest תוך 60 יום']}},
   {id:'p7-tabletop',pillar:'p7',title:'Annual Tabletop Exercise (IR Simulation)',priority:'low',phase:6,
    guide:{portal:'internal',steps:['הכן Scenario: Ransomware / BEC / Data exfiltration (בחר אחד)','משתתפים: IT, Security, Legal, HR, Management','סמלץ: Detection → Containment → Eradication → Recovery → Lessons Learned','תעד: מה עבד טוב, מה נכשל, מה חסר ב-playbook','Update IR Playbook ו-Contact list לאחר התרגיל']}},
+
+  /* ── P8: CONDITIONAL ACCESS ── */
+  {id:'p8-naming',pillar:'p8',title:'Naming Convention מיושמת (CA-XXX-Action-Target)',priority:'high',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → Policies → בדוק שכל פוליסה ממושית לפי: CA-[מספר]-[פעולה]-[יעד]-[תנאי]','דוגמאות: CA-001-Require-MFA-AllUsers | CA-010-Block-LegacyAuth','שדה "Description": תעד מטרה, תאריך יצירה, בעל פוליסה','קבוצות Entra: צור BreakGlass-Exclude לחריגות','הכן טבלת Inventory ב-Excel/Confluence עם כל הפוליסות']}},
+  {id:'p8-breakglass',pillar:'p8',title:'Break Glass excluded מכל פוליסות CA',priority:'critical',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Users → New User → breakglass1@[tenant].onmicrosoft.com (סיסמה 30+ תווים, ללא מייל)','Assign: Global Administrator | ללא MFA | ללא PIM | ללא CA exclusion אחר','צור קבוצת Entra: "BreakGlass-Exclude" → הוסף שני חשבונות','כל פוליסת CA → Assignments → Users → Exclude: BreakGlass-Exclude','Log Analytics Alert: כל Sign-in של חשבון זה → Teams notification מיידי']}},
+  {id:'p8-mfa-all',pillar:'p8',title:'CA-001: MFA נדרש לכל המשתמשים',priority:'critical',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → + New Policy → שם: CA-001-Require-MFA-AllUsers-AllApps','Users: All users | Exclude: BreakGlass-Exclude','Cloud apps: All cloud apps','Grant: Require multifactor authentication','Status: Report-only (7 ימים) → בדוק Insights → לאחר מכן Enabled']}},
+  {id:'p8-legacy',pillar:'p8',title:'CA-002: Legacy Authentication חסום לחלוטין',priority:'critical',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-002-Block-LegacyAuth-AllUsers-AllApps','Users: All | Cloud Apps: All cloud apps','Conditions → Client apps: סמן Exchange ActiveSync + Other clients (בטל שאר ה-checkboxes)','Grant: Block access','Status: Enabled — אין צורך ב-Report-Only לפוליסת Block (בדוק Sign-in logs 30 יום קודם)']}},
+  {id:'p8-mfa-admin',pillar:'p8',title:'CA-003: Phishing-Resistant MFA לאדמינים',priority:'critical',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-003-Require-StrongMFA-Admins-AllApps','Users: בחר Directory roles → כל תפקידי Admin (Global Admin, Exchange Admin, etc.)','Cloud Apps: All cloud apps','Grant: Require authentication strength → Phishing-resistant MFA (Passkey / FIDO2 / WHfB)','אם אין Phishing-resistant: בחר Multifactor authentication + Require compliant device']}},
+  {id:'p8-device',pillar:'p8',title:'CA-010: Compliant Device לאפליקציות ארגוניות',priority:'high',phase:2,
+   guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-010-Require-CompliantDevice-AllUsers-O365','Users: All | Exclude: BreakGlass-Exclude','Cloud Apps: Office 365 (app suite)','Grant: Require device to be marked as compliant (OR: Hybrid Joined)','ודא Intune enrollment מלא לפני Enforce — הפעל Report-Only 14 יום ובדוק Workbook']}},
+  {id:'p8-locations',pillar:'p8',title:'CA-020: Named Locations + חסימת מדינות',priority:'medium',phase:2,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → Named locations → + Countries location','שם: "Allowed Countries" → בחר: Israel + USA + UK (לפי הארגון)','+ New Policy → CA-020-Block-NonAllowedCountries','Users: All | Cloud Apps: All | Conditions → Locations: Not in Allowed Countries','Grant: Block access | לחלופין: MFA חזק מחוץ לישראל בלבד']}},
+  {id:'p8-signin-risk',pillar:'p8',title:'CA-030: Block High Sign-in Risk (P2)',priority:'high',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-030-Block-HighSigninRisk','Users: All | Cloud Apps: All cloud apps','Conditions → Sign-in risk: High → Grant: Block access','Policy נוספת → CA-031-MFA-MediumSigninRisk → Conditions: Medium → Grant: Require MFA','דורש Entra ID P2 | בדוק Risky Sign-ins בדשבורד: Identity Protection → Risky sign-ins']}},
+  {id:'p8-user-risk',pillar:'p8',title:'CA-032: Block High User Risk + Force PW Change (P2)',priority:'high',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-032-Block-HighUserRisk','Users: All | Cloud Apps: All cloud apps','Conditions → User risk: High','Grant: Require password change (דורש SSPR מופעל!) + Require MFA','ודא SSPR: Entra → Users → Password reset → Self service password reset: Enabled for All']}},
+  {id:'p8-session',pillar:'p8',title:'CA-050: Session Controls — Sign-in Frequency',priority:'medium',phase:3,
+   guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-050-Session-SigninFrequency-Admins','Users: Directory roles (Admins) | Cloud Apps: All','Session: Sign-in frequency → 4 Hours','Policy נוספת ל-BYOD: CA-051 → Persistent browser session: Never persistent','Apps רגישות (Finance, HR): Sign-in frequency → 1 Hour + Require reauthentication']}},
+  {id:'p8-mam',pillar:'p8',title:'CA-060: App Protection Policy ל-Mobile BYOD',priority:'medium',phase:3,
+   guide:{portal:'Entra Admin Center + Intune',steps:['Intune: Apps → App protection policies → Create iOS + Create Android','Target: Outlook, Teams, OneDrive, Edge | PIN: Required | Backup: Block | Copy/paste: Block','CA Policy → CA-060-Require-AppProtection-Mobile','Users: All | Cloud Apps: Exchange / SharePoint','Grant: Require approved client app + Require app protection policy (OR)']}},
+  {id:'p8-reportonly',pillar:'p8',title:'Report-Only מעוקב — Workbook פעיל',priority:'medium',phase:2,
+   guide:{portal:'Entra Admin Center + Azure',steps:['Conditional Access → Insights and reporting → בדוק כל שבוע','Azure Monitor Workbook: CA-Insights Workbook (מובנה) → פנה ל-Azure Portal','בדוק: פוליסות Report-Only שאמורות ל-Enforce — האם עברו 7-14 יום?','Sign-in logs → KQL: SigninLogs | where ConditionalAccessStatus == "reportOnlyFailure" | summarize count() by PolicyName','סמן פוליסות בשלות ל-Enforce: שנה Status מ-Report-only ל-On']}},
 ];
 
 // ══════════════════════════════════════════════
@@ -669,6 +696,14 @@ function save(syncClientId) {
 function load() {
   const raw = localStorage.getItem('e5tracker_v2');
   if (raw) { try { APP = JSON.parse(raw); } catch(e) {} }
+  // Migration: ensure all clients have entries for any new items added since creation
+  APP.clients.forEach(c => {
+    ITEMS.forEach(item => {
+      if (!c.items[item.id]) {
+        c.items[item.id] = { status:'pending', date:'', assignee:'', notes:'', blocker:'', priority:item.priority };
+      }
+    });
+  });
 }
 
 // ── CLIENT CRUD ──────────────────────────────
