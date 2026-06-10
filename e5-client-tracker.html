@@ -248,6 +248,8 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
   .topbar-actions::-webkit-scrollbar{display:none;}
   .btn-sm{padding:4px 9px;font-size:.7rem;}
   #sync-status{font-size:.65rem;}
+  #sync-status.syncing{animation:syncpulse 1.2s ease-in-out infinite;}
+  @keyframes syncpulse{0%,100%{opacity:1;}50%{opacity:.45;}}
 
   /* Views */
   .view{padding:12px;}
@@ -1417,7 +1419,8 @@ function setSyncStatus(state, extra) {
   const s = map[state] || map.disabled;
   el.textContent = s.icon + ' ' + (extra || s.text);
   el.style.color = s.color;
-  el.title = extra || s.text;
+  el.title = (state === 'syncing' ? 'לחץ לביטול — ' : '') + (extra || s.text);
+  el.classList.toggle('syncing', state === 'syncing' || state === 'login');
 }
 
 function handleSyncClick() {
@@ -1425,22 +1428,33 @@ function handleSyncClick() {
     alert('SharePoint Sync לא מוגדר עדיין.\n\nמלא את SP_CONFIG בקוד:\n• clientId\n• tenantId\n• enabled: true');
     return;
   }
+  // If currently stuck on syncing — allow click-to-reset
+  const el = document.getElementById('sync-status');
+  if (el && (el.textContent.includes('מסנכרן') || el.textContent.includes('מאמת'))) {
+    _clearMsalState();
+    setSyncStatus('idle');
+    toast('🔄 סנכרון אופס — לחץ שוב לניסיון חוזר', '');
+    return;
+  }
   const accounts = _msal?.getAllAccounts() || [];
   if (!accounts.length) {
     spLogin();
   } else {
     setSyncStatus('syncing');
-    (async () => {
-      try {
-        await ensureLists();
-        await pullFromSP();       // ← pull latest from SharePoint
-        await syncAllPending();   // ← push local changes
-        setSyncStatus('ok');
-      } catch(e) {
+    const SYNC_TIMEOUT_MS = 25000;
+    const syncOp = (async () => {
+      await ensureLists();
+      await pullFromSP();
+      await syncAllPending();
+    })();
+    const timeout = new Promise((_, rej) =>
+      setTimeout(() => rej(new Error('Timeout — לחץ לניסיון חוזר')), SYNC_TIMEOUT_MS));
+    Promise.race([syncOp, timeout])
+      .then(() => setSyncStatus('ok'))
+      .catch(e => {
         console.error('Sync error:', e);
         setSyncStatus('error', e.message?.substring(0,40));
-      }
-    })();
+      });
   }
 }
 
@@ -1458,10 +1472,26 @@ async function initSharePoint() {
       cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: false }
     });
     await _msal.initialize();
-    // Handle response from loginRedirect (all platforms)
+    // Handle response from loginRedirect / acquireTokenRedirect
     const response = await _msal.handleRedirectPromise();
     if (response) {
-      // Just came back from login — wait for user to click sync
+      // Check if we redirected for a token refresh mid-sync
+      const resumeSync = sessionStorage.getItem('resumeSyncAfterRedirect');
+      if (resumeSync) {
+        sessionStorage.removeItem('resumeSyncAfterRedirect');
+        setSyncStatus('syncing');
+        try {
+          await ensureLists();
+          await pullFromSP();
+          await syncAllPending();
+          setSyncStatus('ok');
+        } catch(e) {
+          console.error('Resume sync error:', e);
+          setSyncStatus('error', e.message?.substring(0,40));
+        }
+        return;
+      }
+      // Normal login redirect — wait for user to click sync
       setSyncStatus('idle');
       toast('✅ נכנסת! לחץ שוב לסנכרון', 'success');
       return;
@@ -1486,21 +1516,23 @@ async function spLogin() {
   if (!_msal) return;
   setSyncStatus('login');
   const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All', 'User.Read'];
-  // Clear ALL stale MSAL interaction state (localStorage + sessionStorage)
-  ['localStorage','sessionStorage'].forEach(store => {
-    Object.keys(window[store])
-      .filter(k => k.startsWith('msal.') || k.includes('interaction.status'))
-      .forEach(k => window[store].removeItem(k));
-  });
+  _clearMsalState();
   try {
-    // Always use redirect — works on all platforms (desktop + mobile)
     await _msal.loginRedirect({ scopes, redirectUri: MAIN_URL });
-    // Page navigates away — nothing below runs
   } catch(e) {
     console.error('SP login error:', e);
     setSyncStatus('error');
     toast('שגיאה בהתחברות: ' + (e.message||''), 'danger');
   }
+}
+
+function _clearMsalState() {
+  ['localStorage','sessionStorage'].forEach(store => {
+    Object.keys(window[store])
+      .filter(k => k.startsWith('msal.') || k.includes('interaction.status'))
+      .forEach(k => window[store].removeItem(k));
+  });
+  _interacting = false;
 }
 
 // ── Graph helper ────────────────────────────────
@@ -1511,15 +1543,14 @@ async function _token() {
   try {
     return (await _msal.acquireTokenSilent({ scopes, account: acc[0] })).accessToken;
   } catch(e) {
-    // Mobile: never auto-redirect (causes white screen loop). User must click manually.
     if (isMobile()) throw new Error('נדרשת כניסה מחדש — לחץ על כפתור הסנכרון');
-    if (_interacting) throw new Error('Interaction already in progress');
-    _interacting = true;
-    try {
-      return (await _msal.acquireTokenPopup({ scopes, account: acc[0] })).accessToken;
-    } finally {
-      _interacting = false;
-    }
+    // Use redirect instead of popup — popup gets blocked by Chrome
+    _clearMsalState();
+    sessionStorage.setItem('resumeSyncAfterRedirect', '1');
+    setSyncStatus('login', 'מאמת מחדש...');
+    await _msal.acquireTokenRedirect({ scopes, account: acc[0], redirectUri: MAIN_URL });
+    // Page navigates away — nothing below executes
+    throw new Error('Redirecting for re-auth');
   }
 }
 
