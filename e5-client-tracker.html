@@ -13,7 +13,7 @@
   --text:#1e293b; --muted:#64748b;
   --success:#16a34a; --warning:#d97706; --danger:#dc2626;
   --p1:#6366f1; --p2:#0891b2; --p3:#dc2626; --p4:#7c3aed;
-  --p5:#0369a1; --p6:#7c2d8e; --p7:#1a4080; --p8:#047857;
+  --p5:#0369a1; --p6:#7c2d8e; --p7:#1a4080; --p8:#047857; --p9:#e11d48;
   --radius:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -64,7 +64,7 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .overall-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:6px;}
 .overall-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--ms-blue),var(--p1));transition:width .5s;}
 .overall-pct{font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:12px;}
-.pillar-mini-bars{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;}
+.pillar-mini-bars{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;}
 .pillar-mini-bar{text-align:center;}
 .pillar-mini-bar .icon{font-size:.85rem;}
 .pillar-mini-bar .pct{font-size:.6rem;color:var(--muted);}
@@ -91,7 +91,7 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .progress-details{flex:1;}
 .progress-bar-main{height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-bottom:6px;}
 .progress-bar-main-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ms-blue),var(--p1));transition:width .5s;}
-.pillars-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;}
+.pillars-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:10px;}
 .pillar-progress-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 8px;text-align:center;}
 .pillar-progress-card .p-icon{font-size:1.4rem;}
 .pillar-progress-card .p-name{font-size:.62rem;font-weight:600;color:var(--muted);margin:4px 0;}
@@ -523,6 +523,7 @@ const PILLARS = [
   {id:'p6',name:'מידע — Purview',icon:'🔍',color:'#7c2d8e',short:'Purview'},
   {id:'p7',name:'SIEM — Sentinel',icon:'📊',color:'#1a4080',short:'Sentinel'},
   {id:'p8',name:'Conditional Access',icon:'🔒',color:'#047857',short:'CA Policies'},
+  {id:'p9',name:'AI & Agent Security',icon:'🤖',color:'#e11d48',short:'AI Security'},
 ];
 
 const ITEMS = [
@@ -564,6 +565,12 @@ const ITEMS = [
    guide:{portal:'intune.microsoft.com',steps:['Windows LAPS: Devices → Windows → LAPS → Enable','Configuration profiles → Settings catalog → Local Users and Groups','Remove: Domain Users / Domain Admins מ-Administrators group','חלופה מתקדמת: Endpoint Privilege Management (EPM) להרמת הרשאות ספציפית']}},
   {id:'p2-mam',pillar:'p2',title:'iOS/Android MAM מוגדר ל-BYOD',priority:'medium',phase:2,
    guide:{portal:'intune.microsoft.com',steps:['Apps → App protection policies → Create → iOS ואחר כך Android','Target apps: Microsoft Office (Outlook, Teams, OneDrive, Edge)','Settings: PIN=Required, Copy/paste to unmanaged=Block, Backup=Block','CA Policy: Require app protection policy ל-iOS/Android users']}},
+  {id:'p2-epm',pillar:'p2',title:'Endpoint Privilege Management (EPM) מופעל',priority:'high',phase:2,
+   guide:{portal:'intune.microsoft.com',steps:['Endpoint security → Endpoint Privilege Management → Policies → Create policy','Elevation settings: Default = Deny all / Support approved (לא Automatic בשלב ראשון)','Elevation rules: הגדר אפליקציות ספציפיות שמורשות ל-Elevation (MSI מאושרים)','Reports → Endpoint Privilege Management → נטר בקשות Elevation ואשר/דחה — כלול חינם ב-E5 מ-1.7.2026']}},
+  {id:'p2-enterpriseapp',pillar:'p2',title:'Enterprise Application Management מוגדר',priority:'medium',phase:2,
+   guide:{portal:'intune.microsoft.com',steps:['Apps → Enterprise App Catalog → הפעל את היכולת (כלול חינם ב-E5 מ-1.7.2026)','דפדף בקטלוג המנוהל של מיקרוסופט → הוסף אפליקציות ארגוניות ישירות ל-Intune ללא Packaging ידני','הגדר Auto-update לאפליקציות מהקטלוג','Reports → App install status → נטר הצלחת פריסה']}},
+  {id:'p2-cloudpki',pillar:'p2',title:'Microsoft Cloud PKI מוגדר',priority:'medium',phase:2,
+   guide:{portal:'intune.microsoft.com',steps:['Tenant administration → Cloud PKI → Certificate Authority → Create (Root/Issuing CA)','הגדר SCEP/PKCS Certificate profile דרך Cloud PKI (ללא צורך ב-NDES/CA On-prem)','פרוס ל-Windows Hello for Business certificate-based, Wi-Fi ו-VPN authentication','Monitor → Certificate lifecycle → נטר תפוגה ו-Revocation — כלול חינם ב-E5 מ-1.7.2026']}},
   {id:'p3-mde',pillar:'p3',title:'MDE P2 מחובר לכל מכשיר (Windows + Mac + Linux)',priority:'critical',phase:2,
    guide:{portal:'security.microsoft.com',steps:['Settings → Endpoints → Device management → Onboarding','Windows: Intune → Endpoint security → EDR policy → Onboard via MEM','macOS/Linux: הורד Onboarding package → Deploy via Intune / script','בדוק: Assets → Devices → כל מכשיר בסטטוס Active (Onboarded)']}},
   {id:'p3-tamper',pillar:'p3',title:'Tamper Protection מופעל',priority:'critical',phase:2,
@@ -598,6 +605,8 @@ const ITEMS = [
    guide:{portal:'security.microsoft.com',steps:['Attack simulation training → Settings → Simulation notifications','Positive reinforcement notification: Enable','Training assignment: בחר "Assign training automatically"','Training threshold: Assign to users who clicked phishing link','בדוק Training completion rates ב-Reports → Simulation coverage']}},
   {id:'p4-explorer',pillar:'p4',title:'Threat Explorer — Analyst מכיר ועובד',priority:'low',phase:3,
    guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Explorer → בחר "All email"','הדגם queries: Sender domain, Subject, Detection tech','סינון לפי: Malware / Phish / Spam / None','Action: Email message actions → Soft/Hard delete לפי צורך','ייצא ל-CSV לדו"ח שבועי: Export → Download']}},
+  {id:'p4-preset',pillar:'p4',title:'Preset Security Policies (Standard/Strict) + Priority Accounts מוגדרות',priority:'high',phase:1,
+   guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Threat policies → Preset security policies','Standard protection → Apply → הקצה לכלל הארגון (Manage protection → Users/domains)','Strict protection → Apply → הקצה ל-Priority accounts + Executives/Finance/HR','Settings → Priority accounts → תייג את כל ה-C-Level ובעלי גישה רגישה — Strict מגן עליהם באגרסיביות גבוהה יותר']}},
   {id:'p5-shadow',pillar:'p5',title:'Shadow IT Discovery מופעל (MDE Integration)',priority:'high',phase:3,
    guide:{portal:'security.microsoft.com + admin.microsoft.com',steps:['Defender for Endpoint → Settings → Advanced features → Microsoft Defender for Cloud Apps: On','security.microsoft.com → Cloud apps → Cloud app catalog → בדוק Discovered apps','Defender portal → Settings → Cloud Apps → Microsoft Defender for Endpoint → Enable','בדוק Cloud Discovery reports: Cloud apps → Cloud Discovery → Dashboard','סנן לפי Risk score < 5 → שקול לחסום apps מסוכנות']}},
   {id:'p5-sanction',pillar:'p5',title:'Sanctioned / Unsanctioned Apps מסומנות',priority:'high',phase:3,
@@ -628,6 +637,8 @@ const ITEMS = [
    guide:{portal:'compliance.microsoft.com',steps:['Audit → Audit retention policies → + New retention policy','Name: Audit-Premium-180days | Duration: 180 days','Record type: All (או לפי צורך: AzureActiveDirectory, Exchange, SharePoint)','Priority: 1 (גבוה יותר = גובר על default)','ודא E5/E5 Compliance license מוקצה ל-users הרלוונטיים']}},
   {id:'p6-retention',pillar:'p6',title:'Retention Policies מוגדרות',priority:'medium',phase:5,
    guide:{portal:'compliance.microsoft.com',steps:['Data lifecycle management → Retention policies → + New policy','Policy 1: Exchange email — Retain 7 years (רגולציה ישראלית)','Policy 2: SharePoint + OneDrive — Retain 5 years','Policy 3: Teams messages — Retain 3 years','Conflict: Longest wins → בדוק ב: Retention → Policy lookup']}},
+  {id:'p6-dlpquarantine',pillar:'p6',title:'DLP File Quarantine (SharePoint/OneDrive) מופעל',priority:'medium',phase:5,
+   guide:{portal:'compliance.microsoft.com',steps:['Data loss prevention → Policies → בחר Policy קיים ל-SharePoint/OneDrive → Edit rule','Actions → הוסף Action: Quarantine file (GA יולי 2026, בנוסף ל-Block הקיים)','הגדר Reviewer group שמאשר שחרור קבצים מ-Quarantine','Activity explorer → סנן DLPRuleMatch עם Action=Quarantine → נטר קצב False Positives']}},
   {id:'p7-workspace',pillar:'p7',title:'Sentinel Workspace מוגדר',priority:'high',phase:6,
    guide:{portal:'portal.azure.com',steps:['Azure Portal → Microsoft Sentinel → + Create','בחר / צור Log Analytics Workspace (אותו region כמו M365)','Settings → Workspace settings → Daily cap: הגדר cap למניעת עלויות בלתי צפויות','Content hub → Install: Microsoft 365 Defender, Entra ID, Azure Activity','Pricing tier: Pay-as-you-go / Commitment tier לפי נפח']}},
   {id:'p7-e5conn',pillar:'p7',title:'E5 Connector מחובר (Defender data חינם)',priority:'critical',phase:6,
@@ -678,6 +689,18 @@ const ITEMS = [
    guide:{portal:'Entra Admin Center + Intune',steps:['Intune: Apps → App protection policies → Create iOS + Create Android','Target: Outlook, Teams, OneDrive, Edge | PIN: Required | Backup: Block | Copy/paste: Block','CA Policy → CA-060-Require-AppProtection-Mobile','Users: All | Cloud Apps: Exchange / SharePoint','Grant: Require approved client app + Require app protection policy (OR)']}},
   {id:'p8-reportonly',pillar:'p8',title:'Report-Only מעוקב — Workbook פעיל',priority:'medium',phase:2,
    guide:{portal:'Entra Admin Center + Azure',steps:['Conditional Access → Insights and reporting → בדוק כל שבוע','Azure Monitor Workbook: CA-Insights Workbook (מובנה) → פנה ל-Azure Portal','בדוק: פוליסות Report-Only שאמורות ל-Enforce — האם עברו 7-14 יום?','Sign-in logs → KQL: SigninLogs | where ConditionalAccessStatus == "reportOnlyFailure" | summarize count() by PolicyName','סמן פוליסות בשלות ל-Enforce: שנה Status מ-Report-only ל-On']}},
+  {id:'p8-tokenprotect',pillar:'p8',title:'CA-070: Token Protection (Session מוגן למכשיר)',priority:'high',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-070-TokenProtection-SPO-Exchange-Teams','Users: All | Exclude: BreakGlass-Exclude | Cloud Apps: SharePoint Online + Exchange Online','Session → Token protection → Require token binding to device (מונע Pass-the-Cookie / Token Replay)','דורש Entra ID P1 + מכשירי Windows 10+ Entra Joined/Hybrid Joined — בדוק תאימות ב-Report-Only לפני Enforce']}},
+
+  /* ── P9: AI & AGENT SECURITY (Copilot, Security Copilot, DSPM for AI) ── */
+  {id:'p9-copilot',pillar:'p9',title:'Security Copilot מופעל ומוטמע (Embedded Experiences)',priority:'high',phase:6,
+   guide:{portal:'securitycopilot.microsoft.com',steps:['Security Copilot → Settings → Capacity → ודא הקצאת SCUs (400 לכל 1,000 משתמשי E5, עד 10,000 מקס\' — כלול חינם מ-1.7.2026)','הפעל Embedded experiences: Defender XDR, Entra, Intune, Purview → Settings → Security Copilot integration → Enable','הגדר RBAC: Security Copilot → Permissions → הקצה Owner/Contributor לפי צוות SOC','נטר ניצול SCU חודשי: Security Copilot → Usage → Capacity report → מנע Overage בתשלום']}},
+  {id:'p9-dspm-ai',pillar:'p9',title:'Purview DSPM for AI — Oversharing Assessment רץ',priority:'critical',phase:5,
+   guide:{portal:'purview.microsoft.com',steps:['Data Security Posture Management → for AI → Get started','הפעל Oversharing assessment: זהה קבצים חשופים ל-"Everyone"/"Anyone with link" שנגישים ל-Copilot','Recommendations → יישם Sensitivity label auto-apply על קבצים רגישים לפני הרחבת Copilot','Activity explorer → AI apps → נטר Prompts/Responses עם נתוני DLP-sensitive (Copilot, ChatGPT Enterprise, Claude)']}},
+  {id:'p9-agent-ca',pillar:'p9',title:'Entra Conditional Access / ID Protection for Agents מוגדר',priority:'critical',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['ודא Service Plan מוקצה: Entra Conditional Access for Agents + Entra ID Protection for Agents (כלול ב-E5/E7/M365 Agent מ-7/2026)','Identity Governance → Agent identities → סקור את כל ה-Agent IDs הרשומים (Copilot Studio, Security Copilot agents)','Conditional Access → New Policy → Assignments: Workload identities → Agent identities → הגדר Grant controls','Identity Protection → Agent risk policies → הפעל זיהוי חריגות בהתנהגות Agent']}},
+  {id:'p9-genai-discovery',pillar:'p9',title:'Generative AI App Discovery מופעל (MDCA)',priority:'high',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Cloud apps → Cloud Discovery → Dashboard → סנן קטגוריה: Generative AI','זהה שימוש לא מאושר ב-ChatGPT / Gemini / Claude / DeepSeek דרך הדפדפן הארגוני','תייג Sanctioned (למשל Microsoft 365 Copilot, ChatGPT Enterprise מאושר) מול Unsanctioned','Policies → Cloud Discovery policy → Alert on new GenAI app גילוי + Risk score נמוך → שקול חסימה']}},
 ];
 
 // ══════════════════════════════════════════════
