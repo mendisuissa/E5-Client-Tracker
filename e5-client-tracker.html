@@ -220,6 +220,25 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .nextstep-item-head{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:600;flex-wrap:wrap;}
 .nextstep-item-meta{font-size:.74rem;color:var(--muted);margin-top:3px;}
 .nextstep-item-meta .blocker{color:var(--danger);font-weight:600;}
+.scorecard-composite{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+.scorecard-card{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.scorecard-card .sc-label{font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.scorecard-card .sc-score{font-size:2.2rem;font-weight:800;}
+.scorecard-card .sc-maturity{font-size:.72rem;font-weight:700;margin-top:6px;padding:2px 10px;border-radius:10px;display:inline-block;color:#fff;}
+.scorecard-table{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.scorecard-table h3{font-size:.9rem;font-weight:700;color:var(--primary);margin-bottom:4px;}
+.scorecard-table .sct-note{font-size:.7rem;color:var(--muted);margin-bottom:12px;}
+.scw-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:.82rem;}
+.scw-row:last-child{border-bottom:none;}
+.scw-name{width:150px;flex-shrink:0;font-weight:600;display:flex;align-items:center;gap:5px;}
+.scw-bar-wrap{flex:1;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;}
+.scw-bar-fill{height:100%;border-radius:4px;}
+.scw-score{width:36px;text-align:left;font-weight:700;flex-shrink:0;}
+.scw-maturity{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:8px;color:#fff;white-space:nowrap;flex-shrink:0;width:76px;text-align:center;}
+.mini-scorecard{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.mini-score-badge{flex:1;min-width:110px;background:var(--bg);border-radius:8px;padding:8px 12px;text-align:center;border:1px solid var(--border);}
+.mini-score-badge .msb-label{font-size:.66rem;color:var(--muted);font-weight:600;}
+.mini-score-badge .msb-value{font-size:1.3rem;font-weight:800;}
 .report-blockers{background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:16px;margin-bottom:14px;}
 .report-blockers h3{font-size:.9rem;font-weight:700;color:var(--danger);margin-bottom:10px;}
 .blocker-item{font-size:.83rem;padding:6px 0;border-bottom:1px solid #fecaca;display:flex;gap:8px;}
@@ -564,7 +583,7 @@ const ITEMS = [
    guide:{portal:'Entra Admin Center',steps:['Conditional Access → New Policy: CA-032-Block-High-UserRisk','Conditions → User risk → High','Grant: Require password change + Require MFA','וודא SSPR מופעל לפני Enforce']}},
   {id:'p1-pim',pillar:'p1',title:'PIM מוגדר לכל Admin Roles',priority:'high',phase:1,
    guide:{portal:'Entra Admin Center',steps:['Identity Governance → Privileged Identity Management → Entra roles','בחר כל תפקיד מיוחס → Settings → Edit','Enable: Require MFA on activation + Require justification','Assign existing admins כ-Eligible (לא Permanent)']}},
-  {id:'p1-reviews',pillar:'p1',title:'Access Reviews רבעוניים מוגדרים',priority:'medium',phase:4,
+  {id:'p1-reviews',pillar:'p1',title:'Access Reviews רבעוניים מוגדרים',priority:'medium',phase:4,governance:true,
    guide:{portal:'Entra Admin Center',steps:['Identity Governance → Access Reviews → New access review','בחר: Groups or Teams → Choose groups עם הרשאות גבוהות','תדירות: Quarterly | Reviewers: Managers or Self','Auto-apply results: Enable אם Reviewer לא מגיב תוך 14 יום']}},
   {id:'p1-passwordless',pillar:'p1',title:'Passwordless מוגדר (WHfB + Authenticator)',priority:'medium',phase:4,
    guide:{portal:'Entra Admin Center + Intune',steps:['Entra: Authentication methods → Microsoft Authenticator → Enable → Passwordless phone sign-in','Intune: Devices → Configuration → Windows Hello for Business → Enable','Pilot: קבוצה של 20 משתמשים ראשונה','Sign-in logs → filter by Authentication method = Passwordless לאמת']}},
@@ -572,6 +591,16 @@ const ITEMS = [
    guide:{portal:'Entra Admin Center',steps:['Users → New User → UPN: breakglass1@tenant.onmicrosoft.com (סיסמה 30+ תווים)','Assign: Global Administrator | ללא MFA requirement | ללא PIM','Conditional Access → כל פוליסה → Exclude: קבוצת BreakGlass-Exclude','Log Analytics Alert: כל Sign-in של חשבון זה מדליק התראה מיידית']}},
   {id:'p1-mdi',pillar:'p1',title:'MDI מחובר לכל Domain Controllers',priority:'high',phase:3,
    guide:{portal:'security.microsoft.com',steps:['Settings → Identities → Sensors → Add sensor → Download installer','התקן על כל Domain Controller (כולל Read-Only DCs)','הגדר Directory Service Account (gMSA מומלץ)','בדוק: כל Sensor בסטטוס Running (לא Stopped/Error)']}},
+  {id:'p1-entitlement',pillar:'p1',title:'Entitlement Management (Access Packages) מוגדר',priority:'high',phase:4,governance:true,
+   guide:{portal:'Entra Admin Center',steps:['Identity Governance → Entitlement management → Catalogs → Create catalog','Access packages → Create access package (משאבים: קבוצות/אפליקציות/אתרי SharePoint)','Policies: Requestor scope, Approval flow, Expiration (90 יום + Access review)','בדוק: Access packages → Reports → ניצול בפועל מול בקשות ידניות']}},
+  {id:'p1-lifecycle',pillar:'p1',title:'Lifecycle Workflows (Joiner/Mover/Leaver) מוגדרים',priority:'high',phase:4,governance:true,
+   guide:{portal:'Entra Admin Center',steps:['Identity Governance → Lifecycle workflows → Create workflow → Joiner template (Pre-hire)','Mover template: שינוי מחלקה → עדכון גישה אוטומטי','Leaver template: Termination date → השבתת חשבון + הסרת רישיונות','Execution conditions: טריגר לפי employeeHireDate/employeeLeaveDateTime מ-HR connector']}},
+  {id:'p1-authstrength',pillar:'p1',title:'Authentication Strengths מוגדרות (מעבר ל-CA-003)',priority:'medium',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['Protection → Authentication methods → Authentication strengths → סקור Built-in (MFA, Passwordless MFA, Phishing-resistant)','צור Custom strength אם צריך שילוב ספציפי (למשל FIDO2 + Certificate)','שייך Strength מותאם לכל CA Policy לפי רגישות ה-Resource (לא רק לאדמינים)','בדוק: Sign-in logs → Authentication strength satisfied']}},
+  {id:'p1-tap',pillar:'p1',title:'Temporary Access Pass (TAP) מוגדר',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Protection → Authentication methods → Policies → Temporary Access Pass → Enable','הגדר Default lifetime + One-time use policy','תהליך תפעולי: הנפקת TAP ל-New hire / Password reset ללא תלות ב-SMS','Audit logs → נטר הנפקות TAP חריגות או תכופות מדי']}},
+  {id:'p1-b2b',pillar:'p1',title:'External Identities Governance (B2B) מוגדר',priority:'medium',phase:4,governance:true,
+   guide:{portal:'Entra Admin Center',steps:['External Identities → External collaboration settings → הגבל Guest invite permissions (Members/Admins בלבד)','Cross-tenant access settings → הגדר Inbound/Outbound Trust לפי ארגון שותף','Access reviews → הפעל סקירה תקופתית לחשבונות Guest','B2B direct connect: הגבל ל-Organizations מאושרים בלבד']}},
   {id:'p2-enroll',pillar:'p2',title:'100% מהמכשירים enrolled ב-Intune',priority:'critical',phase:2,
    guide:{portal:'intune.microsoft.com',steps:['Devices → Enrollment → Windows: Auto-enrollment דרך Entra ID Join','קיימים: Devices → All devices → Export → בדוק מה Unmanaged','Bulk enrollment: Provisioning package / Co-management (MECM)','Monitor: Devices → Monitor → Enrollment failures']}},
   {id:'p2-compliance',pillar:'p2',title:'Compliance Policies מוגדרות לכל Platform',priority:'high',phase:2,
@@ -590,6 +619,18 @@ const ITEMS = [
    guide:{portal:'intune.microsoft.com',steps:['Windows LAPS: Devices → Windows → LAPS → Enable','Configuration profiles → Settings catalog → Local Users and Groups','Remove: Domain Users / Domain Admins מ-Administrators group','חלופה מתקדמת: Endpoint Privilege Management (EPM) להרמת הרשאות ספציפית']}},
   {id:'p2-mam',pillar:'p2',title:'iOS/Android MAM מוגדר ל-BYOD',priority:'medium',phase:2,
    guide:{portal:'intune.microsoft.com',steps:['Apps → App protection policies → Create → iOS ואחר כך Android','Target apps: Microsoft Office (Outlook, Teams, OneDrive, Edge)','Settings: PIN=Required, Copy/paste to unmanaged=Block, Backup=Block','CA Policy: Require app protection policy ל-iOS/Android users']}},
+  {id:'p2-baselines',pillar:'p2',title:'Microsoft Security Baselines מוחלות',priority:'high',phase:2,
+   guide:{portal:'intune.microsoft.com',steps:['Endpoint security → Security baselines → בחר Baseline (Windows 11, MDE, Defender for Endpoint) → Create profile','סקור Recommended settings מול Custom (תעד חריגות עם נימוק עסקי)','פרוס ל-Ring ראשון (Pilot) → נטר Conflicts מול פרופילים אחרים','Version updates: כשיוצא Baseline חדש → Compare & merge']}},
+  {id:'p2-settingscatalog',pillar:'p2',title:'Settings Catalog מנוהל (במקום ADMX ישנים)',priority:'medium',phase:2,
+   guide:{portal:'intune.microsoft.com',steps:['Devices → Configuration → Create → Settings catalog (מחליף בהדרגה Administrative Templates)','בדוק Administrative Templates קיימים → Migrate ל-Settings catalog לפי Microsoft roadmap','Duplicate detection: ודא אין קונפליקטים בין פרופילים שונים','Reports → Configuration profiles → נטר Error/Conflict status']}},
+  {id:'p2-appprotection-eff',pillar:'p2',title:'App Protection Effectiveness נמדד',priority:'low',phase:2,
+   guide:{portal:'intune.microsoft.com',steps:['Apps → Monitor → App protection status → בדוק Sync status לכל Policy','Reports → App protection report → זהה Devices שלא Sync-ו לאחרונה','Threshold: Sync frequency > 30 יום ייחשב Stale','תקן מכשירים Stale (Re-enroll / הודעה למשתמש)']}},
+  {id:'p2-remotehelp',pillar:'p2',title:'Remote Help מוגדר',priority:'low',phase:2,
+   guide:{portal:'intune.microsoft.com + Entra',steps:['Tenant administration → Connectors and tokens → Remote help → Enable','RBAC: הגדר תפקיד Helpdesk Operator עם הרשאת Remote control בלבד','Entra: ודא Assign roles ממוקד (לא Global Admin לצוות Helpdesk)','בדוק Session logs: Remote help → Reports']}},
+  {id:'p2-devicecleanup',pillar:'p2',title:'Device Cleanup Rules מוגדרות',priority:'medium',phase:2,
+   guide:{portal:'intune.microsoft.com',steps:['Devices → Device clean-up rules → Configure','Delete devices that haven\'t checked in for X days (מומלץ 90-180 יום)','לפני הפעלה: Devices → Filter Last check-in > 90 days → סקור ידנית פעם ראשונה','Autopilot devices: ודא Exclusion אם עדיין לא Enrolled בפועל']}},
+  {id:'p2-rbac',pillar:'p2',title:'Intune RBAC (Scope Tags + Role Assignments) מוגדר',priority:'high',phase:2,governance:true,
+   guide:{portal:'intune.microsoft.com',steps:['Tenant administration → Roles → Scope (Tags) → Create → לפי Business unit / Region','Roles → Assign built-in roles (Policy and Profile Manager, Helpdesk Operator) לפי צוות','הימנע מ-Global Admin לצוות Intune היומיומי','בדוק: Roles → Assignments → סקור כל 6 חודשים']}},
   {id:'p2-epm',pillar:'p2',title:'Endpoint Privilege Management (EPM) מופעל',priority:'high',phase:2,
    guide:{portal:'intune.microsoft.com',steps:['Endpoint security → Endpoint Privilege Management → Policies → Create policy','Elevation settings: Default = Deny all / Support approved (לא Automatic בשלב ראשון)','Elevation rules: הגדר אפליקציות ספציפיות שמורשות ל-Elevation (MSI מאושרים)','Reports → Endpoint Privilege Management → נטר בקשות Elevation ואשר/דחה — כלול חינם ב-E5 מ-1.7.2026']}},
   {id:'p2-enterpriseapp',pillar:'p2',title:'Enterprise Application Management מוגדר',priority:'medium',phase:2,
@@ -614,6 +655,22 @@ const ITEMS = [
    guide:{portal:'security.microsoft.com',steps:['Settings → Endpoints → Advanced features → Live response: On','Live response for servers: On (אם יש Servers)','Assets → Devices → בחר מכשיר → Initiate Live Response session','הכשר SOC: getfile, putfile, run, findfile, remediate']}},
   {id:'p3-sensors',pillar:'p3',title:'MDI Sensors על כל Domain Controllers',priority:'high',phase:3,
    guide:{portal:'security.microsoft.com',steps:['Settings → Identities → Sensors → בדוק שכל DC מופיע ברשימה','סטטוס חייב להיות: Running (לא Stopped / Error / Update pending)','Sensor שלא מגיב: Restart MDI Sensor service על ה-DC','גרסאות: Sensors מתעדכנים אוטומטית (וודא Auto-update מופעל)']}},
+  {id:'p3-discovery',pillar:'p3',title:'Device Discovery מופעל (מכשירים לא מנוהלים)',priority:'high',phase:2,
+   guide:{portal:'security.microsoft.com',steps:['Settings → Endpoints → Device discovery → Discovery setup → Standard mode (Active probing)','בדוק: Device inventory → Filter Onboarding status = "Can be onboarded"/"Insufficient info"','Onboard מכשירים שהתגלו (Servers, IoT, Legacy) לפי סדר עדיפות','Basic mode אם רגישות רשת גבוהה (Passive בלבד)']}},
+  {id:'p3-vulnremediate',pillar:'p3',title:'Vulnerability Remediation Workflow פעיל',priority:'high',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Vulnerability management → Recommendations → בחר CVE קריטי → Request remediation','Remediation → אינטגרציית Intune → Auto-create Remediation task','Track: Remediation → Activities → נטר Status (Pending/In progress/Completed)','SLA: הגדר יעד תיקון לפי חומרה (Critical: 7 ימים, High: 30 ימים)']}},
+  {id:'p3-exposure',pillar:'p3',title:'Exposure Management (Attack Surface + Critical Assets)',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Exposure management → Overview → בדוק Exposure score מגמתי','Attack surface → Critical asset management → תייג Assets קריטיים (DC, Servers פיננסיים)','Initiatives → הפעל Initiative רלוונטי (Ransomware, Identity security posture)','Attack paths → סקור Attack path visualization → תעדף תיקון']}},
+  {id:'p3-edrblock',pillar:'p3',title:'EDR in Block Mode מופעל (כש-AV צד שלישי הוא Primary)',priority:'high',phase:2,
+   guide:{portal:'Intune + security.microsoft.com',steps:['תרחיש: AV צד שלישי כ-Primary + MDE ב-Passive mode','Intune: Endpoint security → Antivirus → EDR policy → EDR in block mode: Enable','מטרה: MDE חוסם Post-breach גם כש-Passive (Backup detection)','בדוק: Device page → Onboarding status = Passive + EDR block mode = On']}},
+  {id:'p3-hunting',pillar:'p3',title:'Advanced Hunting (KQL) בשימוש שוטף',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Hunting → Advanced hunting → צור Custom detection rule מ-Query שימושי','Query library → שמור Queries חוזרים (Lateral movement, Credential dumping)','Custom detections → הגדר Alert + Action (Isolate device) אוטומטי','הרץ שבועי מתוכנן → תעד ממצאים']}},
+  {id:'p3-isolation',pillar:'p3',title:'Device Isolation Playbook מוגדר',priority:'high',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['תעד תהליך: Device page → Actions → Isolate device (Full / Selective)','Selective isolation: אפשר Outlook/Teams להישאר פעילים בזמן חקירה','Automation rule: Isolate אוטומטית ב-Incident Severity=Critical + Confidence=High','תרגל Tabletop: מדוד זמן תגובה מ-Alert ועד Isolation']}},
+  {id:'p3-indicators',pillar:'p3',title:'Indicator Management (IOCs) מנוהל',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Settings → Endpoints → Indicators → File hashes / IP addresses / URLs-Domains → Add','ייבוא Threat Intel feed חיצוני (STIX/TAXII) אם קיים','Certificate indicators: חסום Publishers ידועים כזדוניים','בדוק: Indicators → נטר Expiry dates (ברירת מחדל 30-180 יום)']}},
+  {id:'p3-threatexperts',pillar:'p3',title:'Microsoft Defender Experts מוגדר (Add-on, אם רלוונטי)',priority:'low',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Settings → Endpoints → Advanced features → Defender Experts for Hunting: On (אם נרכש כתוסף)','Defender Experts for XDR: בדוק אם יש Managed SOC פעיל','Escalations: הגדר Contact ל-Expert-driven investigations','SLA: תעד זמני תגובה מוסכמים עם ה-Vendor']}},
   {id:'p4-safelinks',pillar:'p4',title:'Safe Links — כל users',priority:'critical',phase:3,
    guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Policies & rules → Threat policies → Safe Links','Create new policy → Scope: All users (לא רק default policy)','Enable: Real-time URL scanning + Rewrite URLs + Track clicks','Enable: Apply Safe Links to Teams messages + Office desktop apps']}},
   {id:'p4-safeatt',pillar:'p4',title:'Safe Attachments — כל users + SharePoint',priority:'critical',phase:3,
@@ -632,6 +689,20 @@ const ITEMS = [
    guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Explorer → בחר "All email"','הדגם queries: Sender domain, Subject, Detection tech','סינון לפי: Malware / Phish / Spam / None','Action: Email message actions → Soft/Hard delete לפי צורך','ייצא ל-CSV לדו"ח שבועי: Export → Download']}},
   {id:'p4-preset',pillar:'p4',title:'Preset Security Policies (Standard/Strict) + Priority Accounts מוגדרות',priority:'high',phase:1,
    guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Threat policies → Preset security policies','Standard protection → Apply → הקצה לכלל הארגון (Manage protection → Users/domains)','Strict protection → Apply → הקצה ל-Priority accounts + Executives/Finance/HR','Settings → Priority accounts → תייג את כל ה-C-Level ובעלי גישה רגישה — Strict מגן עליהם באגרסיביות גבוהה יותר']}},
+  {id:'p4-tenantallowblock',pillar:'p4',title:'Tenant Allow/Block List מנוהל',priority:'high',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Threat policies → Tenant Allow/Block Lists','URLs / Domains / Files / Sender addresses → נהל חריגות שאושרו ידנית','בדוק תוקף אוטומטי (ברירת מחדל 30-90 יום) → חדש לפי צורך','Submissions → אישור False positive → הוסף אוטומטית ל-Allow list']}},
+  {id:'p4-userreported',pillar:'p4',title:'User Reported Message Settings מוגדרות',priority:'high',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Threat policies → User reported settings','הפעל Report button ב-Outlook (Report Message / Report Phishing add-in)','הגדר יעד: Send reported messages to → Microsoft + Custom mailbox (SecOps)','Notification: שלח אישור חזרה למשתמש שדיווח']}},
+  {id:'p4-campaign',pillar:'p4',title:'Campaign Views נסקרות',priority:'low',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Campaigns → סקור קמפייני Phishing/Malware שזוהו אוטומטית נגד הארגון','זהה תבניות תקיפה חוזרות → תעד Threat actor patterns','שתף ממצאים עם צוות Threat Intelligence','ייצוא לדוח חודשי']}},
+  {id:'p4-air',pillar:'p4',title:'AIR ל-Email (Automated Investigation & Response) פעיל',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Explorer → Email entity page → בדוק AIR investigations שנוצרו אוטומטית מ-Alerts','Action center → Investigations → Pending actions → Approve/Reject','כוונן Alert policies שמפעילות AIR (Phish click, Malware delivery)','מדוד: זמן ממוצע מ-Alert ועד Auto-remediation']}},
+  {id:'p4-threattrackers',pillar:'p4',title:'Threat Trackers נסקרים',priority:'low',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Threat tracker → Noteworthy trackers → סקור מגמות איומים גלובליות רלוונטיות לתעשייה','Tracked queries: שמור Query מותאם לניטור שוטף','שילוב עם Campaign views לזיהוי מוקדם']}},
+  {id:'p4-submission',pillar:'p4',title:'Submission Policies מוגדרות',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Email & collaboration → Submissions → Admin submissions → Add (דגימות ל-Microsoft לניתוח)','Submission policies: הגדר Auto-forwarding rules לחשבון Submissions מרכזי','Results: בדוק Verdict חוזר תוך 24-48 שעות','שלב תהליך: False negative/positive מ-SOC → Submit אוטומטי']}},
+  {id:'p4-secops-mailbox',pillar:'p4',title:'SecOps Mailbox מוגדר (Dedicated Security Mailbox)',priority:'medium',phase:1,
+   guide:{portal:'Exchange Admin Center + security.microsoft.com',steps:['צור Mailbox ייעודי: secops@[domain] (לא תיבה אישית)','הגדר Exclusion מ-Preset Security policies (למניעת Quarantine של דגימות Malware מכוונות)','Permissions: גישה מוגבלת לצוות SOC בלבד + Audit logging','חבר כ-Destination ל-User reported messages + Submissions']}},
   {id:'p5-shadow',pillar:'p5',title:'Shadow IT Discovery מופעל (MDE Integration)',priority:'high',phase:3,
    guide:{portal:'security.microsoft.com + admin.microsoft.com',steps:['Defender for Endpoint → Settings → Advanced features → Microsoft Defender for Cloud Apps: On','security.microsoft.com → Cloud apps → Cloud app catalog → בדוק Discovered apps','Defender portal → Settings → Cloud Apps → Microsoft Defender for Endpoint → Enable','בדוק Cloud Discovery reports: Cloud apps → Cloud Discovery → Dashboard','סנן לפי Risk score < 5 → שקול לחסום apps מסוכנות']}},
   {id:'p5-sanction',pillar:'p5',title:'Sanctioned / Unsanctioned Apps מסומנות',priority:'high',phase:3,
@@ -644,6 +715,18 @@ const ITEMS = [
    guide:{portal:'security.microsoft.com',steps:['Cloud apps → App governance → Overview','בדוק Apps with high privilege that are not commonly used','Policies → + Create policy → App policy → Over-privileged app','Alert on: New app with high permissions (Mail.ReadWrite, Files.ReadWrite.All)','Remediation: Disable app → הודע ל-user → חקור']}},
   {id:'p5-anomaly',pillar:'p5',title:'Anomaly Detection Policies מופעלות',priority:'low',phase:3,
    guide:{portal:'security.microsoft.com',steps:['Cloud apps → Policies → Policy management → סנן: Anomaly detection','ודא שכל ה-Built-in policies מופעלות (Impossible travel, Mass download, etc.)','Tune sensitivity: לחץ על Policy → Edit → Sensitivity slider','Scope: Apply to All users (לא Specific groups)','Alerts → בדוק שבועי: Cloud apps → Alerts → Filter: Anomaly detection']}},
+  {id:'p5-connectors',pillar:'p5',title:'App Connectors (API-based) מחוברים',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Cloud apps → Connected apps → App connectors → Connect app (Salesforce, Box, ServiceNow, GitHub, AWS, Google Workspace לפי מה שקיים בארגון)','לכל App: הגדר Scan scope (Files, Users, Activities)','בדוק: Connected apps → Status = Connected (ירוק) + Last scan time','הפעל Governance actions אוטומטיות (Quarantine, Remove external share)']}},
+  {id:'p5-govactions',pillar:'p5',title:'Governance Actions אוטומטיות מוגדרות',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Cloud apps → Files → Governance log → סקור פעולות שבוצעו אוטומטית','Policies → File policy → Governance actions: Remove external collaborators / Apply label / Quarantine','בדוק Governance log → Filter: Failed actions → תקן הרשאות Connector']}},
+  {id:'p5-filepolicy',pillar:'p5',title:'File Policies מוגדרות',priority:'high',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Cloud apps → Control → Policies → Create policy → File policy','Filter: Sharing = "Public"/"External" + Content contains sensitivity label','Action: Notify + Apply classification label + Restrict access','Scope: SharePoint, OneDrive, Box, Google Drive (App connectors מחוברים)']}},
+  {id:'p5-activitypolicy',pillar:'p5',title:'Activity Policies מוגדרות',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Cloud apps → Control → Policies → Create policy → Activity policy','Template: Mass download by single user, Multiple failed login attempts','Action: Suspend user + Require step-up MFA','בדוק Alerts → Activity policy matches שבועי']}},
+  {id:'p5-impossibletravel',pillar:'p5',title:'Impossible Travel Detection מכוונן',priority:'high',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Cloud apps → Policies → Anomaly detection policies → Impossible travel','Sensitivity slider: כוונן לפי גודל הארגון (נמוך = פחות False positives)','Exclude: VPN corporate ranges מ-Trusted locations','בדוק Alerts שבועי → Investigate + Tune Exceptions']}},
+  {id:'p5-alerttuning',pillar:'p5',title:'MDCA Alert Tuning — תהליך קבוע',priority:'low',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Cloud apps → Alerts → סקור שבועי: Open vs Dismissed vs Resolved','זהה Policies עם False positive rate גבוה → Adjust sensitivity/Scope','תעד Baseline "normal behavior" לארגון (בעיקר ב-3 חודשים הראשונים)','הגדר Owner לכל קטגוריית Policy']}},
   {id:'p6-labels',pillar:'p6',title:'Sensitivity Labels מפורסמות לכל הארגון',priority:'high',phase:5,
    guide:{portal:'compliance.microsoft.com',steps:['Information protection → Labels → + Create a label','צור היררכיה: Public → Internal → Confidential → Highly Confidential','לכל Label: הגדר encryption, content marking (header/footer/watermark)','Label policies → + Publish label → בחר את כל ה-Labels','Publish to: All users and groups → Default label: Internal']}},
   {id:'p6-autolabel',pillar:'p6',title:'Auto-Labeling Policy מוגדרת',priority:'medium',phase:5,
@@ -654,16 +737,36 @@ const ITEMS = [
    guide:{portal:'compliance.microsoft.com + Intune',steps:['compliance.microsoft.com → Data loss prevention → Endpoint DLP settings','Onboarding: ודא שמכשירים מחוברים דרך Intune / MDE','DLP Policy → Locations → הוסף Endpoint devices','Actions: Audit / Block / Block with override לפי רגישות','בדוק: DLP → Activity explorer → Filter: Endpoint activities']}},
   {id:'p6-irm',pillar:'p6',title:'Insider Risk Management — 3+ Policies',priority:'medium',phase:5,
    guide:{portal:'compliance.microsoft.com',steps:['Insider risk management → Policies → + Create policy','Policy 1: Data theft by departing users (חיבור ל-HR Connector)','Policy 2: Data leaks — General data leaks','Policy 3: Security policy violations by users (חיבור ל-MDE)','Indicators: הפעל File exfiltration, Email forwarding, USB upload']}},
-  {id:'p6-hr',pillar:'p6',title:'HR Connector מחובר (עזיבה / גיוס)',priority:'medium',phase:5,
+  {id:'p6-hr',pillar:'p6',title:'HR Connector מחובר (עזיבה / גיוס)',priority:'medium',phase:5,governance:true,
    guide:{portal:'compliance.microsoft.com',steps:['Data connectors → HR → + Add','Set up connector: הורד script Python → הכנס API key','CSV format: EmailAddress, ResignationDate, LastWorkingDate','הגדר scheduled task (Task Scheduler) להריץ script מדי יום','IRM → בדוק שנתוני HR מגיעים: Insider risk → Users → HR data']}},
   {id:'p6-compl',pillar:'p6',title:'Communication Compliance — לפי רגולציה',priority:'low',phase:5,
    guide:{portal:'compliance.microsoft.com',steps:['Communication compliance → Policies → + Create policy','Policy type: Detect inappropriate content / Regulatory compliance','Scope: בחר groups רלוונטיים (Finance, Legal, Executives)','Classifiers: Regulatory collusion, Targeted harassment, Profanity','Reviewers: הגדר compliance officers → Alerts on match']}},
-  {id:'p6-audit',pillar:'p6',title:'Audit Premium — 180 יום retention',priority:'high',phase:5,
+  {id:'p6-audit',pillar:'p6',title:'Audit Premium — 180 יום retention',priority:'high',phase:5,governance:true,
    guide:{portal:'compliance.microsoft.com',steps:['Audit → Audit retention policies → + New retention policy','Name: Audit-Premium-180days | Duration: 180 days','Record type: All (או לפי צורך: AzureActiveDirectory, Exchange, SharePoint)','Priority: 1 (גבוה יותר = גובר על default)','ודא E5/E5 Compliance license מוקצה ל-users הרלוונטיים']}},
   {id:'p6-retention',pillar:'p6',title:'Retention Policies מוגדרות',priority:'medium',phase:5,
    guide:{portal:'compliance.microsoft.com',steps:['Data lifecycle management → Retention policies → + New policy','Policy 1: Exchange email — Retain 7 years (רגולציה ישראלית)','Policy 2: SharePoint + OneDrive — Retain 5 years','Policy 3: Teams messages — Retain 3 years','Conflict: Longest wins → בדוק ב: Retention → Policy lookup']}},
   {id:'p6-dlpquarantine',pillar:'p6',title:'DLP File Quarantine (SharePoint/OneDrive) מופעל',priority:'medium',phase:5,
    guide:{portal:'compliance.microsoft.com',steps:['Data loss prevention → Policies → בחר Policy קיים ל-SharePoint/OneDrive → Edit rule','Actions → הוסף Action: Quarantine file (GA יולי 2026, בנוסף ל-Block הקיים)','הגדר Reviewer group שמאשר שחרור קבצים מ-Quarantine','Activity explorer → סנן DLPRuleMatch עם Action=Quarantine → נטר קצב False Positives']}},
+  {id:'p6-retentionlabels',pillar:'p6',title:'Retention Labels (ברמת פריט) מוגדרות ו-Published',priority:'medium',phase:5,
+   guide:{portal:'compliance.microsoft.com',steps:['Data lifecycle management → Labels → Create a label → הגדר Retention period + Action at end of retention (Delete/Review/Keep)','Label policies → Publish → בחר Locations','Auto-apply: הגדר Trainable classifier / Sensitive info type לתיוג אוטומטי','Disposition review: הגדר Reviewers לפני מחיקה סופית']}},
+  {id:'p6-records',pillar:'p6',title:'Records Management (רשומות רגולטוריות) מוגדר',priority:'medium',phase:5,governance:true,
+   guide:{portal:'compliance.microsoft.com',steps:['Records management → File plan → הגדר קטגוריות רשומות (Regulatory, Business-critical)','Label ל-Record / Regulatory record (immutable, לא ניתן להסרה ידנית)','Disposition: Event-based retention (למשל סיום חוזה) + Manual disposition review','File plan descriptors: Citation, Jurisdiction, Department']}},
+  {id:'p6-ediscovery-std',pillar:'p6',title:'eDiscovery (Standard) מוגדר',priority:'medium',phase:5,
+   guide:{portal:'compliance.microsoft.com',steps:['eDiscovery → Standard → Create case','Search: הגדר Search query (Keywords, Date range, Custodians)','ודא הרשאות (eDiscovery Manager role) מוגדרות נכון','Case closure: תעד תהליך סגירת Case + שמירת ראיות']}},
+  {id:'p6-ediscovery-premium',pillar:'p6',title:'eDiscovery Premium + Legal Hold מוגדרים',priority:'high',phase:5,governance:true,
+   guide:{portal:'compliance.microsoft.com',steps:['eDiscovery → Premium → Create case → Add custodians','Legal hold: Create hold policy → Custodian notification (Hold notification template)','Review sets: השתמש ב-Analytics (Near-duplicate detection, Email threading)','Chain of custody: תעד Export logs לצורך הליך משפטי']}},
+  {id:'p6-datamap',pillar:'p6',title:'Purview Data Map / Unified Catalog מוגדר',priority:'medium',phase:5,
+   guide:{portal:'purview.microsoft.com',steps:['Data Map → Sources → Register source (SQL, ADLS, SharePoint, Power BI)','Scan → Create scan rule → Run scan (Full/Incremental)','Classification: בדוק Data assets מסווגים אוטומטית לפי Sensitive info types','Glossary: הגדר Business glossary terms לנתונים קריטיים']}},
+  {id:'p6-classanalytics',pillar:'p6',title:'Data Classification Analytics נסקר',priority:'low',phase:5,
+   guide:{portal:'compliance.microsoft.com',steps:['Data classification → Overview → סקור Sensitive info types מפוזרים בארגון (Top locations)','Content explorer → זהה Repositories עם ריכוז נתונים רגישים','Activity explorer → נטר פעולות על תוכן מסווג (Copy, Print, Share)','דוח רבעוני: מגמת חשיפה (עולה/יורדת)']}},
+  {id:'p6-adaptive',pillar:'p6',title:'Adaptive Protection (סיכון דינמי + DLP/IRM) מוגדר',priority:'high',phase:5,governance:true,
+   guide:{portal:'purview.microsoft.com',steps:['Insider Risk Management → Adaptive protection → Turn on','הגדר Risk levels (Elevated/Moderate/Minor) → שיוך אוטומטי ל-DLP policy מחמירה יותר','Integration: DLP policy scope → Elevated risk users','בדוק: Adaptive protection → Impact report → משתמשים שעברו Risk level']}},
+  {id:'p6-losstrends',pillar:'p6',title:'Data Loss Trends נסקרים',priority:'low',phase:5,
+   guide:{portal:'purview.microsoft.com',steps:['Data Security Posture Management → Data loss trends (metrics view)','סקור מגמת DLP matches לאורך זמן (עולה = בעיה מחמירה או Policy חדש)','Filter לפי Location/Policy/User group','דוח חודשי למנהל אבטחה']}},
+  {id:'p6-riskanalytics',pillar:'p6',title:'Data Risk Analytics (DSPM Recommendations) מיושם',priority:'medium',phase:5,governance:true,
+   guide:{portal:'purview.microsoft.com',steps:['Data Security Posture Management → Recommendations → סקור המלצות מדורגות','יישם Top 3-5 המלצות לחודש (Overshared files, Missing labels)','מדוד השפעה: Before/After Risk score','שילוב: DSPM Reports → Executive summary ללקוח']}},
+  {id:'p6-infobarriers',pillar:'p6',title:'Information Barriers מוגדרות (אם רלוונטי)',priority:'low',phase:5,governance:true,
+   guide:{portal:'compliance.microsoft.com',steps:['Information barriers → Segments → הגדר קבוצות לפי Department/Attribute (למשל Investment Banking מול Research)','Policies → Create → Block communication/collaboration בין Segments רלוונטיים','Apply policies → Validate','רלוונטי בעיקר לארגונים עם דרישת הפרדה רגולטורית (פיננסים)']}},
   {id:'p7-workspace',pillar:'p7',title:'Sentinel Workspace מוגדר',priority:'high',phase:6,
    guide:{portal:'portal.azure.com',steps:['Azure Portal → Microsoft Sentinel → + Create','בחר / צור Log Analytics Workspace (אותו region כמו M365)','Settings → Workspace settings → Daily cap: הגדר cap למניעת עלויות בלתי צפויות','Content hub → Install: Microsoft 365 Defender, Entra ID, Azure Activity','Pricing tier: Pay-as-you-go / Commitment tier לפי נפח']}},
   {id:'p7-e5conn',pillar:'p7',title:'E5 Connector מחובר (Defender data חינם)',priority:'critical',phase:6,
@@ -688,9 +791,29 @@ const ITEMS = [
    guide:{portal:'external',steps:['הכן Scope document: IP ranges, domains, cloud assets','בחר penetration testing vendor (מאושר ע"י הנהלה)','Assumed breach test: ניתן להשתמש ב-Attack Simulation training כ-pre-test','בדוק Sentinel alerts מופעלים בזמן הtest (ודא visibility)','קבל דו"ח + patch ממצאים תוך 30 יום | Retest תוך 60 יום']}},
   {id:'p7-tabletop',pillar:'p7',title:'Annual Tabletop Exercise (IR Simulation)',priority:'low',phase:6,
    guide:{portal:'internal',steps:['הכן Scenario: Ransomware / BEC / Data exfiltration (בחר אחד)','משתתפים: IT, Security, Legal, HR, Management','סמלץ: Detection → Containment → Eradication → Recovery → Lessons Learned','תעד: מה עבד טוב, מה נכשל, מה חסר ב-playbook','Update IR Playbook ו-Contact list לאחר התרגיל']}},
+  {id:'p7-socmaturity',pillar:'p7',title:'SOC Maturity Assessment מבוצע',priority:'medium',phase:6,governance:true,
+   guide:{portal:'security.microsoft.com + Sentinel',steps:['Secure Score + Sentinel Workbooks → Security Operations Efficiency','הערך רמת בשלות SOC (Reactive / Proactive / Predictive) לפי Framework (למשל SOC-CMM)','תעד Gap Analysis מול היעד','תוכנית שיפור רבעונית']}},
+  {id:'p7-mitre',pillar:'p7',title:'MITRE ATT&CK Coverage נמדד',priority:'medium',phase:6,
+   guide:{portal:'portal.azure.com',steps:['Sentinel → Content hub → MITRE ATT&CK Workbook → Install','סקור Coverage heatmap: אילו Tactics/Techniques מכוסות ע"י Analytics rules קיימים','זהה Gaps (Techniques ללא Detection) → תעדף לפי Threat model רלוונטי','הוסף Analytics rules חדשים לסגירת Gaps קריטיים']}},
+  {id:'p7-connectorhealth',pillar:'p7',title:'Connector Health מנוטר',priority:'high',phase:6,
+   guide:{portal:'portal.azure.com',steps:['Sentinel → Data connectors → Connector health monitoring (Workbook מובנה)','הגדר Alert: Data connector הפסיק לשלוח Logs > 24 שעות','KQL: SentinelHealth לניטור סטטוס Connectors','בדוק שבועי: אין Connector ב-Disconnected/Error']}},
+  {id:'p7-automationpct',pillar:'p7',title:'Incident Automation % נמדד',priority:'medium',phase:6,
+   guide:{portal:'portal.azure.com',steps:['Sentinel → Workbooks → Security Operations Efficiency → Automation rate','מדוד: כמה % מה-Incidents נסגרים/מטופלים אוטומטית ללא מגע אנושי','יעד ריאלי: 30-50% ל-Low/Medium severity','זהה Incident types חוזרים → בנה Automation rule נוספת']}},
+  {id:'p7-logsource',pillar:'p7',title:'Log Source Coverage נבדק מול Assets',priority:'high',phase:6,
+   guide:{portal:'portal.azure.com',steps:['השווה רשימת Assets (מ-CMDB/Intune/MDE) מול מקורות Logs מחוברים בפועל','זהה Blind spots (Servers/Apps קריטיים ללא Logging)','תעדוף חיבור לפי קריטיות עסקית','תעד ב-Workbook ייעודי: Coverage Map']}},
+  {id:'p7-mssp',pillar:'p7',title:'MSSP Integration מוגדר (אם רלוונטי)',priority:'low',phase:6,
+   guide:{portal:'portal.azure.com',steps:['אם עובדים עם SOC חיצוני: Azure Lighthouse → Delegate resource access ל-MSSP tenant','הגדר Scope מדויק (Read/Contributor לפי Role)','Incident sharing: ודא Two-way visibility (MSSP רואה + הארגון רואה מה MSSP עשה)','SLA מסמך: זמני תגובה מוסכמים לפי Severity']}},
+  {id:'p7-watchlists',pillar:'p7',title:'Watchlists מנוהלות',priority:'medium',phase:6,
+   guide:{portal:'portal.azure.com',steps:['Sentinel → Configuration → Watchlists → Create (VIP users, Known malicious IPs, Approved admin IPs)','שילוב ב-Analytics rules: JOIN מול Watchlist להפחתת False positives','Update process: הגדר בעלים ותדירות עדכון (למשל HR feed ל-VIP list)','בדוק תוקף — Watchlists שלא עודכנו > 90 יום']}},
+  {id:'p7-automationrules',pillar:'p7',title:'Automation Rules (Orchestration חוצה-Playbooks) מוגדרות',priority:'medium',phase:6,
+   guide:{portal:'portal.azure.com',steps:['Sentinel → Automation → Automation rules → Create','דוגמאות: Auto-close alerts אינפורמטיביים מ-Source ידוע כ-Noisy','Auto-assign Incident לפי Tag/Severity לצוות הנכון','Suppress duplicate incidents מ-Analytics rule ספציפי; ודא סדר Priority נכון בין Rules']}},
+  {id:'p7-contenthub',pillar:'p7',title:'Content Hub Solutions מותקנות',priority:'low',phase:6,
+   guide:{portal:'portal.azure.com',steps:['Sentinel → Content hub → סקור Solutions זמינות לפי Data connectors מחוברים','התקן Solutions רלוונטיים (Microsoft 365, Entra ID, Azure Activity, Purview) — כוללות Analytics rules + Workbooks + Playbooks מוכנים','עדכון גרסאות: בדוק Updates available','הימנע מהתקנה עודפת (Solutions לא רלוונטיים = רעש)']}},
+  {id:'p7-asim',pillar:'p7',title:'ASIM (Advanced Security Information Model) בשימוש',priority:'low',phase:6,
+   guide:{portal:'portal.azure.com',steps:['Sentinel → Hunting/Analytics → השתמש ב-ASIM parsers (למשל imDns, imWebSession) במקום Raw tables ל-Queries חוצי-מקור','יתרון: Query אחד עובד גם אם משנים Connector/Vendor','בדוק Content hub → ASIM parsers מותקנים','Custom parsers: בנה ASIM-compliant parser למקור לא סטנדרטי']}},
 
   /* ── P8: CONDITIONAL ACCESS ── */
-  {id:'p8-naming',pillar:'p8',title:'Naming Convention מיושמת (CA-XXX-Action-Target)',priority:'high',phase:1,
+  {id:'p8-naming',pillar:'p8',title:'Naming Convention מיושמת (CA-XXX-Action-Target)',priority:'high',phase:1,governance:true,
    guide:{portal:'Entra Admin Center',steps:['Conditional Access → Policies → בדוק שכל פוליסה ממושית לפי: CA-[מספר]-[פעולה]-[יעד]-[תנאי]','דוגמאות: CA-001-Require-MFA-AllUsers | CA-010-Block-LegacyAuth','שדה "Description": תעד מטרה, תאריך יצירה, בעל פוליסה','קבוצות Entra: צור BreakGlass-Exclude לחריגות','הכן טבלת Inventory ב-Excel/Confluence עם כל הפוליסות']}},
   {id:'p8-breakglass',pillar:'p8',title:'Break Glass excluded מכל פוליסות CA',priority:'critical',phase:1,
    guide:{portal:'Entra Admin Center',steps:['Users → New User → breakglass1@[tenant].onmicrosoft.com (סיסמה 30+ תווים, ללא מייל)','Assign: Global Administrator | ללא MFA | ללא PIM | ללא CA exclusion אחר','צור קבוצת Entra: "BreakGlass-Exclude" → הוסף שני חשבונות','כל פוליסת CA → Assignments → Users → Exclude: BreakGlass-Exclude','Log Analytics Alert: כל Sign-in של חשבון זה → Teams notification מיידי']}},
@@ -712,7 +835,7 @@ const ITEMS = [
    guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-050-Session-SigninFrequency-Admins','Users: Directory roles (Admins) | Cloud Apps: All','Session: Sign-in frequency → 4 Hours','Policy נוספת ל-BYOD: CA-051 → Persistent browser session: Never persistent','Apps רגישות (Finance, HR): Sign-in frequency → 1 Hour + Require reauthentication']}},
   {id:'p8-mam',pillar:'p8',title:'CA-060: App Protection Policy ל-Mobile BYOD',priority:'medium',phase:3,
    guide:{portal:'Entra Admin Center + Intune',steps:['Intune: Apps → App protection policies → Create iOS + Create Android','Target: Outlook, Teams, OneDrive, Edge | PIN: Required | Backup: Block | Copy/paste: Block','CA Policy → CA-060-Require-AppProtection-Mobile','Users: All | Cloud Apps: Exchange / SharePoint','Grant: Require approved client app + Require app protection policy (OR)']}},
-  {id:'p8-reportonly',pillar:'p8',title:'Report-Only מעוקב — Workbook פעיל',priority:'medium',phase:2,
+  {id:'p8-reportonly',pillar:'p8',title:'Report-Only מעוקב — Workbook פעיל',priority:'medium',phase:2,governance:true,
    guide:{portal:'Entra Admin Center + Azure',steps:['Conditional Access → Insights and reporting → בדוק כל שבוע','Azure Monitor Workbook: CA-Insights Workbook (מובנה) → פנה ל-Azure Portal','בדוק: פוליסות Report-Only שאמורות ל-Enforce — האם עברו 7-14 יום?','Sign-in logs → KQL: SigninLogs | where ConditionalAccessStatus == "reportOnlyFailure" | summarize count() by PolicyName','סמן פוליסות בשלות ל-Enforce: שנה Status מ-Report-only ל-On']}},
   {id:'p8-tokenprotect',pillar:'p8',title:'CA-070: Token Protection (Session מוגן למכשיר)',priority:'high',phase:1,
    guide:{portal:'Entra Admin Center',steps:['+ New Policy → שם: CA-070-TokenProtection-SPO-Exchange-Teams','Users: All | Exclude: BreakGlass-Exclude | Cloud Apps: SharePoint Online + Exchange Online','Session → Token protection → Require token binding to device (מונע Pass-the-Cookie / Token Replay)','דורש Entra ID P1 + מכשירי Windows 10+ Entra Joined/Hybrid Joined — בדוק תאימות ב-Report-Only לפני Enforce']}},
@@ -726,6 +849,18 @@ const ITEMS = [
    guide:{portal:'Entra Admin Center',steps:['ודא Service Plan מוקצה: Entra Conditional Access for Agents + Entra ID Protection for Agents (כלול ב-E5/E7/M365 Agent מ-7/2026)','Identity Governance → Agent identities → סקור את כל ה-Agent IDs הרשומים (Copilot Studio, Security Copilot agents)','Conditional Access → New Policy → Assignments: Workload identities → Agent identities → הגדר Grant controls','Identity Protection → Agent risk policies → הפעל זיהוי חריגות בהתנהגות Agent']}},
   {id:'p9-genai-discovery',pillar:'p9',title:'Generative AI App Discovery מופעל (MDCA)',priority:'high',phase:3,
    guide:{portal:'security.microsoft.com',steps:['Cloud apps → Cloud Discovery → Dashboard → סנן קטגוריה: Generative AI','זהה שימוש לא מאושר ב-ChatGPT / Gemini / Claude / DeepSeek דרך הדפדפן הארגוני','תייג Sanctioned (למשל Microsoft 365 Copilot, ChatGPT Enterprise מאושר) מול Unsanctioned','Policies → Cloud Discovery policy → Alert on new GenAI app גילוי + Risk score נמוך → שקול חסימה']}},
+  {id:'p9-readiness',pillar:'p9',title:'Copilot Readiness Assessment בוצע',priority:'critical',phase:5,
+   guide:{portal:'purview.microsoft.com',steps:['לפני הפעלת Copilot בהיקף רחב: הרץ Purview → DSPM → Copilot readiness report','בדוק אחוז קבצים עם הרשאות "Everyone"/"Anyone with link" שנגישים ל-Copilot','SharePoint Advanced Management → Site access review לפני Rollout','Go/No-Go decision: תעד Baseline risk score לפני הרחבה לעובדים נוספים']}},
+  {id:'p9-labels-copilot',pillar:'p9',title:'Sensitivity Labels אוכפים הרשאות ב-Copilot',priority:'high',phase:5,
+   guide:{portal:'purview.microsoft.com',steps:['ודא Sensitivity labels (מ-p6) אוכפים גם על תוכן שנצרך ע"י Copilot — לא רק Encryption סטטי','Auto-labeling: הרחב Policy לזהות תוכן רגיש שטרם תויג לפני חשיפה ל-Copilot','בדוק: תוכן שמסומן "Highly Confidential" חסום מ-Copilot summarization (Protection settings בתוך ה-Label)','Test: נסה לשאול Copilot על מסמך מתויג → ודא אכיפה בפועל']}},
+  {id:'p9-accessgov',pillar:'p9',title:'AI Access Governance (מי רשאי להשתמש ב-Copilot/Agents)',priority:'high',phase:4,governance:true,
+   guide:{portal:'Entra Admin Center + M365 Admin Center',steps:['Licenses → Copilot license assignment → ודא הקצאה מבוקרת (לא Blanket assignment לכולם ללא הצדקה)','Entra: קבוצת Security ייעודית ל-Copilot users + CA policy Scoped אליה','Copilot Studio: הגבל מי יכול לבנות/לפרסם Agents (Maker permissions)','Access reviews: סקירה רבעונית למי יש גישה ל-Copilot / Agent building tools']}},
+  {id:'p9-agentgov',pillar:'p9',title:'Agent Governance Framework מוגדר',priority:'high',phase:5,governance:true,
+   guide:{portal:'Power Platform Admin Center',steps:['Power Platform admin center → Agents → Environment-level DLP policies ל-Connectors שסוכנים יכולים להשתמש בהם','Publishing approval: הגדר תהליך אישור לפני פרסום Agent חדש לארגון','DLP: חסום Connectors לא מאושרים (Third-party AI, Personal email) עבור Agents','תיעוד: Catalog מרכזי לכל Agent + Owner + Purpose']}},
+  {id:'p9-agentinventory',pillar:'p9',title:'Agent Inventory מלא ומעודכן',priority:'high',phase:4,governance:true,
+   guide:{portal:'Entra Admin Center + Power Platform Admin Center',steps:['Entra → Identity Governance → Agent identities → Export רשימה מלאה (Copilot Studio, Security Copilot, Custom agents)','Power Platform admin center → Agents → סקור כל Environment (Prod/Dev/Test)','לכל Agent: תעד Owner, Purpose, Data access scope, Last activity','זהה Agents יתומים (ללא Owner פעיל) → Deactivate']}},
+  {id:'p9-agentlifecycle',pillar:'p9',title:'Agent Lifecycle Management מוגדר',priority:'medium',phase:5,governance:true,
+   guide:{portal:'Power Platform Admin Center',steps:['הגדר תהליך: Agent Onboarding (אישור לפני יצירה) → Review תקופתי (רבעוני) → Decommission (Deactivate + Archive data)','Inactive agent policy: Agent ללא שימוש > 90 יום → Flag לסקירה','Offboarding: כשעובד עוזב, Ownership transfer אוטומטי ל-Agents שבבעלותו','Audit trail: תעד כל שינוי Lifecycle (Created/Modified/Retired)']}},
 ];
 
 // ══════════════════════════════════════════════
@@ -815,6 +950,74 @@ function getOverallProgress(client) {
 
 function getBlockers(client) {
   return ITEMS.filter(i => client.items[i.id]?.blocker?.trim());
+}
+
+// ── E5 SCORECARD (V2) ────────────────────────
+// Layer 1 = Adoption Score: plain completion %, unweighted (reuses getOverallProgress/getPillarProgress).
+// Layer 2 = Weighted Score: priority-weighted completion, so a missed Critical hurts far more than a missed Low.
+// Layer 3 = Maturity Level: label lookup on top of a weighted score.
+const PRIORITY_WEIGHT = {critical:5, high:3, medium:2, low:1};
+
+const MATURITY_LEVELS = [
+  {max:25,  label:'Initial',    color:'#dc2626'},
+  {max:50,  label:'Developing', color:'#d97706'},
+  {max:75,  label:'Managed',    color:'#0078d4'},
+  {max:90,  label:'Mature',     color:'#16a34a'},
+  {max:100, label:'Optimized',  color:'#0369a1'},
+];
+function getMaturityLevel(score) {
+  return MATURITY_LEVELS.find(l => score <= l.max) || MATURITY_LEVELS[MATURITY_LEVELS.length - 1];
+}
+
+// Generic weighted-completion calc over any item subset: Σ(weight×done) / Σ(weight×relevant) × 100.
+// NA items are excluded from both sums, same convention as getPillarProgress.
+function getWeightedScore(client, itemsSubset) {
+  let doneWeight = 0, totalWeight = 0;
+  itemsSubset.forEach(item => {
+    const data = client.items[item.id];
+    if (!data || data.status === 'na') return;
+    const w = PRIORITY_WEIGHT[data.priority || item.priority] || 2;
+    totalWeight += w;
+    if (data.status === 'done') doneWeight += w;
+  });
+  return totalWeight ? Math.round(doneWeight / totalWeight * 100) : 0;
+}
+
+function getPillarWeightedScore(client, pillarId) {
+  return getWeightedScore(client, ITEMS.filter(i => i.pillar === pillarId));
+}
+
+// Security Score domains: extends the Identity/Endpoint/Email/Data/Cloud model with SIEM/Detection (Sentinel),
+// since detection coverage is as core to "how protected are we" as the control pillars themselves.
+const SECURITY_DOMAINS = [
+  {key:'identity',  label:'זהות',            pillars:['p1','p8'], weight:25},
+  {key:'endpoint',  label:'Endpoint',        pillars:['p2','p3'], weight:20},
+  {key:'email',     label:'Email',           pillars:['p4'],      weight:15},
+  {key:'data',      label:'Data (DLP/Labels)', pillars:['p6'],    weight:15},
+  {key:'cloudapps', label:'Cloud Apps',      pillars:['p5'],      weight:10},
+  {key:'detection', label:'SIEM/Detection',  pillars:['p7'],      weight:15},
+];
+function getSecurityScore(client) {
+  let total = 0;
+  SECURITY_DOMAINS.forEach(d => {
+    const domainItems = ITEMS.filter(i => d.pillars.includes(i.pillar));
+    total += getWeightedScore(client, domainItems) * (d.weight / 100);
+  });
+  return Math.round(total);
+}
+
+// Governance Score: not pillar-based — pulls every item tagged governance:true across all pillars
+// (Access Reviews, Entitlement Mgmt, Lifecycle Workflows, Records Mgmt, Legal Hold, Adaptive Protection,
+// RBAC, Agent Governance/Inventory/Lifecycle, etc.) Answers "is there process/oversight", not "is the toggle on".
+function getGovernanceItems() {
+  return ITEMS.filter(i => i.governance);
+}
+function getGovernanceScore(client) {
+  return getWeightedScore(client, getGovernanceItems());
+}
+
+function getAdoptionScore(client) {
+  return getOverallProgress(client).pct;
 }
 
 // ── ACTIVITY LOG ─────────────────────────────
@@ -977,6 +1180,18 @@ function renderClientView() {
     </div>`;
   }).join('');
 
+  const scoreBadges = [
+    {label:'Adoption', score:getAdoptionScore(c)},
+    {label:'Security', score:getSecurityScore(c)},
+    {label:'Governance', score:getGovernanceScore(c)},
+  ].map(s => {
+    const m = getMaturityLevel(s.score);
+    return `<div class="mini-score-badge" style="border-color:${m.color}">
+      <div class="msb-label">${s.label}</div>
+      <div class="msb-value" style="color:${m.color}">${s.score}</div>
+    </div>`;
+  }).join('');
+
   document.getElementById('progress-overview').innerHTML = `
     <h3>📊 סקירת התקדמות</h3>
     <div class="progress-big">
@@ -989,7 +1204,8 @@ function renderClientView() {
         <div style="font-size:.8rem;color:var(--muted)">${ov.total - ov.done} פריטים נותרו${blockers ? ` · <span style="color:var(--danger)">⚠️ ${blockers} Blockers פתוחים</span>` : ''}</div>
       </div>
     </div>
-    <div class="pillars-grid">${pillarsHtml}</div>`;
+    <div class="pillars-grid">${pillarsHtml}</div>
+    <div class="mini-scorecard">${scoreBadges}</div>`;
 
   // Pillar tabs
   document.getElementById('pillar-tabs').innerHTML = PILLARS.map(p => {
@@ -1171,6 +1387,41 @@ function renderReport(c) {
   const modeLabel = c.mode === 'cloud' ? '☁️ Fully Cloud' : c.mode === 'hybrid' ? '🔄 Hybrid' : '🔗 Co-Management';
   const today = new Date().toLocaleDateString('he-IL');
 
+  // ── E5 Executive Scorecard (V2) ──
+  const adoptionScore = getAdoptionScore(c);
+  const securityScore = getSecurityScore(c);
+  const governanceScore = getGovernanceScore(c);
+  const scorecardCompositeHtml = [
+    {label:'📈 Adoption Score', score:adoptionScore, sub:'שימוש בפועל ביכולות E5 — ללא משקל לקריטיות'},
+    {label:'🛡️ Security Score', score:securityScore, sub:'ממוצע משוקלל: Identity 25% · Endpoint 20% · Email 15% · Data 15% · Cloud 10% · SIEM 15%'},
+    {label:'📋 Governance Score', score:governanceScore, sub:`תהליך ופיקוח (${getGovernanceItems().length} בקרות Governance)`},
+  ].map(s => {
+    const m = getMaturityLevel(s.score);
+    return `<div class="scorecard-card" style="border-color:${m.color}">
+      <div class="sc-label">${s.label}</div>
+      <div class="sc-score" style="color:${m.color}">${s.score}</div>
+      <div class="sc-maturity" style="background:${m.color}">${m.label}</div>
+      <div style="font-size:.66rem;color:var(--muted);margin-top:8px">${s.sub}</div>
+    </div>`;
+  }).join('');
+
+  const scorecardTableHtml = `
+    <div class="scorecard-table">
+      <h3>🎯 E5 Executive Scorecard</h3>
+      <div class="sct-note">ציון משוקלל לפי עדיפות (Critical×5 / High×3 / Medium×2 / Low×1) — לא % השלמה גולמי</div>
+      <div class="scorecard-composite">${scorecardCompositeHtml}</div>
+      ${PILLARS.map(p => {
+        const score = getPillarWeightedScore(c, p.id);
+        const m = getMaturityLevel(score);
+        return `<div class="scw-row">
+          <div class="scw-name">${p.icon} ${p.short}</div>
+          <div class="scw-bar-wrap"><div class="scw-bar-fill" style="width:${score}%;background:${m.color}"></div></div>
+          <div class="scw-score">${score}</div>
+          <div class="scw-maturity" style="background:${m.color}">${m.label}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
   const pillarsHtml = PILLARS.map(p => {
     const pp = getPillarProgress(c, p.id);
     const pItems = ITEMS.filter(i => i.pillar === p.id);
@@ -1282,6 +1533,7 @@ function renderReport(c) {
       <div class="report-stat"><div class="n">${ov.total - ov.done}</div><div class="l">פריטים נותרו</div></div>
       <div class="report-stat"><div class="n" style="color:${blockerItems.length?'var(--danger)':'var(--success)'}">${blockerItems.length}</div><div class="l">Blockers פתוחים</div></div>
     </div>
+    ${scorecardTableHtml}
     ${nextStepsHtml}
     ${blockersHtml}
     ${pillarsHtml}
