@@ -194,13 +194,32 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .report-pillar-header .pct{font-size:1rem;font-weight:800;}
 .report-pbar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin-bottom:12px;}
 .report-pbar-fill{height:100%;border-radius:4px;transition:width .5s;}
-.report-items{display:flex;flex-direction:column;gap:4px;}
-.report-item{display:flex;align-items:center;gap:8px;font-size:.82rem;}
+.report-items{display:flex;flex-direction:column;gap:2px;}
+.report-item{display:flex;flex-direction:column;gap:3px;padding:7px 0;border-bottom:1px dashed var(--border);}
+.report-item:last-child{border-bottom:none;}
+.report-item-main{display:flex;align-items:center;gap:8px;font-size:.82rem;}
 .report-item .ri-check{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0;}
 .report-item .ri-done{background:var(--success);color:#fff;}
 .report-item .ri-pend{background:#e2e8f0;color:var(--muted);}
 .report-item .ri-title{flex:1;}
 .report-item .ri-date{font-size:.7rem;color:var(--muted);}
+.report-item-meta{font-size:.72rem;color:var(--muted);padding-right:24px;display:flex;gap:12px;flex-wrap:wrap;}
+.report-item-note{font-size:.76rem;color:var(--text);padding-right:24px;}
+.report-item-note::before{content:'📝 ';}
+.report-item-blocker{font-size:.76rem;color:var(--danger);font-weight:600;padding-right:24px;}
+.report-item-blocker::before{content:'🚧 ';}
+.ri-status-badge{font-size:.62rem;font-weight:700;padding:1px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap;}
+.ri-status-done{background:#d1fae5;color:#065f46;}
+.ri-status-pending{background:#fef3c7;color:#92400e;}
+.ri-status-na{background:#e2e8f0;color:var(--muted);}
+.ri-priority-badge{font-size:.6rem;font-weight:700;padding:1px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap;}
+.report-nextsteps{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;margin-bottom:14px;}
+.report-nextsteps h3{font-size:.9rem;font-weight:700;color:var(--ms-blue);margin-bottom:10px;}
+.nextstep-item{padding:8px 0;border-bottom:1px solid #dbeafe;}
+.nextstep-item:last-child{border-bottom:none;}
+.nextstep-item-head{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:600;flex-wrap:wrap;}
+.nextstep-item-meta{font-size:.74rem;color:var(--muted);margin-top:3px;}
+.nextstep-item-meta .blocker{color:var(--danger);font-weight:600;}
 .report-blockers{background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:16px;margin-bottom:14px;}
 .report-blockers h3{font-size:.9rem;font-weight:700;color:var(--danger);margin-bottom:10px;}
 .blocker-item{font-size:.83rem;padding:6px 0;border-bottom:1px solid #fecaca;display:flex;gap:8px;}
@@ -514,6 +533,12 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 // ══════════════════════════════════════════════
 //  DATA DEFINITIONS
 // ══════════════════════════════════════════════
+const PRIORITY_META = {
+  critical: {label:'🔴 קריטי', bg:'#fee2e2', color:'#dc2626'},
+  high:     {label:'🟠 גבוה',  bg:'#fffbeb', color:'#d97706'},
+  medium:   {label:'🟡 בינוני', bg:'#dbeafe', color:'#0078d4'},
+  low:      {label:'⚫ נמוך',   bg:'#f1f5f9', color:'#64748b'},
+};
 const PILLARS = [
   {id:'p1',name:'זהות — Entra ID P2',icon:'🔐',color:'#6366f1',short:'Identity'},
   {id:'p2',name:'מכשירים — Intune',icon:'💻',color:'#0891b2',short:'Devices'},
@@ -1151,13 +1176,28 @@ function renderReport(c) {
     const pItems = ITEMS.filter(i => i.pillar === p.id);
     const itemsHtml = pItems.map(item => {
       const data = c.items[item.id] || {};
-      const isDone = data.status === 'done';
-      const isNA = data.status === 'na';
-      if (isNA) return '';
+      const status = data.status || 'pending';
+      const isDone = status === 'done';
+      const isNA = status === 'na';
+      const prio = PRIORITY_META[data.priority || item.priority] || PRIORITY_META.medium;
+      const statusBadge = isDone
+        ? `<span class="ri-status-badge ri-status-done">✓ הושלם</span>`
+        : isNA
+          ? `<span class="ri-status-badge ri-status-na">— לא רלוונטי</span>`
+          : `<span class="ri-status-badge ri-status-pending">⏳ בתהליך</span>`;
+      const metaBits = [];
+      if (data.date) metaBits.push(`📅 ${data.date}`);
+      if (data.assignee) metaBits.push(`👤 ${data.assignee}`);
       return `<div class="report-item">
-        <div class="ri-check ${isDone ? 'ri-done' : 'ri-pend'}">${isDone ? '✓' : ''}</div>
-        <div class="ri-title" style="${isDone ? 'text-decoration:line-through;color:var(--muted)' : ''}">${item.title}</div>
-        ${isDone && data.date ? `<div class="ri-date">${data.date}</div>` : ''}
+        <div class="report-item-main">
+          <div class="ri-check ${isDone ? 'ri-done' : 'ri-pend'}">${isDone ? '✓' : isNA ? '—' : ''}</div>
+          <div class="ri-title" style="${isDone || isNA ? 'text-decoration:line-through;color:var(--muted)' : ''}">${item.title}</div>
+          ${statusBadge}
+          ${!isNA ? `<span class="ri-priority-badge" style="background:${prio.bg};color:${prio.color}">${prio.label}</span>` : ''}
+        </div>
+        ${metaBits.length ? `<div class="report-item-meta">${metaBits.join('')}</div>` : ''}
+        ${data.notes ? `<div class="report-item-note">${data.notes}</div>` : ''}
+        ${data.blocker ? `<div class="report-item-blocker">${data.blocker}</div>` : ''}
       </div>`;
     }).join('');
     return `<div class="report-pillar">
@@ -1170,6 +1210,37 @@ function renderReport(c) {
       <div class="report-items">${itemsHtml}</div>
     </div>`;
   }).join('');
+
+  // Recommended next steps — open items (not done, not N/A) ranked by priority.
+  // This is the section meant to feed directly into a follow-up SOW: what's left, ranked.
+  const priorityOrder = {critical:0, high:1, medium:2, low:3};
+  const openItems = ITEMS.filter(i => {
+    const d = c.items[i.id];
+    return d && d.status !== 'done' && d.status !== 'na';
+  }).slice().sort((a, b) => {
+    const pa = c.items[a.id].priority || a.priority;
+    const pb = c.items[b.id].priority || b.priority;
+    return (priorityOrder[pa] ?? 2) - (priorityOrder[pb] ?? 2);
+  });
+  const nextStepsHtml = openItems.length ? `
+    <div class="report-nextsteps">
+      <h3>📋 פעולות מומלצות להמשך — ${openItems.length} פריטים פתוחים (ממוין לפי עדיפות)</h3>
+      ${openItems.map(item => {
+        const data = c.items[item.id];
+        const pillar = PILLARS.find(p => p.id === item.pillar);
+        const prio = PRIORITY_META[data.priority || item.priority] || PRIORITY_META.medium;
+        const metaBits = [`${pillar.icon} ${pillar.short}`];
+        if (data.assignee) metaBits.push(`👤 ${data.assignee}`);
+        if (data.notes) metaBits.push(`📝 ${data.notes}`);
+        return `<div class="nextstep-item">
+          <div class="nextstep-item-head">
+            <span class="ri-priority-badge" style="background:${prio.bg};color:${prio.color}">${prio.label}</span>
+            <span>${item.title}</span>
+          </div>
+          <div class="nextstep-item-meta">${metaBits.join(' · ')}${data.blocker ? ` · <span class="blocker">🚧 ${data.blocker}</span>` : ''}</div>
+        </div>`;
+      }).join('')}
+    </div>` : '';
 
   const blockersHtml = blockerItems.length ? `
     <div class="report-blockers">
@@ -1211,6 +1282,7 @@ function renderReport(c) {
       <div class="report-stat"><div class="n">${ov.total - ov.done}</div><div class="l">פריטים נותרו</div></div>
       <div class="report-stat"><div class="n" style="color:${blockerItems.length?'var(--danger)':'var(--success)'}">${blockerItems.length}</div><div class="l">Blockers פתוחים</div></div>
     </div>
+    ${nextStepsHtml}
     ${blockersHtml}
     ${pillarsHtml}
     ${timelineHtml}
