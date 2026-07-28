@@ -601,6 +601,8 @@ const ITEMS = [
    guide:{portal:'Entra Admin Center',steps:['Protection → Authentication methods → Policies → Temporary Access Pass → Enable','הגדר Default lifetime + One-time use policy','תהליך תפעולי: הנפקת TAP ל-New hire / Password reset ללא תלות ב-SMS','Audit logs → נטר הנפקות TAP חריגות או תכופות מדי']}},
   {id:'p1-b2b',pillar:'p1',title:'External Identities Governance (B2B) מוגדר',priority:'medium',phase:4,governance:true,
    guide:{portal:'Entra Admin Center',steps:['External Identities → External collaboration settings → הגבל Guest invite permissions (Members/Admins בלבד)','Cross-tenant access settings → הגדר Inbound/Outbound Trust לפי ארגון שותף','Access reviews → הפעל סקירה תקופתית לחשבונות Guest','B2B direct connect: הגבל ל-Organizations מאושרים בלבד']}},
+  {id:'p1-au',pillar:'p1',title:'Administrative Units (AU) מוגדרות — Multi-Country/BU',priority:'medium',phase:4,governance:true,
+   guide:{portal:'Entra Admin Center',steps:['Identity → Roles & admins → Administrative units → + Add','הגדר AU לפי Country/Region/Business Unit → הוסף Users, Groups, Devices רלוונטיים','הקצה Scoped role (למשל Helpdesk Administrator) בתוך ה-AU בלבד — לא Global scope','Dynamic membership: שקול AU דינמי לפי Attribute (Country=IL) לעדכון אוטומטי — קריטי לארגונים Multi-Country']}},
   {id:'p2-enroll',pillar:'p2',title:'100% מהמכשירים enrolled ב-Intune',priority:'critical',phase:2,
    guide:{portal:'intune.microsoft.com',steps:['Devices → Enrollment → Windows: Auto-enrollment דרך Entra ID Join','קיימים: Devices → All devices → Export → בדוק מה Unmanaged','Bulk enrollment: Provisioning package / Co-management (MECM)','Monitor: Devices → Monitor → Enrollment failures']}},
   {id:'p2-compliance',pillar:'p2',title:'Compliance Policies מוגדרות לכל Platform',priority:'high',phase:2,
@@ -661,6 +663,8 @@ const ITEMS = [
    guide:{portal:'security.microsoft.com',steps:['Vulnerability management → Recommendations → בחר CVE קריטי → Request remediation','Remediation → אינטגרציית Intune → Auto-create Remediation task','Track: Remediation → Activities → נטר Status (Pending/In progress/Completed)','SLA: הגדר יעד תיקון לפי חומרה (Critical: 7 ימים, High: 30 ימים)']}},
   {id:'p3-exposure',pillar:'p3',title:'Exposure Management (Attack Surface + Critical Assets)',priority:'medium',phase:3,
    guide:{portal:'security.microsoft.com',steps:['Exposure management → Overview → בדוק Exposure score מגמתי','Attack surface → Critical asset management → תייג Assets קריטיים (DC, Servers פיננסיים)','Initiatives → הפעל Initiative רלוונטי (Ransomware, Identity security posture)','Attack paths → סקור Attack path visualization → תעדף תיקון']}},
+  {id:'p3-exposure-closure',pillar:'p3',title:'Exposure Management — % המלצות שנסגרו נמדד',priority:'medium',phase:3,
+   guide:{portal:'security.microsoft.com',steps:['Exposure management → Recommendations → סנן לפי Status (Open/In Progress/Completed)','חשב % סגירה: Completed / Total recommendations — עקוב לאורך זמן, לא Snapshot בודד','הגדר יעד ריאלי (למשל 70% תוך רבעון) ותעדף לפי Exposure score impact','דוח חודשי: מגמת סגירה + Recommendations שנפתחו מחדש (Regression)']}},
   {id:'p3-edrblock',pillar:'p3',title:'EDR in Block Mode מופעל (כש-AV צד שלישי הוא Primary)',priority:'high',phase:2,
    guide:{portal:'Intune + security.microsoft.com',steps:['תרחיש: AV צד שלישי כ-Primary + MDE ב-Passive mode','Intune: Endpoint security → Antivirus → EDR policy → EDR in block mode: Enable','מטרה: MDE חוסם Post-breach גם כש-Passive (Backup detection)','בדוק: Device page → Onboarding status = Passive + EDR block mode = On']}},
   {id:'p3-hunting',pillar:'p3',title:'Advanced Hunting (KQL) בשימוש שוטף',priority:'medium',phase:3,
@@ -1201,7 +1205,7 @@ function renderClientView() {
       <div class="progress-details">
         <div style="font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:6px">${ov.done} מתוך ${ov.total} פריטים הושלמו</div>
         <div class="progress-bar-main"><div class="progress-bar-main-fill" style="width:${ov.pct}%"></div></div>
-        <div style="font-size:.8rem;color:var(--muted)">${ov.total - ov.done} פריטים נותרו${blockers ? ` · <span style="color:var(--danger)">⚠️ ${blockers} Blockers פתוחים</span>` : ''}</div>
+        <div style="font-size:.8rem;color:var(--muted)">${ov.total} פריטים במסגרת ההערכה${blockers ? ` · <span style="color:var(--danger)">⚠️ ${blockers} Blockers פתוחים</span>` : ''}</div>
       </div>
     </div>
     <div class="pillars-grid">${pillarsHtml}</div>
@@ -1530,7 +1534,7 @@ function renderReport(c) {
     <div class="report-exec">
       <div class="report-stat"><div class="n">${ov.pct}%</div><div class="l">התקדמות כוללת</div></div>
       <div class="report-stat"><div class="n">${ov.done}</div><div class="l">פריטים הושלמו</div></div>
-      <div class="report-stat"><div class="n">${ov.total - ov.done}</div><div class="l">פריטים נותרו</div></div>
+      <div class="report-stat"><div class="n">${ov.total}</div><div class="l">פריטים במסגרת ההערכה</div></div>
       <div class="report-stat"><div class="n" style="color:${blockerItems.length?'var(--danger)':'var(--success)'}">${blockerItems.length}</div><div class="l">Blockers פתוחים</div></div>
     </div>
     ${scorecardTableHtml}
