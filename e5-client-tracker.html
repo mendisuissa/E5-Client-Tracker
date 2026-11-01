@@ -183,6 +183,10 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .verify-box .vb-lbl{font-weight:700;color:var(--ms-blue);}
 .verify-box .vb-pass .vb-lbl{color:var(--success);}
 .verify-box .vb-ev .vb-lbl{color:var(--muted);}
+.vb-cmd-wrap{position:relative;margin:6px 0 8px;}
+.vb-cmd{direction:ltr;text-align:left;unicode-bidi:isolate;background:#0f172a;color:#e2e8f0;border-radius:6px;padding:8px 10px 8px 64px;font-family:Consolas,'Courier New',monospace;font-size:.74rem;line-height:1.5;overflow-x:auto;white-space:pre;margin:0;}
+.vb-copy{position:absolute;top:5px;left:5px;font-size:.65rem;padding:2px 8px;border:none;border-radius:4px;background:#334155;color:#fff;cursor:pointer;}
+.vb-copy:hover{background:#475569;}
 .item-check.partial{background:linear-gradient(90deg,#0891b2 50%,transparent 50%);border-color:#0891b2;color:#fff;}
 .checklist-item.partial-item{background:#f0fdfa;}
 .ri-status-partial{background:#cffafe;color:#155e75;}
@@ -1018,7 +1022,7 @@ Object.assign(VERIFY, {
   'p1-adminaccts': {check:`לכל חשבון Admin: האם Cloud-only (Entra → Users → On-premises sync enabled = No), האם יש Mailbox/רישיון Teams, והאם נפרד מחשבון יומיומי.`, pass:`כל ה-Admins עם חשבון ייעודי Cloud-only, ללא רישיון דואר/Teams, ועם MFA עמיד-פישינג.`},
   'p1-consent': {check:`Entra → Enterprise applications → Consent and permissions → User consent settings + Admin consent settings. Enterprise apps: סנן Consented by users ובדוק Permissions.`, pass:`User consent מוגבל (Verified publishers + הרשאות Low-risk, או חסום), Admin consent workflow פעיל עם Reviewers, ואין אפליקציות עם הרשאות רחבות שאושרו על ידי משתמשים.`},
   'p1-sspr': {check:`Entra → Protection → Password reset → Properties / Authentication methods / Registration.`, pass:`SSPR Enabled ל-All, נדרשות 2 שיטות, Registration נאכף, ואין תלות ב-SMS/Voice בלבד.`},
-  'p1-pwprotect': {check:`Entra → Protection → Authentication methods → Password protection: Custom banned list, Mode, Smart lockout. Hybrid: Get-AzureADPasswordProtectionSummaryReport.`, pass:`Custom banned list פעיל במצב Enforced, Smart lockout מכוונן, ובסביבה היברידית הסוכנים פעילים ב-Enforced.`},
+  'p1-pwprotect': {check:`Entra → Protection → Authentication methods → Password protection: Custom banned list, Mode, Smart lockout. בסביבה היברידית: הרץ את הפקודה למטה לבדיקת סוכני Password Protection.`, pass:`Custom banned list פעיל במצב Enforced, Smart lockout מכוונן, ובסביבה היברידית הסוכנים פעילים ב-Enforced.`, cmd:`Get-AzureADPasswordProtectionSummaryReport`},
   'p1-smsvoice': {check:`Authentication methods → Activity → User registration details: סנן Methods = SMS / Voice, ובדוק גם הגדרות Legacy MFA/SSPR. השתמש בסקריפט Microsoft לזיהוי משתמשים המופעלים ל-SMS/Voice.`, pass:`קיימת רשימת משתמשים תלויי SMS/Voice עם תכנית מעבר ל-Authenticator/Passkey/FIDO2 לפני 1.2.2027 (Admins ו-Externals: 1.7.2027, לפי Microsoft Learn — לאמת ב-MC1426371).`, evidence:`רשימת משתמשים תלויי SMS/Voice + תכנית מעבר.`},
   'p1-authmethods': {check:`Authentication methods → Policies → Manage migration: סטטוס. Users → Per-user MFA: מצב Enabled/Enforced. MFA service settings ו-SSPR legacy.`, pass:`Migration Complete, כל המשתמשים Per-user MFA = Disabled (אכיפה ב-CA), ואין הגדרות Legacy כפולות או סותרות.`},
   'p1-authenticator': {check:`Authentication methods → Microsoft Authenticator → Configure: Number matching, Show application name / geographic location; Registration campaign.`, pass:`Number matching + Application name + Geographic location מופעלים לכל המשתמשים, ו-Registration campaign פעיל.`},
@@ -1037,7 +1041,7 @@ Object.assign(VERIFY, {
   'p2-updates': {check:`Intune → Devices → Windows → Update rings / Feature update policies / Autopatch. Reports → Windows updates.`, pass:`Update rings עם Deferral ו-Deadline, Feature update policy לגרסה נתמכת, ו-95% ומעלה מהמכשירים ב-Quality update עדכני.`},
   'p2-analytics': {check:`Intune → Reports → Endpoint analytics: Startup performance, App reliability, Work from anywhere scores.`, pass:`Endpoint analytics מופעל ומקבל נתונים ממכשירים; ה-Score נסקר רבעונית.`},
   'p2-encrypt': {check:`Intune → Devices → Monitor → Encryption report. Entra → Devices → BitLocker keys: האם Recovery key נשמר לכל מכשיר.`, pass:`98% ומעלה מהמכשירים מוצפנים עם Recovery key ב-Entra/Intune; macOS FileVault עם Escrow.`},
-  'p2-noadmin': {check:`בדגימת מכשירים: Get-LocalGroupMember Administrators. או Intune → Account protection → Local user group membership. Defender TVM: חשיפת Local admin.`, pass:`משתמשי קצה אינם Local Admin (או מנוהלים דרך EPM/JIT), ו-LAPS מכסה את חשבון ה-Admin המקומי.`},
+  'p2-noadmin': {check:`בדגימת מכשירים: בדוק את חברי קבוצת Administrators המקומית (הפקודה למטה). או Intune → Account protection → Local user group membership. Defender TVM: חשיפת Local admin.`, pass:`משתמשי קצה אינם Local Admin (או מנוהלים דרך EPM/JIT), ו-LAPS מכסה את חשבון ה-Admin המקומי.`, cmd:`Get-LocalGroupMember -Group Administrators`},
   'p2-mam': {check:`Intune → Apps → App protection policies (iOS/Android) + Monitor → App protection status. CA Policy שדורשת App protection.`, pass:`Policy פרוסה ל-Outlook/Teams/OneDrive/Edge ב-BYOD, כוללת PIN וחסימת Copy/Paste ל-Unmanaged, ו-CA אוכף אותה.`},
   'p2-baselines': {check:`Intune → Endpoint security → Security baselines: Profiles פרוסים וגרסה. Per-setting status: Conflicts / Errors.`, pass:`Baseline עדכני פרוס (Windows / Defender / Edge), חריגים מתועדים, ואין Conflicts פתוחים.`},
   'p2-settingscatalog': {check:`Intune → Devices → Configuration: ספור Profiles מסוג Administrative templates (Legacy) מול Settings catalog. Conflicts report.`, pass:`Profiles חדשים נבנים ב-Settings catalog, Templates Legacy בתהליך מעבר, ואין Conflicts/Errors.`},
@@ -1051,7 +1055,7 @@ Object.assign(VERIFY, {
   'p2-osversions': {check:`Intune → Devices → All devices (Export, OS version) + Defender → Vulnerability management → Software inventory / End-of-support. סנן Windows 10, Win11 24H2 Home/Pro, Server 2016, Office 2016/2019.`, pass:`אפס מכשירים/שרתים/תוכנות מחוץ לתמיכה (או תכנית ESU/החלפה מתועדת עם תאריך).`, evidence:`ייצוא OS version + דוח End-of-support מ-Defender.`},
   'p2-laps': {check:`Entra → Devices → Device settings: LAPS enabled. Intune LAPS policy וכיסוי. Entra → Devices → Local administrator password recovery.`, pass:`LAPS פרוס ל-100% ממכשירי Windows, Rotation עד 30 יום, Backup ל-Entra/AD.`},
   'p2-avhealth': {check:`Intune → Reports → Endpoint security → Antivirus agent status. Defender → Device inventory (AV mode, Signature age). Firewall profiles.`, pass:`98% ומעלה מהמכשירים עם AV Healthy (Real-time + Cloud protection), Signatures עד 3 ימים, Firewall פעיל ב-3 Profiles.`},
-  'p2-secureboot': {check:`במכשיר: Confirm-SecureBootUEFI. בדיקת DB: [System.Text.Encoding]::ASCII.GetString((Get-SecureBootUEFI db).bytes) -match 'Windows UEFI CA 2023'. בטננט: דוחות Intune/Autopatch על Secure Boot אם זמינים.`, pass:`Secure Boot מופעל ו-DB מכיל Windows UEFI CA 2023 (או שקיימת תכנית עדכון BIOS/UEFI מתועדת) לכל הצי, כולל VMs.`, evidence:`דגימת פלט PowerShell + דוח Intune אם זמין.`},
+  'p2-secureboot': {check:`במכשיר: ודא ש-Secure Boot מופעל ושה-DB מכיל את התעודה החדשה (הפקודות למטה). בטננט: דוחות Intune/Autopatch על Secure Boot אם זמינים.`, pass:`Secure Boot מופעל ו-DB מכיל Windows UEFI CA 2023 (או שקיימת תכנית עדכון BIOS/UEFI מתועדת) לכל הצי, כולל VMs.`, evidence:`דגימת פלט PowerShell + דוח Intune אם זמין.`, cmd:`Confirm-SecureBootUEFI\n[System.Text.Encoding]::ASCII.GetString((Get-SecureBootUEFI db).bytes) -match 'Windows UEFI CA 2023'`},
   'p2-credguard': {check:`במכשיר: msinfo32 → Virtualization-based security / Credential Guard Running. Intune: סטטוס Account protection policy. Defender TVM: חשיפת Credential Guard.`, pass:`Credential Guard + Memory integrity (HVCI) פעילים בכל מכשירי Win11 התומכים.`},
 });
 Object.assign(VERIFY, {
@@ -1085,7 +1089,7 @@ Object.assign(VERIFY, {
   'p4-safeatt': {check:`Safe Attachments policies + Global settings (Safe Documents, SharePoint / OneDrive / Teams). Reports → Safe Attachments.`, pass:`Safe Attachments לכל המשתמשים (Block / Dynamic delivery) והגנה ל-SharePoint/OneDrive/Teams מופעלת.`},
   'p4-antiphish': {check:`Anti-phishing policies → Impersonation: Users / Domains protected, Mailbox intelligence, Thresholds.`, pass:`משתמשי VIP ו-Domains ארגוניים/שותפים מוגנים, ו-Mailbox intelligence פעיל.`},
   'p4-zap': {check:`Anti-spam / Anti-malware policy: ZAP (Spam / Phish / Malware) Enabled. Explorer → Delivery action = ZAP.`, pass:`ZAP מופעל לכל הסוגים בכל ה-Policies.`},
-  'p4-dmarc': {check:`Resolve-DnsName -Type TXT _dmarc.domain.com ; SPF (TXT על ה-Root) ; DKIM: selector1/selector2._domainkey (CNAME). Defender → DKIM status לכל Domain.`, pass:`SPF עם -all (או ~all מנומק), DKIM מופעל לכל Domain, ו-DMARC ב-p=quarantine או reject עם rua.`, evidence:`פלט MXToolbox / Resolve-DnsName לכל Domain.`},
+  'p4-dmarc': {check:`בדוק SPF, DMARC ו-DKIM לכל Domain עם הסקריפט למטה. רשומות ה-DNS ציבוריות ולא דורשות תפקיד; רק מצב Enabled של DKIM דורש קריאה בטננט (Global Reader אמור להספיק — לא אומת מול Get-DkimSigningConfig, בדוק אצל הלקוח). חלופה בלי הרשאות: שלח מייל לתיבה חיצונית ובדוק ב-Headers dkim=pass עם header.d של הדומיין שלך. בפורטל: Defender → Email authentication settings → DKIM.`, pass:`SPF עם -all (או ~all מנומק), DKIM מופעל לכל Domain, ו-DMARC ב-p=quarantine או reject עם rua.`, evidence:`פלט MXToolbox / Resolve-DnsName לכל Domain.`, cmd:`# Error "window handle must be configured"? Open a NEW PowerShell session and keep -DisableWAM\nConnect-ExchangeOnline -DisableWAM\n$domains = Get-AcceptedDomain | % { $_.DomainName.ToString() } | ? { $_ -notlike '*.onmicrosoft.com' }\n$domains | % {\n  $spf   = ((Resolve-DnsName $_ -Type TXT -EA SilentlyContinue | ? { ($_.Strings -join '') -match '^v=spf1' }).Strings -join '')\n  $dmarc = ((Resolve-DnsName "_dmarc.$_" -Type TXT -EA SilentlyContinue).Strings -join '')\n  $dkim  = (Resolve-DnsName "selector1._domainkey.$_" -Type CNAME -EA SilentlyContinue).NameHost\n  [pscustomobject]@{Domain=$_; SPF=$spf; DMARC=$dmarc; DKIM_Selector1=$dkim}\n} | Format-List\nGet-DkimSigningConfig | ft Domain,Enabled,Status`},
   'p4-sim': {check:`Attack simulation training → Simulations: Completed, Click rate, Report rate.`, pass:`לפחות Simulation אחת ב-12 חודשים אחרונים עם Report rate נמדד.`},
   'p4-training': {check:`Attack simulation training → Settings / Training assignments: Auto-assign, Completion rate.`, pass:`Training מוקצה אוטומטית ל-Clickers ו-Completion של 80% ומעלה.`},
   'p4-explorer': {check:`Explorer / Real-time detections: האם ה-SOC משתמש (Last query, Saved queries).`, pass:`Analysts מכירים ומשתמשים ב-Explorer (שימוש מתועד ב-30 יום).`},
@@ -1097,11 +1101,11 @@ Object.assign(VERIFY, {
   'p4-threattrackers': {check:`Email & collaboration → Threat tracker: Trackers שמורים.`, pass:`Trackers רלוונטיים לענף נסקרים.`},
   'p4-submission': {check:`Submissions → Admin submissions + User reported: Verdicts.`, pass:`תהליך Submit ל-Microsoft מתועד ו-Verdicts מטופלים.`},
   'p4-secops-mailbox': {check:`Exchange admin: תיבת SecOps ייעודית. Advanced delivery (SecOps mailbox) / החרגה מ-Preset.`, pass:`קיימת תיבה ייעודית מוחרגת מסינון (Advanced delivery), עם גישה לצוות SOC בלבד.`},
-  'p4-extfwd': {check:`Threat policies → Anti-spam → Outbound policy: Automatic forwarding rules. Reports → Auto forwarded messages report. Get-InboxRule לבדיקת Forward/Redirect חיצוני.`, pass:`Automatic forwarding חיצוני = Off (או System-controlled), אין Inbox rules חיצוניות פעילות ללא חריג מתועד, ו-Alert פעיל.`, evidence:`הגדרת Outbound policy + דוח Auto-forwarded.`},
-  'p4-smtpauth': {check:`Get-TransportConfig | fl SmtpClientAuthenticationDisabled ; Get-CASMailbox -ResultSize Unlimited | ? SmtpClientAuthenticationDisabled -eq $false ; Sign-in logs: Client app = Authenticated SMTP.`, pass:`SMTP AUTH כבוי ברמת Tenant (או חריגים מתועדים בלבד), ותכנית מעבר ל-OAuth/Graph לפני סוף דצמבר 2026.`, evidence:`פלט Get-TransportConfig + רשימת אפליקציות/מדפסות תלויות.`},
-  'p4-directsend': {check:`Get-OrganizationConfig | fl RejectDirectSend ; Message trace: מקורות Direct Send (אותו Domain, ללא אימות).`, pass:`RejectDirectSend = True, ומקורות לגיטימיים עוברים דרך Connector או SMTP AUTH עם OAuth.`},
-  'p4-legacyprotos': {check:`Get-CASMailbox -ResultSize Unlimited | ? {$_.PopEnabled -or $_.ImapEnabled}. Sign-in logs: Client app = IMAP / POP.`, pass:`POP/IMAP כבויים ברוב המשתמשים וחריגים מתועדים.`},
-  'p4-sharedmbx': {check:`Get-EXOMailbox -RecipientTypeDetails SharedMailbox | % { Get-User $_.ExternalDirectoryObjectId } | ? AccountDisabled -eq $false`, pass:`100% מה-Shared mailboxes עם Sign-in חסום וללא רישיון מיותר.`},
+  'p4-extfwd': {check:`Threat policies → Anti-spam → Outbound policy: Automatic forwarding rules. Reports → Auto forwarded messages report. סרוק Inbox rules עם Forward/Redirect חיצוני (הפקודה למטה; כבדה בטננט גדול — הרץ על דגימה).`, pass:`Automatic forwarding חיצוני = Off (או System-controlled), אין Inbox rules חיצוניות פעילות ללא חריג מתועד, ו-Alert פעיל.`, evidence:`הגדרת Outbound policy + דוח Auto-forwarded.`, cmd:`Get-Mailbox -ResultSize Unlimited | % { Get-InboxRule -Mailbox $_.UserPrincipalName } | ? { $_.ForwardTo -or $_.ForwardAsAttachmentTo -or $_.RedirectTo } | select MailboxOwnerId,Name,ForwardTo,RedirectTo`},
+  'p4-smtpauth': {check:`בדוק ברמת Tenant ובתיבות (הפקודות למטה; ערך ריק בתיבה = יורש את הגדרת ה-Tenant). בנוסף Sign-in logs: Client app = Authenticated SMTP.`, pass:`SMTP AUTH כבוי ברמת Tenant (או חריגים מתועדים בלבד), ותכנית מעבר ל-OAuth/Graph לפני סוף דצמבר 2026.`, evidence:`פלט Get-TransportConfig + רשימת אפליקציות/מדפסות תלויות.`, cmd:`Get-TransportConfig | fl SmtpClientAuthenticationDisabled\nGet-CASMailbox -ResultSize Unlimited | ? SmtpClientAuthenticationDisabled -eq $false`},
+  'p4-directsend': {check:`בדוק את ההגדרה ב-Tenant (הפקודה למטה). ב-Message trace חפש מקורות Direct Send: אותו Domain כשולח, ללא אימות.`, pass:`RejectDirectSend = True, ומקורות לגיטימיים עוברים דרך Connector או SMTP AUTH עם OAuth.`, cmd:`Get-OrganizationConfig | fl RejectDirectSend`},
+  'p4-legacyprotos': {check:`רשום תיבות עם POP/IMAP פעילים (הפקודה למטה). בנוסף Sign-in logs: Client app = IMAP / POP.`, pass:`POP/IMAP כבויים ברוב המשתמשים וחריגים מתועדים.`, cmd:`Get-CASMailbox -ResultSize Unlimited | ? { $_.PopEnabled -or $_.ImapEnabled } | select PrimarySmtpAddress`},
+  'p4-sharedmbx': {check:`רשום Shared mailboxes שה-Sign-in שלהן עדיין פעיל (הפקודה למטה).`, pass:`100% מה-Shared mailboxes עם Sign-in חסום וללא רישיון מיותר.`, cmd:`Get-EXOMailbox -RecipientTypeDetails SharedMailbox -ResultSize Unlimited | % { Get-User $_.ExternalDirectoryObjectId } | ? AccountDisabled -eq $false | select DisplayName,UserPrincipalName`},
   'p4-transport': {check:`Exchange admin → Mail flow → Rules (חפש SetSCL=-1 / Bypass spam filtering), Connectors. Anti-spam: Allowed lists.`, pass:`אין Rules/Allowlists שעוקפים סינון, וה-Connectors מוגבלים ב-Certificate/IP.`},
 });
 Object.assign(VERIFY, {
@@ -1142,7 +1146,7 @@ Object.assign(VERIFY, {
   'p6-losstrends': {check:`DSPM → Data loss trends.`, pass:`נסקר חודשית.`},
   'p6-riskanalytics': {check:`Solutions → DSPM → Recommendations / Data risk assessments.`, pass:`Top המלצות יושמו ו-Risk score מתועד לפני ואחרי.`},
   'p6-infobarriers': {check:`Information barriers → Segments / Policies.`, pass:`Segments ו-Policies לפי דרישה רגולטורית. (N/A אם אין)`},
-  'p6-auditon': {check:`Get-AdminAuditLogConfig | fl UnifiedAuditLogIngestionEnabled ; Get-OrganizationConfig | fl AuditDisabled ; Purview → Audit → Search (7 ימים).`, pass:`UnifiedAuditLogIngestionEnabled = True, AuditDisabled = False, וחיפוש מחזיר אירועים.`, evidence:`פלט הפקודות + צילום תוצאות חיפוש.`},
+  'p6-auditon': {check:`בדוק שה-Audit Log מופעל (הפקודות למטה) ושחיפוש ב-Purview → Audit → Search ל-7 ימים מחזיר אירועים.`, pass:`UnifiedAuditLogIngestionEnabled = True, AuditDisabled = False, וחיפוש מחזיר אירועים.`, evidence:`פלט הפקודות + צילום תוצאות חיפוש.`, cmd:`Get-AdminAuditLogConfig | fl UnifiedAuditLogIngestionEnabled\nGet-OrganizationConfig | fl AuditDisabled`},
   'p6-spo-sharing': {check:`SharePoint admin → Policies → Sharing: External sharing level, Default link type, Anyone links, Expiration.`, pass:`לא Anyone ללא תפוגה, Default link = Specific people, ו-Guest expiration מוגדר.`},
   'p6-teams-external': {check:`Teams admin → Users → External access; Guest access; Meeting policies.`, pass:`External access מוגבל (Allow-list או Teams accounts only), Lobby לחיצוניים, ו-Custom apps מוגבלים.`},
   'p6-m365groups': {check:`Entra → Groups → General (יצירה מוגבלת), Expiration, Naming policy. דוח Ownerless groups.`, pass:`יצירה מוגבלת, Expiration פעיל, וללא Groups יתומות.`},
@@ -1152,9 +1156,9 @@ Object.assign(VERIFY, {
 Object.assign(VERIFY, {
   /* ── P7 Sentinel / SecOps ── */
   'p7-workspace': {check:`security.microsoft.com → Microsoft Sentinel → Workspaces: Workspace מחובר, Daily cap, Pricing / Retention.`, pass:`Workspace פעיל בפורטל Defender, Retention ו-Daily cap מוגדרים, ו-Content hub Solutions הותקנו.`},
-  'p7-e5conn': {check:`Sentinel → Data connectors → Microsoft Defender XDR: Connected. Logs: SecurityAlert | take 10.`, pass:`Connector Connected ו-Incidents/Alerts זורמים (KQL מחזיר נתונים).`},
-  'p7-entra': {check:`Data connectors → Microsoft Entra ID: Sign-in / Audit logs. Logs: SigninLogs | take 5.`, pass:`SigninLogs ו-AuditLogs מתקבלים ב-24 השעות האחרונות.`},
-  'p7-m365': {check:`Data connectors → Microsoft 365: Exchange / SharePoint / Teams. OfficeActivity | take 5.`, pass:`OfficeActivity מתקבל ועדכני.`},
+  'p7-e5conn': {check:`Sentinel → Data connectors → Microsoft Defender XDR: Connected. הרץ ב-Logs את ה-KQL למטה.`, pass:`Connector Connected ו-Incidents/Alerts זורמים (KQL מחזיר נתונים).`, cmd:`SecurityAlert | take 10`},
+  'p7-entra': {check:`Data connectors → Microsoft Entra ID: Sign-in / Audit logs. הרץ ב-Logs את ה-KQL למטה.`, pass:`SigninLogs ו-AuditLogs מתקבלים ב-24 השעות האחרונות.`, cmd:`SigninLogs | take 5`},
+  'p7-m365': {check:`Data connectors → Microsoft 365: Exchange / SharePoint / Teams. הרץ ב-Logs את ה-KQL למטה.`, pass:`OfficeActivity מתקבל ועדכני.`, cmd:`OfficeActivity | take 5`},
   'p7-rules': {check:`Analytics → Active rules: ספירה ו-MITRE mapping.`, pass:`20 Rules ומעלה פעילות המכסות Tactics עיקריים.`},
   'p7-playbook': {check:`Automation → Automation rules / Playbooks: הרצות אחרונות.`, pass:`Playbook ל-High severity פעיל והורץ בהצלחה בחודש האחרון.`},
   'p7-ueba': {check:`Settings → Entity behavior: UEBA Enabled + Data sources.`, pass:`UEBA מופעל עם Entra / MDE sources.`},
@@ -1587,11 +1591,29 @@ function filterPhase(phase, btn) {
   renderPillarContent();
 }
 
+function escHtml(t) {
+  return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function copyVerifyCmd(itemId, btn) {
+  const text = VERIFY[itemId]?.cmd || '';
+  const done = () => { btn.textContent = '✓ הועתק'; setTimeout(() => { btn.textContent = '📋 העתק'; }, 1500); };
+  const fallback = () => {
+    const pre = btn.previousElementSibling;
+    const range = document.createRange(); range.selectNodeContents(pre);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    btn.textContent = 'סומן — Ctrl+C';
+  };
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+
 function verifyBoxHtml(itemId) {
   const v = VERIFY[itemId];
   if (!v) return '';
   return `<div class="verify-box">
     <div class="vb-row"><span class="vb-lbl">🔍 איך לבדוק:</span> ${v.check}</div>
+    ${v.cmd ? `<div class="vb-cmd-wrap"><pre class="vb-cmd" dir="ltr">${escHtml(v.cmd)}</pre><button class="vb-copy" type="button" onclick="event.stopPropagation();copyVerifyCmd('${itemId}',this)">📋 העתק</button></div>` : ''}
     <div class="vb-row vb-pass"><span class="vb-lbl">✅ Pass כש:</span> ${v.pass}</div>
     ${v.evidence ? `<div class="vb-row vb-ev"><span class="vb-lbl">📎 ראיה לתיעוד:</span> ${v.evidence}</div>` : ''}
   </div>`;
