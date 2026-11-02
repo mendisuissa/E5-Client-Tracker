@@ -2178,7 +2178,11 @@ function renderFindings(c) {
   const today = new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'});
 
   // ── internal readiness panel (screen only, Hebrew) ──
-  const noText = findings.filter(f => !(f.d.notes || '').trim());
+  // The finding text is the Notes field; when only the Blocker field was filled (the earlier working habit),
+  // that text is the finding. It then must not be repeated under "Assessment limitations".
+  const findingText = r => (r.d.notes || '').trim() || (r.d.blocker || '').trim();
+  const blockerIsFinding = r => !(r.d.notes || '').trim() && !!(r.d.blocker || '').trim() && (r.status === 'fail' || r.status === 'partial');
+  const noText = findings.filter(f => !findingText(f));
   const noRec = findings.filter(f => !(f.d.recommendation || '').trim());
   const chips = list => list.map(f => `<button onclick="openItemModal('${f.item.id}')">${f.fid}</button>`).join('');
   const readiness = `
@@ -2223,7 +2227,7 @@ function renderFindings(c) {
   // ── detailed findings ──
   const findingCard = f => {
     const sv = SEVERITY_EN[f.sev] || SEVERITY_EN.medium;
-    const txt = (f.d.notes || '').trim(), rec = (f.d.recommendation || '').trim();
+    const txt = findingText(f), rec = (f.d.recommendation || '').trim();
     return `<div class="fr-finding" style="border-left-color:${sv.color}">
       <div class="fr-f-head"><span class="fr-id">${f.fid}</span>
         <span class="fr-chip" style="background:${sv.color}">${sv.label}</span>
@@ -2246,7 +2250,7 @@ function renderFindings(c) {
     const g = list.filter(r => r.item.pillar === p.id);
     return g.length ? `<div class="fr-ws-title">${PILLAR_EN[p.id]}</div><ul class="fr-list">${g.map(r => `<li>${escHtml(titleEn(r.item))}</li>`).join('')}</ul>` : '';
   }).join('');
-  const limits = rows.filter(r => (r.d.blocker || '').trim());
+  const limits = rows.filter(r => (r.d.blocker || '').trim() && !blockerIsFinding(r));
 
   const governanceAssessed = getGovernanceItems().filter(i => isAssessed(c, i)).length;
   const appendix = pending.length ? `<details class="fr-appendix"><summary>Controls not assessed (${pending.length}), internal view only</summary>${groupByWs(pending)}</details>` : '';
