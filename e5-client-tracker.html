@@ -175,6 +175,10 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .status-btn.active-done{background:var(--success);color:#fff;}
 .status-btn.active-partial{background:#0891b2;color:#fff;}
 .status-btn.active-pending{background:var(--warning);color:#fff;}
+.status-btn.active-fail{background:var(--danger);color:#fff;}
+.ri-status-fail{background:#fee2e2;color:#991b1b;}
+.item-check.fail{background:var(--danger);border-color:var(--danger);color:#fff;}
+.checklist-item.fail-item{background:#fef2f2;}
 .status-btn.active-na{background:var(--muted);color:#fff;}
 .status-btn{font-size:.78rem;padding:10px 4px;}
 .verify-box{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:.78rem;line-height:1.55;}
@@ -187,6 +191,50 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .vb-cmd{direction:ltr;text-align:left;unicode-bidi:isolate;background:#0f172a;color:#e2e8f0;border-radius:6px;padding:8px 10px 8px 64px;font-family:Consolas,'Courier New',monospace;font-size:.74rem;line-height:1.5;overflow-x:auto;white-space:pre;margin:0;}
 .vb-copy{position:absolute;top:5px;left:5px;font-size:.65rem;padding:2px 8px;border:none;border-radius:4px;background:#334155;color:#fff;cursor:pointer;}
 .vb-copy:hover{background:#475569;}
+
+/* ── CLIENT-FACING FINDINGS REPORT (English, LTR) ── */
+.fr{direction:ltr;text-align:left;font-family:'Segoe UI',Calibri,Arial,sans-serif;color:#0f172a;max-width:920px;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.fr h2{font-size:1.15rem;font-weight:800;color:var(--primary);margin:30px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary);}
+.fr h3{font-size:.98rem;font-weight:800;margin:20px 0 6px;}
+.fr p{font-size:.9rem;line-height:1.6;margin:6px 0;}
+.fr-cover{background:linear-gradient(135deg,var(--primary-dark),var(--primary-light));color:#fff;border-radius:12px;padding:32px 36px;margin-bottom:22px;}
+.fr-eyebrow{font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8;}
+.fr-cover h1{font-size:2rem;font-weight:800;margin:6px 0 4px;}
+.fr-cover .fr-client{font-size:1.2rem;font-weight:700;}
+.fr-meta{display:flex;gap:20px;flex-wrap:wrap;font-size:.8rem;opacity:.88;margin-top:14px;}
+.fr-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:12px 0;}
+.fr-score{border:2px solid var(--border);border-radius:12px;padding:16px;text-align:center;background:#fff;}
+.fr-score .v{font-size:2.5rem;font-weight:800;line-height:1.1;}
+.fr-score .l{font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.fr-score .m{display:inline-block;margin-top:6px;font-size:.7rem;font-weight:700;color:#fff;padding:2px 11px;border-radius:10px;}
+.fr-score .s{font-size:.7rem;color:var(--muted);margin-top:6px;}
+.fr-bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#e2e8f0;margin:10px 0 6px;}
+.fr-bar span{display:block;height:100%;}
+.fr-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.78rem;color:var(--muted);}
+.fr-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle;}
+.fr-table{width:100%;border-collapse:collapse;font-size:.84rem;margin:8px 0;}
+.fr-table th{background:#f1f5f9;text-align:left;padding:8px 10px;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+.fr-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
+.fr-table .num{text-align:center;}
+.fr-chip{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:10px;color:#fff;white-space:nowrap;}
+.fr-finding{border:1px solid var(--border);border-left:5px solid var(--muted);border-radius:8px;padding:12px 16px;margin:10px 0;background:#fff;break-inside:avoid;page-break-inside:avoid;}
+.fr-f-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.74rem;}
+.fr-id{font-weight:800;color:var(--muted);}
+.fr-ws{color:var(--muted);}
+.fr-finding h4{font-size:.98rem;margin:6px 0 8px;}
+.fr-row{display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:.86rem;margin:5px 0;line-height:1.55;}
+.fr-row b{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;padding-top:3px;}
+.fr-missing{color:#dc2626;font-style:italic;}
+.fr-list{columns:2;column-gap:30px;font-size:.84rem;padding-left:18px;}
+.fr-list li{margin-bottom:3px;break-inside:avoid;}
+.fr-ws-title{font-size:.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 4px;}
+.fr-note{font-size:.76rem;color:var(--muted);}
+.fr-readiness{direction:rtl;text-align:right;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 16px;margin:0 auto 18px;max-width:920px;font-size:.84rem;}
+.fr-readiness button{font-size:.72rem;padding:2px 8px;margin:2px;border:1px solid #fcd34d;background:#fff;border-radius:6px;cursor:pointer;}
+.fr-footer{text-align:center;font-size:.74rem;color:var(--muted);border-top:1px solid var(--border);padding-top:14px;margin-top:30px;}
+.fr-appendix{margin-top:20px;font-size:.84rem;}
+@media(max-width:768px){.fr-scores{grid-template-columns:1fr;}.fr-row{grid-template-columns:1fr;}.fr-list{columns:1;}}
+@media print{.fr-readiness,.fr-appendix{display:none!important;}.fr-cover{border-radius:0;}.fr h2{break-after:avoid;}#view-findings{padding:0;}}
 .item-check.partial{background:linear-gradient(90deg,#0891b2 50%,transparent 50%);border-color:#0891b2;color:#fff;}
 .checklist-item.partial-item{background:#f0fdfa;}
 .ri-status-partial{background:#cffafe;color:#155e75;}
@@ -448,6 +496,15 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
   </div>
 </div>
 
+<!-- ═══ FINDINGS REPORT VIEW (client-facing, English) ═══ -->
+<div class="view" id="view-findings">
+  <div class="report-actions">
+    <button class="btn btn-outline btn-sm" onclick="backToClient()">← חזור</button>
+    <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ הדפסה / PDF</button>
+  </div>
+  <div id="findings-content"></div>
+</div>
+
 <!-- ═══ MODAL: ITEM DETAIL ═══ -->
 <div class="modal-overlay" id="modal-item">
   <div class="modal">
@@ -457,7 +514,8 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
     <div class="status-toggle">
       <div class="status-btn" id="btn-status-done" onclick="setStatus('done')">✅ מלא (Pass)</div>
       <div class="status-btn" id="btn-status-partial" onclick="setStatus('partial')">◐ חלקי / Audit</div>
-      <div class="status-btn" id="btn-status-pending" onclick="setStatus('pending')">⏳ לא הופעל / בתהליך</div>
+      <div class="status-btn" id="btn-status-fail" onclick="setStatus('fail')">❌ לא מיושם</div>
+      <div class="status-btn" id="btn-status-pending" onclick="setStatus('pending')">⏳ טרם נבדק</div>
       <div class="status-btn" id="btn-status-na" onclick="setStatus('na')">➖ לא רלוונטי</div>
     </div>
     <div class="form-row">
@@ -480,8 +538,12 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
       </div>
     </div>
     <div class="form-group">
-      <label>📝 הערות</label>
-      <textarea id="item-notes" placeholder="הערות, תיעוד, קישורים..."></textarea>
+      <label>📝 ממצא / הערות (מופיע בדוח הממצאים)</label>
+      <textarea id="item-notes" placeholder="מה נמצא אצל הלקוח, בקצרה (באנגלית לדוח הלקוח)..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>💡 המלצה (מופיעה בדוח הממצאים)</label>
+      <textarea id="item-recommendation" placeholder="מה מומלץ לעשות (באנגלית לדוח הלקוח)..."></textarea>
     </div>
     <div class="form-group blocker-group">
       <label>🚧 Blocker (מה עוצר?)</label>
@@ -1214,6 +1276,83 @@ Object.assign(VERIFY, {
   'p9-agentlifecycle': {check:`תהליך Onboarding / Review / Decommission לסוכנים.`, pass:`Lifecycle מוגדר ונבדק רבעונית.`},
 });
 
+// English control titles for the client-facing findings report (the Hebrew `title` stays for the working UI).
+const TITLE_EN = {};
+Object.assign(TITLE_EN, {
+  'p1-mfa': 'MFA enforced for all users', 'p1-legacy': 'Legacy authentication blocked', 'p1-device': 'Compliant device required for corporate apps',
+  'p1-signin-risk': 'Sign-in risk policy enabled (Entra ID P2)', 'p1-user-risk': 'User risk policy enabled (Entra ID P2)', 'p1-pim': 'Privileged Identity Management for all admin roles',
+  'p1-pim-groups': 'PIM for Groups configured', 'p1-cae': 'Continuous Access Evaluation and strict enforcement', 'p1-gsa': 'Global Secure Access: E5 entitlement vs Entra Suite',
+  'p1-reviews': 'Quarterly access reviews configured', 'p1-passwordless': 'Passwordless sign-in (Windows Hello for Business, Authenticator)', 'p1-breakglass': 'Two break-glass accounts configured and monitored',
+  'p1-mdi': 'Defender for Identity on all domain controllers', 'p1-entitlement': 'Entitlement management (access packages)', 'p1-lifecycle': 'Lifecycle workflows (joiner, mover, leaver)',
+  'p1-authstrength': 'Authentication strengths beyond the admin policy', 'p1-tap': 'Temporary Access Pass configured', 'p1-passkeys': 'Passkeys as default sign-in method',
+  'p1-b2b': 'External identities governance (B2B)', 'p1-au': 'Administrative units for multi-country or business-unit delegation', 'p1-tenantgov': 'Entra Tenant Governance: shadow tenants and configuration drift',
+  'p1-secadmin-delegate': 'Expanded Security Administrator role for rapid response',
+  'p1-gacount': 'Minimal number of Global Administrators, no shared accounts', 'p1-adminaccts': 'Dedicated cloud-only admin accounts', 'p1-consent': 'User consent restricted with admin consent workflow',
+  'p1-sspr': 'Self-service password reset with two methods', 'p1-pwprotect': 'Password protection and tuned smart lockout', 'p1-smsvoice': 'SMS and voice MFA dependency assessment',
+  'p1-authmethods': 'Authentication methods policy consolidated', 'p1-authenticator': 'Authenticator hardened (number matching, additional context)', 'p1-stale': 'Stale and inactive accounts managed',
+  'p1-appreg': 'App registrations: secrets, owners and permissions', 'p1-hybrid': 'Hybrid identity health (Entra Connect / Cloud Sync)', 'p1-ispm': 'Identity security posture recommendations reviewed',
+  'p1-mscapolicies': 'Microsoft-managed Conditional Access policies reviewed',
+  'p2-enroll': 'All devices enrolled in Intune', 'p2-compliance': 'Compliance policies for every platform', 'p2-block': 'Non-compliant devices blocked by Conditional Access',
+  'p2-autopilot': 'Windows Autopilot for new devices', 'p2-updates': 'Windows Update rings and Autopatch', 'p2-analytics': 'Endpoint analytics enabled',
+  'p2-encrypt': 'BitLocker and FileVault enabled with key escrow', 'p2-noadmin': 'Local administrator rights removed from standard users', 'p2-mam': 'Mobile app protection (MAM) for BYOD',
+  'p2-baselines': 'Microsoft security baselines applied', 'p2-settingscatalog': 'Settings catalog replaces legacy ADMX profiles', 'p2-appprotection-eff': 'App protection effectiveness measured',
+  'p2-remotehelp': 'Remote Help configured', 'p2-devicecleanup': 'Device clean-up rules configured', 'p2-rbac': 'Intune RBAC with scope tags',
+  'p2-epm': 'Endpoint Privilege Management', 'p2-enterpriseapp': 'Enterprise App Management (app catalog)', 'p2-cloudpki': 'Microsoft Cloud PKI',
+  'p2-osversions': 'Supported operating systems and software', 'p2-laps': 'Windows LAPS on all Windows devices', 'p2-avhealth': 'Defender Antivirus and firewall healthy',
+  'p2-secureboot': 'Secure Boot 2023 certificate update', 'p2-credguard': 'Credential Guard and HVCI enabled',
+});
+Object.assign(TITLE_EN, {
+  'p3-mde': 'Defender for Endpoint onboarded on all devices', 'p3-tamper': 'Tamper protection enabled', 'p3-attackdisruption': 'Automatic attack disruption enabled and tuned',
+  'p3-asr': 'Attack surface reduction rules in block mode', 'p3-cfa': 'Controlled folder access enabled', 'p3-netprot': 'Network protection enabled',
+  'p3-tvm': 'Exposure score reviewed weekly', 'p3-air': 'Automated investigation and remediation approved', 'p3-live': 'Live response enabled for the SOC',
+  'p3-sensors': 'Defender for Identity sensors healthy on all domain controllers', 'p3-discovery': 'Device discovery for unmanaged devices', 'p3-vulnremediate': 'Vulnerability remediation workflow',
+  'p3-exposure': 'Exposure management (attack surface and critical assets)', 'p3-exposure-closure': 'Exposure recommendations closure rate tracked', 'p3-edrblock': 'EDR in block mode (third-party antivirus primary)',
+  'p3-hunting': 'Advanced hunting in regular use', 'p3-isolation': 'Device isolation playbook', 'p3-indicators': 'Indicator (IOC) management',
+  'p3-threatexperts': 'Microsoft Defender Experts (optional add-on)', 'p3-devicecontrol': 'Removable storage (USB) control', 'p3-sensorhealth': 'Defender for Endpoint sensor health',
+  'p3-rbac': 'Defender unified RBAC and device groups',
+  'p4-safelinks': 'Safe Links for all users', 'p4-safeatt': 'Safe Attachments for all users and SharePoint', 'p4-antiphish': 'Anti-phishing with VIP impersonation protection',
+  'p4-zap': 'Zero-hour auto purge enabled', 'p4-dmarc': 'SPF, DKIM and DMARC configured', 'p4-sim': 'Phishing simulation performed',
+  'p4-training': 'Automatic awareness training for users who click', 'p4-explorer': 'Threat Explorer used by analysts', 'p4-preset': 'Preset security policies and priority accounts',
+  'p4-tenantallowblock': 'Tenant allow/block list managed', 'p4-userreported': 'User-reported message settings', 'p4-campaign': 'Campaign views reviewed',
+  'p4-air': 'Automated investigation and response for email', 'p4-threattrackers': 'Threat trackers reviewed', 'p4-submission': 'Submission policies configured',
+  'p4-secops-mailbox': 'Dedicated SecOps mailbox', 'p4-extfwd': 'External auto-forwarding blocked', 'p4-smtpauth': 'SMTP AUTH (basic) disabled',
+  'p4-directsend': 'Direct Send restricted (RejectDirectSend)', 'p4-legacyprotos': 'Legacy mail protocols (POP/IMAP) disabled', 'p4-sharedmbx': 'Shared mailboxes: sign-in blocked',
+  'p4-transport': 'Mail flow rules and connectors: no filtering bypass',
+  'p5-shadow': 'Shadow IT discovery (Defender for Endpoint integration)', 'p5-sanction': 'Cloud apps classified as sanctioned or unsanctioned', 'p5-session': 'Session controls for sensitive apps',
+  'p5-block-dl': 'Download blocked on unmanaged devices', 'p5-oauth': 'OAuth app governance', 'p5-anomaly': 'Anomaly detection policies enabled',
+  'p5-connectors': 'App connectors (API-based) connected', 'p5-govactions': 'Automatic governance actions', 'p5-filepolicy': 'File policies configured',
+  'p5-activitypolicy': 'Activity policies configured', 'p5-impossibletravel': 'Impossible travel detection tuned', 'p5-alerttuning': 'Cloud app alert tuning process',
+});
+Object.assign(TITLE_EN, {
+  'p6-labels': 'Sensitivity labels published organization-wide', 'p6-autolabel': 'Auto-labeling policy', 'p6-dlp': 'DLP policies (audit, then enforce)',
+  'p6-edlp': 'Endpoint DLP enabled', 'p6-irm': 'Insider Risk Management (3+ policies)', 'p6-hr': 'HR connector for joiners and leavers',
+  'p6-compl': 'Communication Compliance (as required)', 'p6-audit': 'Audit Premium with 180-day retention', 'p6-retention': 'Retention policies configured',
+  'p6-dlpquarantine': 'DLP file quarantine (SharePoint and OneDrive)', 'p6-retentionlabels': 'Retention labels (item level) published', 'p6-records': 'Records management',
+  'p6-ediscovery-std': 'eDiscovery (Standard)', 'p6-ediscovery-premium': 'eDiscovery Premium and legal hold', 'p6-datamap': 'Purview Data Map and Unified Catalog',
+  'p6-classanalytics': 'Data classification analytics reviewed', 'p6-sam': 'SharePoint Advanced Management: data access governance and site access reviews', 'p6-adaptive': 'Adaptive Protection (dynamic risk with DLP and IRM)',
+  'p6-losstrends': 'Data loss trends reviewed', 'p6-riskanalytics': 'DSPM recommendations implemented', 'p6-infobarriers': 'Information barriers (if applicable)',
+  'p6-auditon': 'Unified audit log enabled', 'p6-spo-sharing': 'SharePoint and OneDrive external sharing hardened', 'p6-teams-external': 'Teams external access, guests and meetings hardened',
+  'p6-m365groups': 'Microsoft 365 Groups governed (creation, expiration, ownerless)', 'p6-lockbox': 'Customer Lockbox enabled', 'p6-dataowners': 'Data owners defined for critical sites',
+  'p7-workspace': 'Microsoft Sentinel workspace', 'p7-e5conn': 'Defender XDR connector (included with E5)', 'p7-entra': 'Entra ID connector',
+  'p7-m365': 'Microsoft 365 and Purview connector', 'p7-rules': 'At least 20 analytics rules enabled', 'p7-playbook': 'Response playbook for high-severity incidents',
+  'p7-ueba': 'UEBA enabled', 'p7-ti': 'Threat intelligence connector', 'p7-hunting': 'Weekly threat hunting',
+  'p7-review': 'Monthly security review and Secure Score', 'p7-pentest': 'Periodic penetration testing', 'p7-tabletop': 'Annual incident response tabletop exercise',
+  'p7-socmaturity': 'SOC maturity assessment', 'p7-mitre': 'MITRE ATT&CK coverage measured', 'p7-connectorhealth': 'Data connector health monitored',
+  'p7-automationpct': 'Incident automation rate measured', 'p7-logsource': 'Log source coverage checked against assets', 'p7-mssp': 'MSSP integration (if applicable)',
+  'p7-watchlists': 'Watchlists managed', 'p7-automationrules': 'Automation rules', 'p7-contenthub': 'Content hub solutions installed',
+  'p7-asim': 'ASIM normalization in use', 'p7-datalake': 'Sentinel data lake: table insights and retention strategy', 'p7-detectionsascode': 'Detections as code (repositories and CI/CD)',
+  'p7-irprocess': 'Documented incident response process', 'p7-adminalerts': 'Alerts on sensitive tenant changes', 'p7-docs': 'Tenant documentation and change process',
+  'p7-backup': 'Microsoft 365 backup and ransomware recovery tested',
+  'p8-naming': 'Conditional Access naming convention', 'p8-breakglass': 'Break-glass accounts excluded from all CA policies', 'p8-mfa-all': 'CA-001: MFA required for all users',
+  'p8-legacy': 'CA-002: Legacy authentication fully blocked', 'p8-mfa-admin': 'CA-003: Phishing-resistant MFA for administrators', 'p8-device': 'CA-010: Compliant device for corporate apps',
+  'p8-locations': 'CA-020: Named locations and country blocking', 'p8-signin-risk': 'CA-030: Block high sign-in risk (Entra ID P2)', 'p8-user-risk': 'CA-032: Block high user risk and force password change (Entra ID P2)',
+  'p8-session': 'CA-050: Sign-in frequency session control', 'p8-mam': 'CA-060: App protection policy for mobile BYOD', 'p8-reportonly': 'Report-only policies monitored',
+  'p8-tokenprotect': 'CA-070: Token protection', 'p8-exclusions': 'Conditional Access exclusions reviewed and documented', 'p8-coverage': 'Conditional Access coverage gaps',
+  'p9-copilot': 'Security Copilot enabled with embedded experiences', 'p9-dspm-ai': 'Purview DSPM for AI: oversharing assessment', 'p9-agent-ca': 'Entra Agent ID: Conditional Access and ID Protection for agents',
+  'p9-genai-discovery': 'Generative AI app discovery', 'p9-readiness': 'Copilot readiness assessment completed', 'p9-labels-copilot': 'Sensitivity labels enforced in Copilot',
+  'p9-accessgov': 'AI access governance', 'p9-agentgov': 'Agent governance framework', 'p9-agentinventory': 'Complete agent inventory', 'p9-agentlifecycle': 'Agent lifecycle management',
+});
+
 // ══════════════════════════════════════════════
 //  STATE & STORAGE
 // ══════════════════════════════════════════════
@@ -1341,8 +1480,19 @@ function getWeightedScore(client, itemsSubset) {
   return totalWeight ? Math.round(doneWeight / totalWeight * 100) : 0;
 }
 
-function getPillarWeightedScore(client, pillarId) {
-  return getWeightedScore(client, ITEMS.filter(i => i.pillar === pillarId));
+// A control is "assessed" once it carries a verdict: done, partial or fail. Default "pending" = not yet assessed.
+// The client-facing findings report scores assessed controls only, so a report built mid-survey is not dragged down
+// by controls nobody has looked at yet. N/A controls are excluded everywhere.
+function isAssessed(client, item) {
+  const s = client.items[item.id]?.status;
+  return s === 'done' || s === 'partial' || s === 'fail';
+}
+function pickAssessed(client, items, assessedOnly) {
+  return assessedOnly ? items.filter(i => isAssessed(client, i)) : items;
+}
+
+function getPillarWeightedScore(client, pillarId, assessedOnly) {
+  return getWeightedScore(client, pickAssessed(client, ITEMS.filter(i => i.pillar === pillarId), assessedOnly));
 }
 
 // Security Score domains: extends the Identity/Endpoint/Email/Data/Cloud model with SIEM/Detection (Sentinel),
@@ -1355,13 +1505,15 @@ const SECURITY_DOMAINS = [
   {key:'cloudapps', label:'Cloud Apps',      pillars:['p5'],      weight:10},
   {key:'detection', label:'SIEM/Detection',  pillars:['p7'],      weight:15},
 ];
-function getSecurityScore(client) {
-  let total = 0;
+function getSecurityScore(client, assessedOnly) {
+  let sum = 0, weightSum = 0;
   SECURITY_DOMAINS.forEach(d => {
-    const domainItems = ITEMS.filter(i => d.pillars.includes(i.pillar));
-    total += getWeightedScore(client, domainItems) * (d.weight / 100);
+    const domainItems = pickAssessed(client, ITEMS.filter(i => d.pillars.includes(i.pillar)), assessedOnly);
+    if (assessedOnly && !domainItems.length) return;   // domain not assessed yet: renormalize over assessed domains
+    sum += getWeightedScore(client, domainItems) * d.weight;
+    weightSum += d.weight;
   });
-  return Math.round(total);
+  return weightSum ? Math.round(sum / weightSum) : 0;
 }
 
 // Governance Score: not pillar-based — pulls every item tagged governance:true across all pillars
@@ -1370,12 +1522,12 @@ function getSecurityScore(client) {
 function getGovernanceItems() {
   return ITEMS.filter(i => i.governance);
 }
-function getGovernanceScore(client) {
-  return getWeightedScore(client, getGovernanceItems());
+function getGovernanceScore(client, assessedOnly) {
+  return getWeightedScore(client, pickAssessed(client, getGovernanceItems(), assessedOnly));
 }
 
-function getAdoptionScore(client) {
-  return getOverallProgress(client).pct;
+function getAdoptionScore(client, assessedOnly) {
+  return assessedOnly ? progressOf(client, pickAssessed(client, ITEMS, true)).pct : getOverallProgress(client).pct;
 }
 
 // ── ACTIVITY LOG ─────────────────────────────
@@ -1423,6 +1575,7 @@ function showClient(clientId) {
     <button class="btn btn-ghost btn-sm" onclick="showDashboard()">← כל הלקוחות</button>
     <button class="btn btn-ghost btn-sm" onclick="showLog('${clientId}')">📋 לוג פעילות</button>
     <button class="btn btn-ghost btn-sm" onclick="showReport('${clientId}')">📄 דוח התקדמות</button>
+    <button class="btn btn-gold btn-sm" onclick="showFindings('${clientId}')">📑 דוח ממצאים ללקוח</button>
     <button class="btn btn-ghost btn-sm" onclick="exportClientJSON()">📤 Export JSON</button>
     <button class="btn btn-gold btn-sm" onclick="editClient('${clientId}')">✏️ ערוך</button>`;
 }
@@ -1622,6 +1775,7 @@ function buildItemRow(item, c) {
   const data = c.items[item.id] || {};
   const isDone = data.status === 'done';
   const isPartial = data.status === 'partial';
+  const isFail = data.status === 'fail';
   const isNA = data.status === 'na';
   const blocker = data.blocker?.trim();
   const pClass = 'priority-' + (data.priority || item.priority);
@@ -1632,8 +1786,8 @@ function buildItemRow(item, c) {
       <ol>${item.guide.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
     </div>` : '';
   return `<div class="checklist-item-wrap">
-    <div class="checklist-item ${isDone ? 'done' : ''} ${isPartial ? 'partial-item' : ''} ${isNA ? 'na-item' : ''}" onclick="openItemModal('${item.id}')">
-      <div class="item-check ${isDone ? 'checked' : isPartial ? 'partial' : ''}">${isDone ? '✓' : isPartial ? '◐' : isNA ? '—' : ''}</div>
+    <div class="checklist-item ${isDone ? 'done' : ''} ${isPartial ? 'partial-item' : ''} ${isFail ? 'fail-item' : ''} ${isNA ? 'na-item' : ''}" onclick="openItemModal('${item.id}')">
+      <div class="item-check ${isDone ? 'checked' : isPartial ? 'partial' : isFail ? 'fail' : ''}">${isDone ? '✓' : isPartial ? '◐' : isFail ? '✕' : isNA ? '—' : ''}</div>
       <div class="priority-dot ${pClass}"></div>
       <div class="item-body">
         <div class="item-title ${isDone ? 'done' : ''}">${item.title}</div>
@@ -1643,6 +1797,7 @@ function buildItemRow(item, c) {
           ${blocker ? `<span class="item-blocker">🚧 ${blocker.substring(0,40)}${blocker.length>40?'...':''}</span>` : ''}
           ${data.notes && !blocker ? `<span class="item-note-preview">📝 ${data.notes.substring(0,50)}</span>` : ''}
           ${isPartial ? `<span style="font-size:.72rem;color:#0e7490;font-weight:600">◐ חלקי / Audit</span>` : ''}
+          ${isFail ? `<span style="font-size:.72rem;color:var(--danger);font-weight:600">❌ לא מיושם</span>` : ''}
           ${isNA ? `<span style="font-size:.72rem;color:var(--muted)">לא רלוונטי</span>` : ''}
         </div>
       </div>
@@ -1745,8 +1900,8 @@ function renderLog(c) {
     const item = ITEMS.find(i => i.id === entry.itemId);
     const pillar = item ? PILLARS.find(p => p.id === item.pillar) : null;
     const dotClass = entry.action === 'done' ? 'log-dot-done' : entry.action === 'undone' ? 'log-dot-undone' : 'log-dot-note';
-    const icon = entry.action === 'done' ? '✅' : entry.action === 'partial' ? '◐' : entry.action === 'undone' ? '↩️' : entry.action === 'blocker' ? '🚧' : '📝';
-    const actionText = entry.action === 'done' ? 'הושלם' : entry.action === 'partial' ? 'סומן כחלקי / Audit' : entry.action === 'undone' ? 'בוטל' : entry.action === 'blocker' ? 'Blocker נוסף' : 'עודכן';
+    const icon = entry.action === 'done' ? '✅' : entry.action === 'partial' ? '◐' : entry.action === 'fail' ? '❌' : entry.action === 'undone' ? '↩️' : entry.action === 'blocker' ? '🚧' : '📝';
+    const actionText = entry.action === 'done' ? 'הושלם' : entry.action === 'partial' ? 'סומן כחלקי / Audit' : entry.action === 'fail' ? 'סומן כלא מיושם' : entry.action === 'undone' ? 'חזר ל"טרם נבדק"' : entry.action === 'blocker' ? 'Blocker נוסף' : 'עודכן';
     return `<div class="log-entry">
       <div class="log-dot ${dotClass}">${icon}</div>
       <div class="log-body">
@@ -1823,15 +1978,17 @@ function renderReport(c) {
         ? `<span class="ri-status-badge ri-status-done">✓ מלא</span>`
         : status === 'partial'
           ? `<span class="ri-status-badge ri-status-partial">◐ חלקי / Audit</span>`
-          : isNA
-            ? `<span class="ri-status-badge ri-status-na">— לא רלוונטי</span>`
-            : `<span class="ri-status-badge ri-status-pending">⏳ לא הופעל / בתהליך</span>`;
+          : status === 'fail'
+            ? `<span class="ri-status-badge ri-status-fail">❌ לא מיושם</span>`
+            : isNA
+              ? `<span class="ri-status-badge ri-status-na">— לא רלוונטי</span>`
+              : `<span class="ri-status-badge ri-status-pending">⏳ טרם נבדק</span>`;
       const metaBits = [];
       if (data.date) metaBits.push(`📅 ${data.date}`);
       if (data.assignee) metaBits.push(`👤 ${data.assignee}`);
       return `<div class="report-item">
         <div class="report-item-main">
-          <div class="ri-check ${isDone ? 'ri-done' : 'ri-pend'}">${isDone ? '✓' : status === 'partial' ? '◐' : isNA ? '—' : ''}</div>
+          <div class="ri-check ${isDone ? 'ri-done' : 'ri-pend'}">${isDone ? '✓' : status === 'partial' ? '◐' : status === 'fail' ? '✕' : isNA ? '—' : ''}</div>
           <div class="ri-title" style="${isDone || isNA ? 'text-decoration:line-through;color:var(--muted)' : ''}">${item.title}</div>
           ${statusBadge}
           ${!isNA ? `<span class="ri-priority-badge" style="background:${prio.bg};color:${prio.color}">${prio.label}</span>` : ''}
@@ -1878,6 +2035,7 @@ function renderReport(c) {
             <span class="ri-priority-badge" style="background:${prio.bg};color:${prio.color}">${prio.label}</span>
             <span>${item.title}</span>
             ${data.status === 'partial' ? `<span class="ri-status-badge ri-status-partial">◐ חלקי</span>` : ''}
+            ${data.status === 'fail' ? `<span class="ri-status-badge ri-status-fail">❌ לא מיושם</span>` : ''}
           </div>
           <div class="nextstep-item-meta">${metaBits.join(' · ')}${data.blocker ? ` · <span class="blocker">🚧 ${data.blocker}</span>` : ''}</div>
         </div>`;
@@ -1899,7 +2057,7 @@ function renderReport(c) {
       <h3>📅 פעילות אחרונה</h3>
       ${recentLog.map(entry => {
         const item = ITEMS.find(i => i.id === entry.itemId);
-        const actionText = entry.action === 'done' ? 'הושלם' : entry.action === 'partial' ? 'חלקי / Audit' : entry.action === 'undone' ? 'בוטל' : 'עודכן';
+        const actionText = entry.action === 'done' ? 'הושלם' : entry.action === 'partial' ? 'חלקי / Audit' : entry.action === 'fail' ? 'לא מיושם' : entry.action === 'undone' ? 'טרם נבדק' : 'עודכן';
         return `<div class="rt-item">
           <div class="rt-date">${formatDate(entry.timestamp, true)}</div>
           <div>${item ? item.title : entry.itemId} — ${actionText}</div>
@@ -1935,6 +2093,188 @@ function renderReport(c) {
 }
 
 // ══════════════════════════════════════════════
+//  CLIENT-FACING FINDINGS REPORT (English, LTR)
+// ══════════════════════════════════════════════
+const PILLAR_EN = {
+  p1: 'Identity (Entra ID)', p2: 'Devices (Intune)', p3: 'Endpoint (Defender for Endpoint)',
+  p4: 'Email (Exchange, Defender for Office 365)', p5: 'Cloud Apps (Defender for Cloud Apps)',
+  p6: 'Data and Collaboration (Purview, SharePoint, Teams)', p7: 'Security Operations (Sentinel, IR)',
+  p8: 'Conditional Access', p9: 'AI and Agent Security',
+};
+const SEVERITY_EN = {
+  critical: {label: 'Critical', color: '#b91c1c', bg: '#fee2e2', rank: 0},
+  high:     {label: 'High',     color: '#c2410c', bg: '#ffedd5', rank: 1},
+  medium:   {label: 'Medium',   color: '#a16207', bg: '#fef9c3', rank: 2},
+  low:      {label: 'Low',      color: '#475569', bg: '#e2e8f0', rank: 3},
+};
+const MODE_EN = {cloud: 'Cloud-only', hybrid: 'Hybrid', comgmt: 'Co-management'};
+const STATUS_EN = {done: 'Met', partial: 'Partially met', fail: 'Not implemented', pending: 'Not assessed', na: 'Not applicable'};
+const STATUS_COLOR = {done: '#16a34a', partial: '#0891b2', fail: '#dc2626', pending: '#cbd5e1', na: '#94a3b8'};
+
+function titleEn(item) { return TITLE_EN[item.id] || item.title; }
+function fmtText(t) { return escHtml(String(t || '').trim()).replace(/\n/g, '<br>'); }
+function maturityChip(score) {
+  const m = getMaturityLevel(score);
+  return `<span class="fr-chip" style="background:${m.color}">${m.label}</span>`;
+}
+
+function showFindings(clientId) {
+  currentClientId = clientId;
+  renderFindings(getClient(clientId));
+  showView('findings');
+}
+
+function renderFindings(c) {
+  const rows = ITEMS.map((item, idx) => {
+    const d = c.items[item.id] || {};
+    return {item, idx, d, status: d.status || 'pending', sev: d.priority || item.priority};
+  });
+  const by = s => rows.filter(r => r.status === s);
+  const met = by('done'), partial = by('partial'), fail = by('fail'), pending = by('pending'), na = by('na');
+  const applicable = rows.length - na.length;
+  const assessedN = met.length + partial.length + fail.length;
+  const sevRank = r => SEVERITY_EN[r.sev]?.rank ?? 2;
+  const findings = [...fail, ...partial].sort((a, b) => sevRank(a) - sevRank(b) || a.idx - b.idx);
+  findings.forEach((f, i) => { f.fid = 'F-' + String(i + 1).padStart(2, '0'); });
+
+  // A score built on fewer than MIN_SCORED assessed controls says little (one passed control would read "100, Optimized"),
+  // so below that threshold the report shows "Not enough data" instead of a number.
+  const MIN_SCORED = 3;
+  const govAssessedN = getGovernanceItems().filter(i => isAssessed(c, i)).length;
+  const scores = [
+    {label: 'Adoption', v: getAdoptionScore(c, true), ok: assessedN >= MIN_SCORED, sub: 'How much of the licensed capability is in use'},
+    {label: 'Security', v: getSecurityScore(c, true), ok: assessedN >= MIN_SCORED, sub: 'Weighted protection across identity, endpoint, email, data, cloud apps and detection'},
+    {label: 'Governance', v: getGovernanceScore(c, true), ok: govAssessedN >= MIN_SCORED, sub: 'Process and oversight controls'},
+  ];
+  const sevCount = k => findings.filter(f => f.sev === k).length;
+  const critHigh = findings.filter(f => f.sev === 'critical' || f.sev === 'high');
+  const today = new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'});
+
+  // ── internal readiness panel (screen only, Hebrew) ──
+  const noText = findings.filter(f => !(f.d.notes || '').trim());
+  const noRec = findings.filter(f => !(f.d.recommendation || '').trim());
+  const chips = list => list.map(f => `<button onclick="openItemModal('${f.item.id}')">${f.fid}</button>`).join('');
+  const readiness = `
+    <div class="fr-readiness">
+      <strong>בדיקת מוכנות לפני הצגה ללקוח</strong> (לא מודפס)<br>
+      נבדקו ${assessedN} מתוך ${applicable} בקרות. ${pending.length ? `<span style="color:#b45309">${pending.length} בקרות עדיין "טרם נבדק" ולא ייכללו בממצאים או בציונים.</span>` : 'כל הבקרות נבדקו.'}<br>
+      ${findings.length ? `ממצאים ללא טקסט ממצא: <b>${noText.length}</b> ${chips(noText)}<br>ממצאים ללא המלצה: <b>${noRec.length}</b> ${chips(noRec)}` : 'עדיין אין ממצאים (סמן פריטים כ"חלקי" או "לא מיושם").'}
+    </div>`;
+
+  // ── executive summary ──
+  const barSegs = ['done', 'partial', 'fail', 'pending'].map(s => {
+    const n = rows.filter(r => r.status === s).length;
+    return n && applicable ? `<span style="width:${(n / applicable * 100).toFixed(2)}%;background:${STATUS_COLOR[s]}" title="${STATUS_EN[s]}: ${n}"></span>` : '';
+  }).join('');
+  const legend = ['done', 'partial', 'fail', 'pending'].map(s =>
+    `<span><i style="background:${STATUS_COLOR[s]}"></i>${STATUS_EN[s]}: <b>${rows.filter(r => r.status === s).length}</b></span>`).join('');
+
+  const summaryText = assessedN
+    ? `We assessed <b>${assessedN}</b> of <b>${applicable}</b> applicable controls. <b>${met.length}</b> are fully in place, <b>${partial.length}</b> are partially in place and <b>${fail.length}</b> are not implemented. ` +
+      (critHigh.length
+        ? `<b>${sevCount('critical')}</b> Critical and <b>${sevCount('high')}</b> High findings need priority attention.`
+        : 'No Critical or High findings were recorded.')
+    : 'No controls have been assessed yet.';
+
+  const topList = critHigh.slice(0, 5).map(f =>
+    `<li><b>${f.fid}</b> ${escHtml(titleEn(f.item))} <span class="fr-note">(${SEVERITY_EN[f.sev]?.label})</span></li>`).join('');
+
+  // ── workstream table ──
+  const wsRows = PILLARS.map(p => {
+    const its = rows.filter(r => r.item.pillar === p.id && r.status !== 'na');
+    const a = its.filter(r => r.status === 'done' || r.status === 'partial' || r.status === 'fail');
+    const score = a.length >= MIN_SCORED ? getPillarWeightedScore(c, p.id, true) : null;
+    return `<tr><td>${PILLAR_EN[p.id]}</td><td class="num">${a.length} / ${its.length}</td>
+      <td class="num">${a.filter(r => r.status === 'done').length}</td><td class="num">${a.filter(r => r.status === 'partial').length}</td><td class="num">${a.filter(r => r.status === 'fail').length}</td>
+      <td class="num"><b>${score === null ? '-' : score}</b></td><td>${score === null ? '' : maturityChip(score)}</td></tr>`;
+  }).join('');
+
+  // ── severity summary ──
+  const sevRows = Object.keys(SEVERITY_EN).map(k =>
+    `<td class="num"><span class="fr-chip" style="background:${SEVERITY_EN[k].color}">${SEVERITY_EN[k].label}</span><div style="font-size:1.4rem;font-weight:800;margin-top:4px">${sevCount(k)}</div></td>`).join('');
+
+  // ── detailed findings ──
+  const findingCard = f => {
+    const sv = SEVERITY_EN[f.sev] || SEVERITY_EN.medium;
+    const txt = (f.d.notes || '').trim(), rec = (f.d.recommendation || '').trim();
+    return `<div class="fr-finding" style="border-left-color:${sv.color}">
+      <div class="fr-f-head"><span class="fr-id">${f.fid}</span>
+        <span class="fr-chip" style="background:${sv.color}">${sv.label}</span>
+        <span class="fr-chip" style="background:${f.status === 'fail' ? STATUS_COLOR.fail : STATUS_COLOR.partial}">${STATUS_EN[f.status]}</span>
+        <span class="fr-ws">${PILLAR_EN[f.item.pillar]}</span></div>
+      <h4>${escHtml(titleEn(f.item))}</h4>
+      <div class="fr-row"><b>Finding</b><div dir="auto">${txt ? fmtText(txt) : '<span class="fr-missing">To be completed</span>'}</div></div>
+      <div class="fr-row"><b>Recommendation</b><div dir="auto">${rec ? fmtText(rec) : '<span class="fr-missing">To be completed</span>'}</div></div>
+    </div>`;
+  };
+  const findingsHtml = findings.length
+    ? Object.keys(SEVERITY_EN).map(k => {
+        const g = findings.filter(f => f.sev === k);
+        return g.length ? `<h3>${SEVERITY_EN[k].label} (${g.length})</h3>${g.map(findingCard).join('')}` : '';
+      }).join('')
+    : '<p>No findings were recorded.</p>';
+
+  // ── what is working well / out of scope / limitations ──
+  const groupByWs = list => PILLARS.map(p => {
+    const g = list.filter(r => r.item.pillar === p.id);
+    return g.length ? `<div class="fr-ws-title">${PILLAR_EN[p.id]}</div><ul class="fr-list">${g.map(r => `<li>${escHtml(titleEn(r.item))}</li>`).join('')}</ul>` : '';
+  }).join('');
+  const limits = rows.filter(r => (r.d.blocker || '').trim());
+
+  const governanceAssessed = getGovernanceItems().filter(i => isAssessed(c, i)).length;
+  const appendix = pending.length ? `<details class="fr-appendix"><summary>Controls not assessed (${pending.length}), internal view only</summary>${groupByWs(pending)}</details>` : '';
+
+  document.getElementById('findings-content').innerHTML = `
+    ${readiness}
+    <div class="fr">
+      <div class="fr-cover">
+        <div class="fr-eyebrow">Microsoft 365 E5 Security, Governance and AI Assessment</div>
+        <h1>Findings Report</h1>
+        <div class="fr-client">${escHtml(c.name)}</div>
+        <div class="fr-meta">
+          <span>Date: ${today}</span>
+          ${c.consultant ? `<span>Prepared by: ${escHtml(c.consultant)}</span>` : ''}
+          <span>Environment: ${MODE_EN[c.mode] || ''}</span>
+          ${c.licenses ? `<span>E5 licenses: ${escHtml(c.licenses)}</span>` : ''}
+        </div>
+      </div>
+
+      <h2>Executive summary</h2>
+      <p>${summaryText}</p>
+      <div class="fr-scores">${scores.map(s => {
+        const m = getMaturityLevel(s.v);
+        return `<div class="fr-score" style="border-color:${s.ok ? m.color : 'var(--border)'}"><div class="l">${s.label}</div><div class="v" style="color:${s.ok ? m.color : '#94a3b8'}">${s.ok ? s.v : '-'}</div>${s.ok ? `<span class="m" style="background:${m.color}">${m.label}</span>` : '<span class="fr-note">Not enough data</span>'}<div class="s">${s.sub}</div></div>`;
+      }).join('')}</div>
+      <div class="fr-bar">${barSegs}</div>
+      <div class="fr-legend">${legend}</div>
+      <p class="fr-note">Scores cover assessed controls only (${assessedN} of ${applicable}) and appear once at least ${MIN_SCORED} controls are assessed. Not applicable controls (${na.length}) are excluded.</p>
+      ${topList ? `<h3>Top priorities</h3><ul class="fr-list" style="columns:1">${topList}</ul>` : ''}
+
+      <h2>Results by workstream</h2>
+      <table class="fr-table"><thead><tr><th>Workstream</th><th class="num">Assessed</th><th class="num">Met</th><th class="num">Partial</th><th class="num">Not implemented</th><th class="num">Score</th><th>Maturity</th></tr></thead><tbody>${wsRows}</tbody></table>
+
+      <h2>Findings overview</h2>
+      <table class="fr-table"><tbody><tr>${sevRows}</tr></tbody></table>
+
+      <h2>Detailed findings</h2>
+      ${findingsHtml}
+
+      ${met.length ? `<h2>What is working well</h2><p class="fr-note">Controls assessed as fully in place.</p>${groupByWs(met)}` : ''}
+      ${na.length ? `<h2>Not applicable</h2><p class="fr-note">Controls outside the scope of this environment.</p><ul class="fr-list">${na.map(r => `<li>${escHtml(titleEn(r.item))}</li>`).join('')}</ul>` : ''}
+      ${limits.length ? `<h2>Assessment limitations</h2><ul class="fr-list" style="columns:1">${limits.map(r => `<li><b>${escHtml(titleEn(r.item))}</b>: ${escHtml(r.d.blocker.trim())}</li>`).join('')}</ul>` : ''}
+
+      <h2>Scope and method</h2>
+      <p>The assessment reviews the Microsoft 365 E5 security stack across identity, devices, endpoint, email, cloud apps, data protection, security operations, conditional access and AI governance. Each control is rated Met, Partially met, Not implemented or Not applicable.</p>
+      <p>Scores are priority-weighted (Critical 5, High 3, Medium 2, Low 1). Partially met controls earn half credit. The Security score weights identity 25%, endpoint 20%, email 15%, data 15%, cloud apps 10% and detection 15%; the Governance score covers ${governanceAssessed} assessed process and oversight controls.</p>
+      <table class="fr-table"><thead><tr><th>Maturity</th><th>Score range</th></tr></thead><tbody>
+        ${MATURITY_LEVELS.map((m, i) => `<tr><td>${maturityChip(m.max)}</td><td>${i === 0 ? 0 : MATURITY_LEVELS[i - 1].max + 1} to ${m.max}</td></tr>`).join('')}
+      </tbody></table>
+      ${appendix}
+      <div class="fr-footer">Confidential. Prepared for ${escHtml(c.name)}, ${today}.</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
 //  MODALS
 // ══════════════════════════════════════════════
 
@@ -1955,6 +2295,7 @@ function openItemModal(itemId) {
   document.getElementById('item-date').value = data.date || '';
   document.getElementById('item-assignee').value = data.assignee || '';
   document.getElementById('item-notes').value = data.notes || '';
+  document.getElementById('item-recommendation').value = data.recommendation || '';
   document.getElementById('item-blocker').value = data.blocker || '';
 
   updateStatusBtns(editingItemStatus);
@@ -1964,7 +2305,7 @@ function openItemModal(itemId) {
 
 function setStatus(s) { editingItemStatus = s; updateStatusBtns(s); }
 function updateStatusBtns(s) {
-  ['done','partial','pending','na'].forEach(st => {
+  ['done','partial','fail','pending','na'].forEach(st => {
     const btn = document.getElementById('btn-status-' + st);
     btn.className = 'status-btn' + (s === st ? ' active-' + st : '');
   });
@@ -1987,6 +2328,7 @@ function saveItem() {
   const date = document.getElementById('item-date').value;
   const assignee = document.getElementById('item-assignee').value;
   const notes = document.getElementById('item-notes').value;
+  const recommendation = document.getElementById('item-recommendation').value;
   const blocker = document.getElementById('item-blocker').value;
 
   c.items[itemId] = {
@@ -1994,13 +2336,14 @@ function saveItem() {
     date: editingItemStatus === 'done' && !date ? new Date().toISOString().split('T')[0] : date,
     assignee,
     notes,
+    recommendation,
     blocker,
     priority: editingItemPriority,
   };
 
   // Log changes
   if (prev.status !== editingItemStatus) {
-    const action = editingItemStatus === 'done' ? 'done' : editingItemStatus === 'partial' ? 'partial' : editingItemStatus === 'pending' ? 'undone' : 'note';
+    const action = editingItemStatus === 'done' ? 'done' : editingItemStatus === 'partial' ? 'partial' : editingItemStatus === 'fail' ? 'fail' : editingItemStatus === 'pending' ? 'undone' : 'note';
     logActivity(currentClientId, itemId, action, notes || '');
   } else if (blocker && prev.blocker !== blocker) {
     logActivity(currentClientId, itemId, 'blocker', blocker);
@@ -2011,7 +2354,8 @@ function saveItem() {
   save(currentClientId); // sync this client to SharePoint
   closeItemModal();
   renderClientView();
-  toast(editingItemStatus === 'done' ? '✅ פריט הושלם!' : editingItemStatus === 'partial' ? '◐ סומן כחלקי / Audit' : '💾 נשמר', editingItemStatus === 'done' ? 'success' : '');
+  if (document.getElementById('view-findings').classList.contains('active')) renderFindings(c);
+  toast(editingItemStatus === 'done' ? '✅ פריט הושלם!' : editingItemStatus === 'partial' ? '◐ סומן כחלקי / Audit' : editingItemStatus === 'fail' ? '❌ סומן כלא מיושם' : '💾 נשמר', editingItemStatus === 'done' ? 'success' : '');
 }
 
 // ── Client Modal ──────────────────────────────
