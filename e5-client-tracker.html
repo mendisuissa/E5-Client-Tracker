@@ -1368,6 +1368,29 @@ function save(syncClientId) {
   localStorage.setItem('e5tracker_v2', JSON.stringify(APP));
   if (syncClientId) pushClientToSP(syncClientId); // async fire-and-forget
 }
+// One-time status-model migration (per client, flagged with c.statusModel = 2).
+// Old model: "pending" meant "not enabled / in progress", and people filled notes for controls they had assessed.
+// New model: "pending" means "not yet assessed". So a pending control that carries any work (notes, blocker, assignee,
+// date, or an activity-log entry) becomes "fail" (Not implemented) and stays in the findings report.
+// Returns -1 if the client was already migrated, otherwise the number of controls moved (0 or more).
+function migrateStatusModel(c) {
+  if (!c || c.statusModel >= 2) return -1;
+  const touched = new Set((c.activityLog || []).map(e => e.itemId));
+  let moved = 0;
+  ITEMS.forEach(item => {
+    const d = c.items?.[item.id];
+    if (!d || d.status !== 'pending') return;
+    const hasWork = (d.notes || '').trim() || (d.blocker || '').trim() || (d.assignee || '').trim() || d.date || touched.has(item.id);
+    if (hasWork) { d.status = 'fail'; moved++; }
+  });
+  c.statusModel = 2;
+  return moved;
+}
+let _statusMigratedCount = 0;
+function toastMigration(moved) {
+  if (moved > 0) setTimeout(() => toast(`🔄 ${moved} בקרות שסומנו בעבר "לא הופעל" הומרו ל-"❌ לא מיושם" ונשארו בדוח הממצאים`, 'success'), 1200);
+}
+
 function load() {
   const raw = localStorage.getItem('e5tracker_v2');
   if (raw) { try { APP = JSON.parse(raw); } catch(e) {} }
@@ -1379,6 +1402,9 @@ function load() {
       }
     });
   });
+  const results = APP.clients.map(migrateStatusModel);
+  _statusMigratedCount = results.filter(r => r > 0).reduce((s, r) => s + r, 0);
+  if (results.some(r => r >= 0)) localStorage.setItem('e5tracker_v2', JSON.stringify(APP));
 }
 
 // ── CLIENT CRUD ──────────────────────────────
@@ -1397,6 +1423,7 @@ function createClient(data) {
     notes: data.notes || '',
     items: {},
     activityLog: [],
+    statusModel: 2,
     createdAt: new Date().toISOString(),
   };
   // Init all items as pending
@@ -2451,6 +2478,7 @@ function doImport() {
       const parsed = JSON.parse(e.target.result);
       if (parsed.clients) {
         APP = parsed;
+        toastMigration(APP.clients.map(migrateStatusModel).filter(r => r > 0).reduce((s, r) => s + r, 0));
         save();
         document.getElementById('modal-import').classList.remove('open');
         showDashboard();
@@ -2720,9 +2748,15 @@ async function pullFromSP() {
   if (spClients.length > 0) {
     // Merge: SP is source of truth
     APP.clients = spClients;
+    // Apply the status-model migration to server data too, then write migrated clients back so it sticks.
+    const migrated = [];
+    let movedTotal = 0;
+    APP.clients.forEach(c => { const r = migrateStatusModel(c); if (r >= 0) { migrated.push(c); movedTotal += r; } });
     save();
     renderDashboard();
     toast(`☁️ נטענו ${spClients.length} לקוחות מ-SharePoint`, 'success');
+    toastMigration(movedTotal);
+    for (const c of migrated) { try { await pushClientToSP(c.id); } catch(e) { console.warn('Migration push failed for', c.name, e); } }
   }
 }
 
@@ -2840,6 +2874,7 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 // ══════════════════════════════════════════════
 load();
 showDashboard();
+toastMigration(_statusMigratedCount);
 initSharePoint(); // Phase 2: connect to SharePoint if SP_CONFIG.enabled = true
 </script>
 </body>
