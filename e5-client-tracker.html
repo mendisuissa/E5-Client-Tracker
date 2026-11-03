@@ -235,7 +235,7 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .fr-appendix{margin-top:20px;font-size:.84rem;}
 @media(max-width:768px){.fr-scores{grid-template-columns:1fr;}.fr-row{grid-template-columns:1fr;}.fr-list{columns:1;}}
 @media print{.fr-readiness,.fr-appendix{display:none!important;}.fr-cover{border-radius:0;}.fr h2{break-after:avoid;}#view-findings{padding:0;}}
-#view-findings.pdf-mode .fr-readiness,#view-findings.pdf-mode .fr-appendix{display:none!important;}
+#view-findings.pdf-mode .fr-readiness,#view-findings.pdf-mode .fr-appendix,.fr.pdf-clone .fr-appendix{display:none!important;}
 .item-check.partial{background:linear-gradient(90deg,#0891b2 50%,transparent 50%);border-color:#0891b2;color:#fff;}
 .checklist-item.partial-item{background:#f0fdfa;}
 .ri-status-partial{background:#cffafe;color:#155e75;}
@@ -2441,10 +2441,15 @@ async function downloadFindingsPDF() {
   const view = document.getElementById('view-findings');
   if (!c || !el) return;
   const btn = document.getElementById('btn-findings-pdf');
+  let savedStyle = '';
   btn.disabled = true; btn.textContent = '⏳ מכין PDF...';
   try {
     await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js', () => window.html2pdf);
     view.classList.add('pdf-mode');
+    // html2pdf renders a clone inside an RTL page-width box: pin the report to a centered fixed width and hide the internal appendix in the clone.
+    savedStyle = el.style.cssText;
+    el.style.cssText = 'width:740px;max-width:none;margin:0 auto;position:relative;left:-7px;';
+    el.classList.add('pdf-clone');
     const filename = `${c.name.replace(/[^\w\-]+/g, '_')}-E5-Findings-Report-${new Date().toISOString().slice(0, 10)}.pdf`;
     await html2pdf().set({
       margin: [10, 8, 14, 8], filename,
@@ -2465,6 +2470,7 @@ async function downloadFindingsPDF() {
   } catch (err) {
     toast('לא הצלחתי ליצור PDF. אפשר להשתמש בהדפסה', 'error');
   } finally {
+    el.style.cssText = savedStyle; el.classList.remove('pdf-clone');
     view.classList.remove('pdf-mode');
     btn.disabled = false; btn.textContent = '⬇️ הורד PDF';
   }
