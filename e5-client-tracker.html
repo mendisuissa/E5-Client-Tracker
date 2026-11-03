@@ -235,6 +235,7 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .fr-appendix{margin-top:20px;font-size:.84rem;}
 @media(max-width:768px){.fr-scores{grid-template-columns:1fr;}.fr-row{grid-template-columns:1fr;}.fr-list{columns:1;}}
 @media print{.fr-readiness,.fr-appendix{display:none!important;}.fr-cover{border-radius:0;}.fr h2{break-after:avoid;}#view-findings{padding:0;}}
+#view-findings.pdf-mode .fr-readiness,#view-findings.pdf-mode .fr-appendix{display:none!important;}
 .item-check.partial{background:linear-gradient(90deg,#0891b2 50%,transparent 50%);border-color:#0891b2;color:#fff;}
 .checklist-item.partial-item{background:#f0fdfa;}
 .ri-status-partial{background:#cffafe;color:#155e75;}
@@ -500,7 +501,8 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 <div class="view" id="view-findings">
   <div class="report-actions">
     <button class="btn btn-outline btn-sm" onclick="backToClient()">← חזור</button>
-    <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ הדפסה / PDF</button>
+    <button class="btn btn-primary btn-sm" id="btn-findings-pdf" onclick="downloadFindingsPDF()">⬇️ הורד PDF</button>
+    <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ הדפסה</button>
   </div>
   <div id="findings-content"></div>
 </div>
@@ -2421,6 +2423,51 @@ function applyWordingFile(input) {
     } catch (err) { alert('קובץ ניסוח לא תקין'); }
   };
   reader.readAsText(file);
+}
+
+// Direct PDF download of the findings report (no print dialog, no browser header/footer). html2pdf is loaded on first use.
+function loadScriptOnce(src, test) {
+  return new Promise((resolve, reject) => {
+    if (test()) return resolve();
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = () => reject(new Error('script load failed'));
+    document.head.appendChild(s);
+  });
+}
+
+async function downloadFindingsPDF() {
+  const c = getClient(currentClientId);
+  const el = document.querySelector('#findings-content .fr');
+  const view = document.getElementById('view-findings');
+  if (!c || !el) return;
+  const btn = document.getElementById('btn-findings-pdf');
+  btn.disabled = true; btn.textContent = '⏳ מכין PDF...';
+  try {
+    await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js', () => window.html2pdf);
+    view.classList.add('pdf-mode');
+    const filename = `${c.name.replace(/[^\w\-]+/g, '_')}-E5-Findings-Report-${new Date().toISOString().slice(0, 10)}.pdf`;
+    await html2pdf().set({
+      margin: [10, 8, 14, 8], filename,
+      image: {type: 'jpeg', quality: 0.9},
+      html2canvas: {scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0},
+      jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'},
+      pagebreak: {mode: ['css', 'legacy'], avoid: ['.fr-finding', '.fr-score', '.fr-table tr', '.fr-cover']},
+    }).from(el).toPdf().get('pdf').then(pdf => {
+      const n = pdf.internal.getNumberOfPages(), w = pdf.internal.pageSize.getWidth(), h = pdf.internal.pageSize.getHeight();
+      pdf.setFontSize(8); pdf.setTextColor(120);
+      for (let i = 1; i <= n; i++) {
+        pdf.setPage(i);
+        pdf.text(`${c.name}  |  Microsoft 365 E5 Findings Report  |  Confidential`, 8, h - 7);
+        pdf.text(`Page ${i} of ${n}`, w - 8, h - 7, {align: 'right'});
+      }
+    }).save();
+    toast('✅ ה-PDF ירד', 'success');
+  } catch (err) {
+    toast('לא הצלחתי ליצור PDF. אפשר להשתמש בהדפסה', 'error');
+  } finally {
+    view.classList.remove('pdf-mode');
+    btn.disabled = false; btn.textContent = '⬇️ הורד PDF';
+  }
 }
 
 function revertWordingUI() {
