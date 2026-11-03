@@ -1458,6 +1458,7 @@ function deleteClient(id) {
 // ── PROGRESS CALC ────────────────────────────
 // A "partial" item (enabled in Audit mode / partial coverage) earns half credit everywhere scores are computed.
 const STATUS_CREDIT = {done:1, partial:0.5};
+const STATUS_ORDER = ['done', 'partial', 'fail', 'pending', 'na'];
 function statusCredit(status) { return STATUS_CREDIT[status] || 0; }
 
 function progressOf(client, items) {
@@ -2371,17 +2372,24 @@ async function pasteWordingReply() {
 // Apply a wording file {type:'e5-wording', items:{itemId:{notes, recommendation}}} to one client.
 function applyWordingData(c, data) {
   if (!data || data.type !== 'e5-wording' || typeof data.items !== 'object' || !data.items) throw new Error('bad wording file');
-  let applied = 0, skipped = 0;
+  let applied = 0, skipped = 0, statusChanged = 0;
   Object.entries(data.items).forEach(([id, w]) => {
     const d = c.items[id];
     if (!d || !w) { skipped++; return; }
     if (!d.orig) d.orig = {notes: d.notes || '', blocker: d.blocker || '', recommendation: d.recommendation || ''};
     const findingWasBlocker = !(d.notes || '').trim() && !!(d.blocker || '').trim();
+    // Optional status correction; the previous status is kept in orig so revert can restore it.
+    if (typeof w.status === 'string' && STATUS_ORDER.includes(w.status) && w.status !== d.status) {
+      if (!('status' in d.orig)) d.orig.status = d.status || 'pending';
+      d.status = w.status; statusChanged++;
+    }
+    // Optional "clear": text that was filed under the wrong control (done before the new text so it can't wipe it).
+    (Array.isArray(w.clear) ? w.clear : []).forEach(f => { if (['notes', 'blocker', 'recommendation'].includes(f)) d[f] = ''; });
     if (typeof w.notes === 'string' && w.notes.trim()) { d.notes = w.notes.trim(); if (findingWasBlocker) d.blocker = ''; }
     if (typeof w.recommendation === 'string' && w.recommendation.trim()) d.recommendation = w.recommendation.trim();
     applied++;
   });
-  return {applied, skipped};
+  return {applied, skipped, statusChanged};
 }
 
 function revertWordingData(c) {
@@ -2389,6 +2397,7 @@ function revertWordingData(c) {
   Object.values(c.items).forEach(d => {
     if (!d.orig) return;
     d.notes = d.orig.notes; d.blocker = d.orig.blocker; d.recommendation = d.orig.recommendation;
+    if (d.orig.status) d.status = d.orig.status;
     delete d.orig; n++;
   });
   return n;
@@ -2403,11 +2412,12 @@ function applyWordingFile(input) {
       const c = getClient(currentClientId);
       const data = JSON.parse(e.target.result);
       const count = Object.keys(data.items || {}).length;
-      if (!confirm(`להחיל ניסוח על ${count} בקרות בלקוח "${c.name}"?\nהטקסט המקורי נשמר ואפשר לשחזר.`)) return;
-      const {applied, skipped} = applyWordingData(c, data);
+      const statusCount = Object.entries(data.items || {}).filter(([id, w]) => w && w.status && c.items[id] && w.status !== c.items[id].status).length;
+      if (!confirm(`להחיל ניסוח על ${count} בקרות בלקוח "${c.name}"?${statusCount ? `\nכולל תיקון סטטוס ב-${statusCount} בקרות.` : ''}\nהטקסט והסטטוס המקוריים נשמרים ואפשר לשחזר.`)) return;
+      const {applied, skipped, statusChanged} = applyWordingData(c, data);
       save(c.id);
       renderFindings(c);
-      toast(`✅ הוחל ניסוח על ${applied} בקרות${skipped ? ` (${skipped} דולגו)` : ''}`, 'success');
+      toast(`✅ הוחל ניסוח על ${applied} בקרות${statusChanged ? `, סטטוס תוקן ב-${statusChanged}` : ''}${skipped ? ` (${skipped} דולגו)` : ''}`, 'success');
     } catch (err) { alert('קובץ ניסוח לא תקין'); }
   };
   reader.readAsText(file);
