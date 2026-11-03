@@ -2441,15 +2441,18 @@ async function downloadFindingsPDF() {
   const view = document.getElementById('view-findings');
   if (!c || !el) return;
   const btn = document.getElementById('btn-findings-pdf');
-  let savedStyle = '';
   btn.disabled = true; btn.textContent = '⏳ מכין PDF...';
   try {
     await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js', () => window.html2pdf);
     view.classList.add('pdf-mode');
-    // html2pdf renders a clone inside an RTL page-width box: pin the report to a centered fixed width and hide the internal appendix in the clone.
-    savedStyle = el.style.cssText;
-    el.style.cssText = 'width:740px;max-width:none;margin:0 auto;position:relative;left:-7px;';
-    el.classList.add('pdf-clone');
+    // html2pdf renders inside an RTL page-width box that crops wide content. Render a detached LTR wrapper of exactly page width instead,
+    // without the internal appendix.
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'width:733px;padding:0 6px;box-sizing:border-box;direction:ltr;background:#fff;';
+    const copy = el.cloneNode(true);
+    copy.style.cssText = 'width:100%;max-width:none;margin:0;';
+    copy.querySelectorAll('.fr-appendix').forEach(n => n.remove());
+    wrap.appendChild(copy);
     const filename = `${c.name.replace(/[^\w\-]+/g, '_')}-E5-Findings-Report-${new Date().toISOString().slice(0, 10)}.pdf`;
     await html2pdf().set({
       margin: [10, 8, 14, 8], filename,
@@ -2457,11 +2460,13 @@ async function downloadFindingsPDF() {
       html2canvas: {scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0},
       jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'},
       pagebreak: {mode: ['css', 'legacy'], avoid: ['.fr-finding', '.fr-score', '.fr-table tr', '.fr-cover']},
-    }).from(el).toPdf().get('pdf').then(pdf => {
+    }).from(wrap).toPdf().get('pdf').then(pdf => {
       const n = pdf.internal.getNumberOfPages(), w = pdf.internal.pageSize.getWidth(), h = pdf.internal.pageSize.getHeight();
       pdf.setFontSize(8); pdf.setTextColor(120);
       for (let i = 1; i <= n; i++) {
         pdf.setPage(i);
+        // html2pdf can leave a sliver of the next card at the bottom edge of a page; mask the last ~2.5mm of the content area.
+        pdf.setFillColor(255, 255, 255); pdf.rect(0, h - 16.5, w, 3, 'F');
         pdf.text(`${c.name}  |  Microsoft 365 E5 Findings Report  |  Confidential`, 8, h - 7);
         pdf.text(`Page ${i} of ${n}`, w - 8, h - 7, {align: 'right'});
       }
@@ -2470,7 +2475,6 @@ async function downloadFindingsPDF() {
   } catch (err) {
     toast('לא הצלחתי ליצור PDF. אפשר להשתמש בהדפסה', 'error');
   } finally {
-    el.style.cssText = savedStyle; el.classList.remove('pdf-clone');
     view.classList.remove('pdf-mode');
     btn.disabled = false; btn.textContent = '⬇️ הורד PDF';
   }
