@@ -2435,6 +2435,51 @@ function loadScriptOnce(src, test) {
   });
 }
 
+// html2pdf renders inside an RTL box exactly as wide as the A4 content area (733px) and crops anything wider, so the report is rendered
+// from a detached LTR wrapper of that width (without the internal appendix). Its own page slicing cuts through cards, so the page
+// breaks are chosen here instead: on the last blank gap before the page limit, and never right after a lone heading.
+function buildPdfWrapper(el) {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'width:733px;padding:0 6px;box-sizing:border-box;direction:ltr;background:#fff;';
+  const copy = el.cloneNode(true);
+  copy.style.cssText = 'width:100%;max-width:none;margin:0;';
+  copy.querySelectorAll('.fr-appendix').forEach(n => n.remove());
+  // keep the desktop layout even when the browser window is narrow (the mobile media query would stack the cards)
+  const st = document.createElement('style');
+  st.textContent = '.fr-scores{grid-template-columns:repeat(3,1fr)!important}.fr-row{grid-template-columns:110px 1fr!important}.fr-list{columns:2!important}';
+  wrap.appendChild(st);
+  wrap.appendChild(copy);
+  return wrap;
+}
+
+// Returns [[y0, y1), ...] row ranges of the rendered canvas, one per PDF page.
+function pdfPageCuts(cv, pageH) {
+  const ctx = cv.getContext('2d'), W = cv.width, MIN_GAP = 16, MIN_BLOCK = 110;
+  const cuts = []; let start = 0;
+  while (cv.height - start > pageH) {
+    const target = start + pageH;
+    const d = ctx.getImageData(0, start, W, pageH).data;
+    const white = y => { for (let x = 0; x < W; x += 3) { const p = (y * W + x) * 4; if (d[p] < 245 || d[p + 1] < 245 || d[p + 2] < 245) return false; } return true; };
+    const runs = []; let rs = -1;
+    for (let y = 0; y < pageH; y++) {
+      if (white(y)) { if (rs < 0) rs = y; } else if (rs >= 0) { if (y - rs >= MIN_GAP) runs.push([rs, y]); rs = -1; }
+    }
+    if (rs >= 0 && pageH - rs >= MIN_GAP) runs.push([rs, pageH]);
+    let cut = pageH;
+    const usable = runs.filter(r => r[0] > pageH * 0.3);
+    if (usable.length) {
+      let idx = usable.length - 1;
+      // a thin block sitting under a wide gap is a heading: do not leave it alone at the bottom of a page, break above it instead
+      if (idx > 0 && usable[idx][0] - usable[idx - 1][1] < MIN_BLOCK && usable[idx - 1][1] - usable[idx - 1][0] >= 36) idx--;
+      const r = usable[idx];
+      cut = Math.min(pageH, Math.floor((r[0] + r[1]) / 2));
+    }
+    cuts.push([start, start + cut]); start += cut;
+  }
+  cuts.push([start, cv.height]);
+  return cuts;
+}
+
 async function downloadFindingsPDF() {
   const c = getClient(currentClientId);
   const el = document.querySelector('#findings-content .fr');
@@ -2445,32 +2490,35 @@ async function downloadFindingsPDF() {
   try {
     await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js', () => window.html2pdf);
     view.classList.add('pdf-mode');
-    // html2pdf renders inside an RTL page-width box that crops wide content. Render a detached LTR wrapper of exactly page width instead,
-    // without the internal appendix.
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'width:733px;padding:0 6px;box-sizing:border-box;direction:ltr;background:#fff;';
-    const copy = el.cloneNode(true);
-    copy.style.cssText = 'width:100%;max-width:none;margin:0;';
-    copy.querySelectorAll('.fr-appendix').forEach(n => n.remove());
-    wrap.appendChild(copy);
+    const wrap = buildPdfWrapper(el);
     const filename = `${c.name.replace(/[^\w\-]+/g, '_')}-E5-Findings-Report-${new Date().toISOString().slice(0, 10)}.pdf`;
-    await html2pdf().set({
+    const opt = {
       margin: [10, 8, 14, 8], filename,
       image: {type: 'jpeg', quality: 0.9},
       html2canvas: {scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0},
       jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'},
-      pagebreak: {mode: ['css', 'legacy'], avoid: ['.fr-finding', '.fr-score', '.fr-table tr', '.fr-cover']},
-    }).from(wrap).toPdf().get('pdf').then(pdf => {
-      const n = pdf.internal.getNumberOfPages(), w = pdf.internal.pageSize.getWidth(), h = pdf.internal.pageSize.getHeight();
-      pdf.setFontSize(8); pdf.setTextColor(120);
-      for (let i = 1; i <= n; i++) {
-        pdf.setPage(i);
-        // html2pdf can leave a sliver of the next card at the bottom edge of a page; mask the last ~2.5mm of the content area.
-        pdf.setFillColor(255, 255, 255); pdf.rect(0, h - 16.5, w, 3, 'F');
-        pdf.text(`${c.name}  |  Microsoft 365 E5 Findings Report  |  Confidential`, 8, h - 7);
-        pdf.text(`Page ${i} of ${n}`, w - 8, h - 7, {align: 'right'});
-      }
-    }).save();
+      pagebreak: {mode: []},  // no automatic page-break spacers: pages are cut by pdfPageCuts
+    };
+    const cv = await html2pdf().set(opt).from(wrap).toCanvas().get('canvas');
+    // a throw-away 10px page gives us the jsPDF instance; the real pages are cut from the canvas (see pdfPageCuts)
+    const dummy = document.createElement('div'); dummy.style.cssText = 'width:10px;height:10px;background:#fff;';
+    const pdf = await html2pdf().set(opt).from(dummy).toPdf().get('pdf');
+    const pageHpx = Math.floor(cv.width * 273 / 194);
+    pdfPageCuts(cv, pageHpx).forEach(([y0, y1]) => {
+      const tmp = document.createElement('canvas'); tmp.width = cv.width; tmp.height = y1 - y0;
+      tmp.getContext('2d').drawImage(cv, 0, y0, cv.width, y1 - y0, 0, 0, cv.width, y1 - y0);
+      pdf.addPage();
+      pdf.addImage(tmp.toDataURL('image/jpeg', 0.9), 'JPEG', 8, 10, 194, (y1 - y0) * 194 / cv.width);
+    });
+    pdf.deletePage(1);
+    const n = pdf.internal.getNumberOfPages(), w = pdf.internal.pageSize.getWidth(), h = pdf.internal.pageSize.getHeight();
+    pdf.setFontSize(8); pdf.setTextColor(120);
+    for (let i = 1; i <= n; i++) {
+      pdf.setPage(i);
+      pdf.text(`${c.name}  |  Microsoft 365 E5 Findings Report  |  Confidential`, 8, h - 7);
+      pdf.text(`Page ${i} of ${n}`, w - 8, h - 7, {align: 'right'});
+    }
+    pdf.save(filename);
     toast('✅ ה-PDF ירד', 'success');
   } catch (err) {
     toast('לא הצלחתי ליצור PDF. אפשר להשתמש בהדפסה', 'error');
