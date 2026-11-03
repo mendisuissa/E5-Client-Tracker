@@ -544,6 +544,10 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
     <div class="form-group">
       <label>💡 המלצה (מופיעה בדוח הממצאים)</label>
       <textarea id="item-recommendation" placeholder="מה מומלץ לעשות (באנגלית לדוח הלקוח)..."></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button type="button" class="btn btn-outline btn-sm" onclick="copyWordingPrompt()">✨ העתק פרומפט לניסוח באנגלית</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="pasteWordingReply()">📥 הדבק ניסוח מהלוח</button>
+      </div>
     </div>
     <div class="form-group blocker-group">
       <label>🚧 Blocker (מה עוצר?)</label>
@@ -2190,6 +2194,10 @@ function renderFindings(c) {
       <strong>בדיקת מוכנות לפני הצגה ללקוח</strong> (לא מודפס)<br>
       נבדקו ${assessedN} מתוך ${applicable} בקרות. ${pending.length ? `<span style="color:#b45309">${pending.length} בקרות עדיין "טרם נבדק" ולא ייכללו בממצאים או בציונים.</span>` : 'כל הבקרות נבדקו.'}<br>
       ${findings.length ? `ממצאים ללא טקסט ממצא: <b>${noText.length}</b> ${chips(noText)}<br>ממצאים ללא המלצה: <b>${noRec.length}</b> ${chips(noRec)}` : 'עדיין אין ממצאים (סמן פריטים כ"חלקי" או "לא מיושם").'}
+      <div style="margin-top:8px">
+        <label class="btn btn-outline btn-sm" style="cursor:pointer">📥 החל קובץ ניסוח (JSON)<input type="file" accept=".json" hidden onchange="applyWordingFile(this)"></label>
+        ${Object.values(c.items).some(d => d.orig) ? '<button onclick="revertWordingUI()">↩️ שחזר ניסוח מקורי</button>' : ''}
+      </div>
     </div>`;
 
   // ── executive summary ──
@@ -2305,6 +2313,115 @@ function renderFindings(c) {
     </div>`;
 }
 
+// ── Wording tools for findings ────────────────
+// A static page cannot hold an AI key safely, so wording help works through the clipboard:
+// copy a ready prompt, run it in Claude/Copilot, paste the reply back. A wording file (JSON) can also be applied in bulk.
+let _wordingEdited = false;
+
+function buildWordingPrompt(item, raw, recommendation, status, priority) {
+  return [
+    'You are helping write a client-facing finding for a Microsoft 365 E5 security assessment.',
+    `Control: ${titleEn(item)}`,
+    `Status: ${STATUS_EN[status] || status}`,
+    `Severity: ${SEVERITY_EN[priority]?.label || priority}`,
+    `Consultant raw notes (may contain typos or shorthand): """${raw || '(none)'}"""`,
+    recommendation ? `Existing recommendation draft: """${recommendation}"""` : null,
+    '',
+    'Rewrite in clear, professional English. Keep every fact from the notes and add none. If the notes are empty, write the finding only from the control and status, and say nothing about the environment.',
+    'Reply in exactly this format, nothing else:',
+    'Finding: <1-3 factual sentences>',
+    'Recommendation: <1-3 actionable sentences>',
+  ].filter(l => l !== null).join('\n');
+}
+
+function copyWordingPrompt() {
+  const item = ITEMS.find(i => i.id === editingItemId);
+  if (!item) return;
+  const raw = document.getElementById('item-notes').value.trim() || document.getElementById('item-blocker').value.trim();
+  const rec = document.getElementById('item-recommendation').value.trim();
+  const text = buildWordingPrompt(item, raw, rec, editingItemStatus, editingItemPriority);
+  const done = () => toast('✨ הפרומפט הועתק. הדבק ב-Claude או Copilot, ואז לחץ "הדבק ניסוח מהלוח"', 'success');
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(done).catch(() => window.prompt('העתק ידנית:', text));
+  else window.prompt('העתק ידנית:', text);
+}
+
+function parseWordingReply(text) {
+  const t = String(text || '');
+  const f = t.match(/Finding:\s*([\s\S]*?)(?=\n\s*Recommendation:|$)/i);
+  const r = t.match(/Recommendation:\s*([\s\S]*)$/i);
+  return {finding: f ? f[1].trim() : '', recommendation: r ? r[1].trim() : ''};
+}
+
+async function pasteWordingReply() {
+  try {
+    const {finding, recommendation} = parseWordingReply(await navigator.clipboard.readText());
+    if (!finding && !recommendation) { toast('לא נמצא "Finding:" או "Recommendation:" בלוח', 'danger'); return; }
+    const notesEl = document.getElementById('item-notes'), blockerEl = document.getElementById('item-blocker');
+    if (finding) {
+      // The finding was written in the Blocker field: the polished text replaces it so it is not listed twice.
+      if (!notesEl.value.trim() && blockerEl.value.trim()) blockerEl.value = '';
+      notesEl.value = finding;
+    }
+    if (recommendation) document.getElementById('item-recommendation').value = recommendation;
+    _wordingEdited = true;
+    toast('📥 הניסוח הודבק. בדוק ולחץ שמור (הטקסט המקורי נשמר ואפשר לשחזר)', 'success');
+  } catch (e) { toast('אין גישה ללוח. הדבק ידנית בשדות', 'danger'); }
+}
+
+// Apply a wording file {type:'e5-wording', items:{itemId:{notes, recommendation}}} to one client.
+function applyWordingData(c, data) {
+  if (!data || data.type !== 'e5-wording' || typeof data.items !== 'object' || !data.items) throw new Error('bad wording file');
+  let applied = 0, skipped = 0;
+  Object.entries(data.items).forEach(([id, w]) => {
+    const d = c.items[id];
+    if (!d || !w) { skipped++; return; }
+    if (!d.orig) d.orig = {notes: d.notes || '', blocker: d.blocker || '', recommendation: d.recommendation || ''};
+    const findingWasBlocker = !(d.notes || '').trim() && !!(d.blocker || '').trim();
+    if (typeof w.notes === 'string' && w.notes.trim()) { d.notes = w.notes.trim(); if (findingWasBlocker) d.blocker = ''; }
+    if (typeof w.recommendation === 'string' && w.recommendation.trim()) d.recommendation = w.recommendation.trim();
+    applied++;
+  });
+  return {applied, skipped};
+}
+
+function revertWordingData(c) {
+  let n = 0;
+  Object.values(c.items).forEach(d => {
+    if (!d.orig) return;
+    d.notes = d.orig.notes; d.blocker = d.orig.blocker; d.recommendation = d.orig.recommendation;
+    delete d.orig; n++;
+  });
+  return n;
+}
+
+function applyWordingFile(input) {
+  const file = input.files[0]; input.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const c = getClient(currentClientId);
+      const data = JSON.parse(e.target.result);
+      const count = Object.keys(data.items || {}).length;
+      if (!confirm(`להחיל ניסוח על ${count} בקרות בלקוח "${c.name}"?\nהטקסט המקורי נשמר ואפשר לשחזר.`)) return;
+      const {applied, skipped} = applyWordingData(c, data);
+      save(c.id);
+      renderFindings(c);
+      toast(`✅ הוחל ניסוח על ${applied} בקרות${skipped ? ` (${skipped} דולגו)` : ''}`, 'success');
+    } catch (err) { alert('קובץ ניסוח לא תקין'); }
+  };
+  reader.readAsText(file);
+}
+
+function revertWordingUI() {
+  const c = getClient(currentClientId);
+  if (!confirm('לשחזר את הטקסט המקורי (לפני הניסוח) בכל הבקרות בלקוח הזה?')) return;
+  const n = revertWordingData(c);
+  save(c.id);
+  renderFindings(c);
+  toast(`↩️ שוחזר הטקסט המקורי ב-${n} בקרות`, '');
+}
+
 // ══════════════════════════════════════════════
 //  MODALS
 // ══════════════════════════════════════════════
@@ -2319,6 +2436,7 @@ function openItemModal(itemId) {
   editingItemStatus = data.status || 'pending';
   editingItemPriority = data.priority || item.priority;
 
+  _wordingEdited = false;
   document.getElementById('item-modal-title').textContent = item.title;
   document.getElementById('item-modal-verify').innerHTML = verifyBoxHtml(itemId);
   document.getElementById('item-modal-pillar-badge').textContent = pillar.icon + ' ' + pillar.name;
@@ -2362,6 +2480,8 @@ function saveItem() {
   const recommendation = document.getElementById('item-recommendation').value;
   const blocker = document.getElementById('item-blocker').value;
 
+  // Keep the text as it was before any wording change (first backup wins), so "restore original wording" always works.
+  const origToKeep = prev.orig || (_wordingEdited ? {notes: prev.notes || '', blocker: prev.blocker || '', recommendation: prev.recommendation || ''} : null);
   c.items[itemId] = {
     status: editingItemStatus,
     date: editingItemStatus === 'done' && !date ? new Date().toISOString().split('T')[0] : date,
@@ -2370,7 +2490,9 @@ function saveItem() {
     recommendation,
     blocker,
     priority: editingItemPriority,
+    ...(origToKeep ? {orig: origToKeep} : {}),
   };
+  _wordingEdited = false;
 
   // Log changes
   if (prev.status !== editingItemStatus) {
