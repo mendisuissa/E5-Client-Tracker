@@ -166,10 +166,10 @@
    "portal": "Entra admin center",
    "startUrl": "https://entra.microsoft.com",
    "minimumRole": "Global Reader (Entra)",
-   "check": "Entra → Users: זהה 2 חשבונות Break-Glass (Cloud-only, Global Admin). Sign-in logs: Sign-in אחרון. Conditional Access: Exclusion group בכל Policy. ודא Alert על כל Sign-in.",
+   "check": "Entra → Users: זהה 2 חשבונות Break-Glass (Cloud-only, Global Admin). Sign-in logs: Sign-in אחרון. Conditional Access: Exclusion group בכל Policy (בדיקה אוטומטית לכל ה-Policies: הפקודות למטה, קריאה בלבד). ודא Alert על כל Sign-in.",
    "pass": "2 חשבונות עם סיסמה ארוכה/FIDO2, מוחרגים מ-CA הרגיל (או מוגנים ב-Phishing-resistant), Alert פעיל, ונבדקו ב-90 הימים האחרונים.",
    "evidence": "צילום Exclusion group + Alert rule + תאריך בדיקה אחרון.",
-   "powershellAlternative": false
+   "powershellAlternative": true
   },
   {
    "id": "p1-mdi",
@@ -1888,10 +1888,10 @@
    "portal": "Entra admin center, Conditional Access",
    "startUrl": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
    "minimumRole": "Global Reader (Entra)",
-   "check": "בכל Policy → Exclude: Break-Glass group.",
+   "check": "בכל Policy → Exclude: Break-Glass group. בדיקה אוטומטית (קריאה בלבד): הפקודות למטה. החליפו את החשבונות ב-UPN של ה-BG. הסקריפט מציג לכל Policy אם החשבון מוחרג (EXCLUDED), לא רלוונטי (NOT TARGETED) או חסר (MISSING).",
    "pass": "Break-Glass מוחרג מכל ה-Policies (או מוגן ב-Phishing-resistant), ו-Alert פעיל.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": true
   },
   {
    "id": "p8-mfa-all",
