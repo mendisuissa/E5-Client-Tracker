@@ -193,49 +193,87 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .vb-copy:hover{background:#475569;}
 
 /* ── CLIENT-FACING FINDINGS REPORT (English, LTR) ── */
-.fr{direction:ltr;text-align:left;font-family:'Segoe UI',Calibri,Arial,sans-serif;color:#0f172a;max-width:920px;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-.fr h2{font-size:1.15rem;font-weight:800;color:var(--primary);margin:30px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary);}
-.fr h3{font-size:.98rem;font-weight:800;margin:20px 0 6px;}
-.fr p{font-size:.9rem;line-height:1.6;margin:6px 0;}
-.fr-cover{background:linear-gradient(135deg,var(--primary-dark),var(--primary-light));color:#fff;border-radius:12px;padding:32px 36px;margin-bottom:22px;}
-.fr-eyebrow{font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8;}
-.fr-cover h1{font-size:2rem;font-weight:800;margin:6px 0 4px;}
-.fr-cover .fr-client{font-size:1.2rem;font-weight:700;}
-.fr-meta{display:flex;gap:20px;flex-wrap:wrap;font-size:.8rem;opacity:.88;margin-top:14px;}
-.fr-scores{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:12px 0;}
-.fr-score{border:2px solid var(--border);border-radius:12px;padding:16px;text-align:center;background:#fff;}
-.fr-score .v{font-size:2.5rem;font-weight:800;line-height:1.1;}
-.fr-score .l{font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
-.fr-score .m{display:inline-block;margin-top:6px;font-size:.7rem;font-weight:700;color:#fff;padding:2px 11px;border-radius:10px;}
-.fr-score .s{font-size:.7rem;color:var(--muted);margin-top:6px;}
-.fr-bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#e2e8f0;margin:10px 0 6px;}
-.fr-bar span{display:block;height:100%;}
-.fr-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.78rem;color:var(--muted);}
-.fr-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle;}
-.fr-table{width:100%;border-collapse:collapse;font-size:.84rem;margin:8px 0;}
-.fr-table th{background:#f1f5f9;text-align:left;padding:8px 10px;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
-.fr-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
-.fr-table .num{text-align:center;}
-.fr-chip{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:10px;color:#fff;white-space:nowrap;}
-.fr-finding{border:1px solid var(--border);border-left:5px solid var(--muted);border-radius:8px;padding:12px 16px;margin:10px 0;background:#fff;break-inside:avoid;page-break-inside:avoid;}
-.fr-f-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.74rem;}
-.fr-id{font-weight:800;color:var(--muted);}
-.fr-ws{color:var(--muted);}
-.fr-finding h4{font-size:.98rem;margin:6px 0 8px;}
-.fr-row{display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:.86rem;margin:5px 0;line-height:1.55;}
-.fr-row b{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;padding-top:3px;}
-.fr-missing{color:#dc2626;font-style:italic;}
-.fr-list{columns:2;column-gap:30px;font-size:.84rem;padding-left:18px;}
-.fr-list li{margin-bottom:3px;break-inside:avoid;}
-.fr-ws-title{font-size:.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 4px;}
-.fr-note{font-size:.76rem;color:var(--muted);}
-.fr-readiness{direction:rtl;text-align:right;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 16px;margin:0 auto 18px;max-width:920px;font-size:.84rem;}
+/* ── CloudEdge security posture report (class prefix rp-; shared by screen, PDF and the exported HTML) ── */
+.fr{direction:ltr;text-align:left;font-family:'Segoe UI',Calibri,Arial,sans-serif;color:#1b2430;max-width:960px;margin:0 auto;font-size:14px;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.fr *{box-sizing:border-box;}
+.rp-top{background:linear-gradient(120deg,#08213f 0%,#0d3a66 62%,#0f4c81 100%);color:#fff;border-radius:8px;padding:22px 26px;display:flex;gap:24px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px;}
+.rp-brand{display:flex;align-items:center;gap:12px;}
+.rp-brand .nm{font-size:1.3rem;font-weight:700;letter-spacing:.01em;line-height:1.1;}
+.rp-brand .nm b{color:#4dd0e1;font-weight:700;}
+.rp-brand .pt{font-size:.7rem;opacity:.8;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.rp-h1{margin:22px 0 2px;font-size:1.9rem;font-weight:700;line-height:1.15;}
+.rp-sub{font-size:.9rem;opacity:.85;}
+.rp-meta{margin:0;display:grid;grid-template-columns:auto auto;gap:6px 22px;font-size:.8rem;align-content:start;}
+.rp-meta dt{opacity:.7;text-transform:uppercase;letter-spacing:.06em;font-size:.66rem;margin:0;}
+.rp-meta dd{margin:0 0 4px;font-weight:600;}
+.rp-sec{margin:26px 0 0;}
+.rp-h{font-size:1.05rem;font-weight:700;color:#0a2540;margin:0 0 12px;padding-bottom:7px;border-bottom:1px solid #d6dde6;display:flex;align-items:baseline;gap:10px;}
+.rp-h small{font-weight:400;color:#64748b;font-size:.78rem;}
+.rp-h3{font-size:.82rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.07em;margin:20px 0 8px;}
+.rp-lead{margin:0 0 14px;font-size:.95rem;}
+.rp-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}.rp-grid3>*{min-width:0;}
+.rp-card{background:#fff;border:1px solid #dfe5ec;border-radius:8px;padding:14px 16px;}
+.rp-card h4{margin:0 0 10px;font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;}
+.rp-vis{display:flex;align-items:center;gap:12px;}.rp-vis>div{min-width:0;}
+.rp-big{font-size:2.1rem;font-weight:700;line-height:1;}
+.rp-cap{font-size:.74rem;color:#64748b;margin-top:2px;}
+.rp-leg{display:grid;gap:4px;font-size:.8rem;flex:1;}
+.rp-leg div{display:flex;align-items:center;gap:7px;}
+.rp-leg i{width:9px;height:9px;border-radius:2px;flex:none;}
+.rp-leg b{margin-inline-start:auto;font-variant-numeric:tabular-nums;}
+.rp-sevrow{display:grid;grid-template-columns:78px 1fr 28px;gap:8px;align-items:center;font-size:.8rem;margin:7px 0;}
+.rp-track{height:8px;background:#eef1f5;border-radius:4px;overflow:hidden;}
+.rp-track i{display:block;height:100%;border-radius:4px;}
+.rp-sub2{margin-top:10px;padding-top:8px;border-top:1px solid #eef1f5;font-size:.78rem;color:#475569;display:flex;gap:16px;flex-wrap:wrap;}
+.rp-sub2 b{color:#0f172a;}
+.rp-wslist{border-top:1px solid #eef1f5;}.rp-ws{display:grid;grid-template-columns:230px 1fr 40px 210px 92px;gap:12px;align-items:center;padding:9px 4px;border-bottom:1px solid #eef1f5;font-size:.84rem;}
+.rp-ws:last-child{border-bottom:0;}
+.rp-ws .nm{font-weight:600;}
+.rp-ws .cn{font-size:.74rem;color:#64748b;}
+.rp-ws .sc{font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
+.rp-pill{display:inline-block;font-size:.68rem;font-weight:700;padding:1px 8px;border-radius:4px;white-space:nowrap;border:1px solid transparent;}
+.rp-st{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:600;white-space:nowrap;}
+.rp-st:before{content:'';width:8px;height:8px;border-radius:50%;background:var(--c,#94a3b8);}
+.rp-tbl{width:100%;border-collapse:collapse;font-size:.82rem;}
+.rp-tbl th{background:#f3f5f8;text-align:left;padding:8px 10px;font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:#64748b;border-bottom:1px solid #dfe5ec;}
+.rp-tbl td{padding:9px 10px;border-bottom:1px solid #f0f2f5;vertical-align:top;}
+.rp-tbl .id{font-weight:700;color:#64748b;white-space:nowrap;}
+.rp-waves{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.rp-wave h5{margin:0;font-size:.95rem;color:#0a2540;}
+.rp-wave .wh{font-size:.72rem;color:#64748b;margin:2px 0 8px;}
+.rp-wave ul{list-style:none;margin:0;padding:0;font-size:.78rem;}
+.rp-wave li{padding:5px 0;border-top:1px solid #f0f2f5;display:flex;gap:7px;align-items:flex-start;}
+.rp-wave li i{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none;}
+.rp-wave .more{color:#64748b;font-style:italic;}
+.rp-filters{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 12px;}
+.rp-filters input,.rp-filters select{border:1px solid #cdd5df;border-radius:6px;padding:5px 9px;font:inherit;font-size:.8rem;background:#fff;color:#1b2430;}
+.rp-filters input{flex:1;min-width:180px;}
+.rp-filters button{border:1px solid #cdd5df;background:#fff;border-radius:14px;padding:3px 11px;font:inherit;font-size:.76rem;cursor:pointer;color:#1b2430;}
+.rp-filters button.on{background:#0a2540;color:#fff;border-color:#0a2540;}
+.rp-filters .n{font-size:.76rem;color:#64748b;margin-inline-start:auto;}
+.rp-find{background:#fff;border:1px solid #dfe5ec;border-left:5px solid #94a3b8;border-radius:8px;padding:12px 16px;margin:10px 0;}
+.rp-fh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.74rem;}
+.rp-fid{font-weight:700;color:#64748b;}
+.rp-fws{color:#64748b;margin-inline-start:auto;}
+.rp-find h4{margin:6px 0 8px;font-size:.98rem;color:#0f172a;}
+.rp-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.rp-cols b{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:2px;}
+.rp-cols div{font-size:.84rem;}
+.rp-missing{color:#dc2626;font-style:italic;}
+.rp-list{columns:2;column-gap:28px;font-size:.82rem;padding-left:18px;margin:6px 0;}
+.rp-list li{margin-bottom:3px;break-inside:avoid;}
+.rp-note{font-size:.76rem;color:#64748b;}
+.rp-foot{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #dfe5ec;margin-top:30px;padding-top:12px;font-size:.74rem;color:#64748b;}
+.fr-readiness{direction:rtl;text-align:right;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 16px;margin:0 auto 18px;max-width:960px;font-size:.84rem;}
 .fr-readiness button{font-size:.72rem;padding:2px 8px;margin:2px;border:1px solid #fcd34d;background:#fff;border-radius:6px;cursor:pointer;}
-.fr-footer{text-align:center;font-size:.74rem;color:var(--muted);border-top:1px solid var(--border);padding-top:14px;margin-top:30px;}
 .fr-appendix{margin-top:20px;font-size:.84rem;}
-@media(max-width:768px){.fr-scores{grid-template-columns:1fr;}.fr-row{grid-template-columns:1fr;}.fr-list{columns:1;}}
-@media print{.fr-readiness,.fr-appendix{display:none!important;}.fr-cover{border-radius:0;}.fr h2{break-after:avoid;}#view-findings{padding:0;}}
-#view-findings.pdf-mode .fr-readiness,#view-findings.pdf-mode .fr-appendix,.fr.pdf-clone .fr-appendix{display:none!important;}
+@media(max-width:768px){.rp-grid3,.rp-waves,.rp-cols{grid-template-columns:1fr;}.rp-ws{grid-template-columns:1fr 1fr;}.rp-list{columns:1;}}
+@media print{.fr-readiness,.fr-appendix,.rp-filters{display:none!important;}#view-findings{padding:0;}.rp-find,.rp-card,.rp-wave{break-inside:avoid;}}
+#view-findings.pdf-mode .fr-readiness,#view-findings.pdf-mode .fr-appendix{display:none!important;}
+.exp-wrap{position:relative;display:inline-block;}
+.exp-menu{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid #cbd5e1;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,.18);min-width:190px;z-index:30;padding:4px;}
+.exp-menu button{display:block;width:100%;text-align:right;background:none;border:0;padding:8px 12px;border-radius:6px;cursor:pointer;font:inherit;font-size:.85rem;color:#0f172a;}
+.exp-menu button:hover{background:#eef2f7;}
 .item-check.partial{background:linear-gradient(90deg,#0891b2 50%,transparent 50%);border-color:#0891b2;color:#fff;}
 .checklist-item.partial-item{background:#f0fdfa;}
 .ri-status-partial{background:#cffafe;color:#155e75;}
@@ -502,8 +540,15 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 <div class="view" id="view-findings">
   <div class="report-actions">
     <button class="btn btn-outline btn-sm" onclick="backToClient()">← חזור</button>
-    <button class="btn btn-primary btn-sm" id="btn-findings-pdf" onclick="downloadFindingsPDF()">⬇️ הורד PDF</button>
-    <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ הדפסה</button>
+    <div class="exp-wrap">
+      <button class="btn btn-primary btn-sm" id="btn-export" onclick="toggleExportMenu(event)">⬇️ ייצוא דוח ▾</button>
+      <div class="exp-menu" id="exp-menu" hidden>
+        <button onclick="exportReport('pdf')">📄 PDF</button>
+        <button onclick="exportReport('html')">🌐 HTML</button>
+        <button onclick="exportReport('xlsx')">📊 Excel (XLSX)</button>
+        <button onclick="window.print()">🖨️ הדפסה</button>
+      </div>
+    </div>
   </div>
   <div id="findings-content"></div>
 </div>
@@ -2161,7 +2206,35 @@ function showFindings(clientId) {
   showView('findings');
 }
 
-function renderFindings(c) {
+const REPORT_BRAND = {name: 'CloudEdge', title: 'Security Posture Report', tagline: 'Microsoft 365 E5 Security, Governance and AI Assessment'};
+// Suggested remediation sequence, derived from the tracker's implementation phases.
+const REPORT_WAVES = [
+  {label: 'Wave 1', when: '0 to 30 days', focus: 'Foundation', phases: [1]},
+  {label: 'Wave 2', when: '30 to 60 days', focus: 'Devices and threat protection', phases: [2, 3]},
+  {label: 'Wave 3', when: '60 to 90 days', focus: 'Advanced identity, data and detection', phases: [4, 5, 6]},
+];
+const waveOf = item => { const i = REPORT_WAVES.findIndex(w => w.phases.includes(item.phase)); return i < 0 ? 2 : i; };
+const findingText = r => (r.d.notes || '').trim() || (r.d.blocker || '').trim();
+const blockerIsFinding = r => !(r.d.notes || '').trim() && !!(r.d.blocker || '').trim() && (r.status === 'fail' || r.status === 'partial');
+
+function brandLogoSvg(px) {
+  return `<svg width="${px}" height="${px}" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ceg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4dd0e1"/><stop offset="1" stop-color="#0891b2"/></linearGradient></defs><rect width="48" height="48" rx="11" fill="url(#ceg)"/><path d="M14 30a6 6 0 0 1 1.2-11.9A8.5 8.5 0 0 1 31.6 16 7 7 0 0 1 33 30z" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><path d="M12 35h24" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+}
+
+function rpDonut(parts, size, thick, mid) {
+  const r = (size - thick) / 2, C = 2 * Math.PI * r, tot = parts.reduce((s, p) => s + p.v, 0) || 1, h = size / 2;
+  let off = 0;
+  const arcs = parts.filter(p => p.v > 0).map(p => {
+    const len = p.v / tot * C;
+    const s = `<circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="${p.color}" stroke-width="${thick}" stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}"/>`;
+    off += len; return s;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex:none"><circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="#eef1f5" stroke-width="${thick}"/><g transform="rotate(-90 ${h} ${h})">${arcs}</g>${mid}</svg>`;
+}
+const rpSevPill = sev => { const s = SEVERITY_EN[sev] || SEVERITY_EN.medium; return `<span class="rp-pill" style="background:${s.bg};color:${s.color};border-color:${s.color}40">${s.label}</span>`; };
+const rpStatus = st => `<span class="rp-st" style="--c:${STATUS_COLOR[st]}">${STATUS_EN[st]}</span>`;
+
+function buildReportModel(c) {
   const rows = ITEMS.map((item, idx) => {
     const d = c.items[item.id] || {};
     return {item, idx, d, status: d.status || 'pending', sev: d.priority || item.priority};
@@ -2173,25 +2246,167 @@ function renderFindings(c) {
   const sevRank = r => SEVERITY_EN[r.sev]?.rank ?? 2;
   const findings = [...fail, ...partial].sort((a, b) => sevRank(a) - sevRank(b) || a.idx - b.idx);
   findings.forEach((f, i) => { f.fid = 'F-' + String(i + 1).padStart(2, '0'); });
-
-  // A score built on fewer than MIN_SCORED assessed controls says little (one passed control would read "100, Optimized"),
-  // so below that threshold the report shows "Not enough data" instead of a number.
+  // A score built on fewer than MIN_SCORED assessed controls says little (one passed control would read "100, Optimized").
   const MIN_SCORED = 3;
   const govAssessedN = getGovernanceItems().filter(i => isAssessed(c, i)).length;
-  const scores = [
-    {label: 'Adoption', v: getAdoptionScore(c, true), ok: assessedN >= MIN_SCORED, sub: 'How much of the licensed capability is in use'},
-    {label: 'Security', v: getSecurityScore(c, true), ok: assessedN >= MIN_SCORED, sub: 'Weighted protection across identity, endpoint, email, data, cloud apps and detection'},
-    {label: 'Governance', v: getGovernanceScore(c, true), ok: govAssessedN >= MIN_SCORED, sub: 'Process and oversight controls'},
-  ];
+  const scores = {
+    security: {label: 'Security', v: getSecurityScore(c, true), ok: assessedN >= MIN_SCORED, sub: 'Weighted protection score'},
+    adoption: {label: 'Adoption', v: getAdoptionScore(c, true), ok: assessedN >= MIN_SCORED, sub: 'How much of the licensed capability is in use'},
+    governance: {label: 'Governance', v: getGovernanceScore(c, true), ok: govAssessedN >= MIN_SCORED, sub: 'Process and oversight controls'},
+  };
   const sevCount = k => findings.filter(f => f.sev === k).length;
-  const critHigh = findings.filter(f => f.sev === 'critical' || f.sev === 'high');
+  const workstreams = PILLARS.map(p => {
+    const its = rows.filter(r => r.item.pillar === p.id && r.status !== 'na');
+    const a = its.filter(r => ['done', 'partial', 'fail'].includes(r.status));
+    return {id: p.id, name: PILLAR_EN[p.id], total: its.length, assessed: a.length,
+      met: a.filter(r => r.status === 'done').length, partial: a.filter(r => r.status === 'partial').length, fail: a.filter(r => r.status === 'fail').length,
+      score: a.length >= MIN_SCORED ? getPillarWeightedScore(c, p.id, true) : null};
+  });
+  const matrix = rows.filter(r => ['done', 'partial', 'fail'].includes(r.status))
+    .sort((a, b) => PILLARS.findIndex(p => p.id === a.item.pillar) - PILLARS.findIndex(p => p.id === b.item.pillar) || a.idx - b.idx);
+  const limits = rows.filter(r => (r.d.blocker || '').trim() && !blockerIsFinding(r));
   const today = new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'});
+  return {c, rows, met, partial, fail, pending, na, applicable, assessedN, findings, scores, sevCount, workstreams, matrix, limits, today, MIN_SCORED, govAssessedN};
+}
 
+function renderReportHtml(m) {
+  const {c, met, partial, fail, pending, na, applicable, assessedN, findings, scores, sevCount, workstreams, matrix, limits, today, MIN_SCORED, govAssessedN} = m;
+  const crit = findings.filter(f => f.sev === 'critical' || f.sev === 'high');
+  const title = f => escHtml(titleEn(f.item));
+  const txtOrMissing = t => t ? fmtText(t) : '<span class="rp-missing">To be completed</span>';
+
+  const summaryText = assessedN
+    ? `We assessed <b>${assessedN}</b> of <b>${applicable}</b> applicable controls: <b>${met.length}</b> are fully in place, <b>${partial.length}</b> are partially in place and <b>${fail.length}</b> are not implemented. ` +
+      (crit.length ? `<b>${sevCount('critical')}</b> Critical and <b>${sevCount('high')}</b> High findings need priority attention.` : 'No Critical or High findings were recorded.')
+    : 'No controls have been assessed yet.';
+
+  // ── overview cards ──
+  const sec = scores.security, secM = getMaturityLevel(sec.v);
+  const mid = (big, small, color, sz) => `<text x="50%" y="44%" text-anchor="middle" dominant-baseline="central" font-size="${Math.round(sz * 0.26)}" font-weight="700" fill="${color}" font-family="Segoe UI,Arial,sans-serif">${big}</text><text x="50%" y="66%" text-anchor="middle" font-size="${Math.max(7, Math.round(sz * 0.085))}" fill="#64748b" font-family="Segoe UI,Arial,sans-serif">${small}</text>`;
+  const scoreOf = s => s.ok ? s.v : '-';
+  const cardPosture = `<div class="rp-card"><h4>Security posture</h4><div class="rp-vis">
+      ${rpDonut([{v: sec.ok ? sec.v : 0, color: secM.color}, {v: sec.ok ? 100 - sec.v : 100, color: '#eef1f5'}], 100, 12, mid(scoreOf(sec), 'of 100', sec.ok ? secM.color : '#94a3b8', 100))}
+      <div><span class="rp-pill" style="background:${sec.ok ? secM.color : '#94a3b8'};color:#fff">${sec.ok ? secM.label : 'Not enough data'}</span><div class="rp-cap" style="margin-top:8px">${sec.sub}</div></div></div>
+      <div class="rp-sub2"><span>Adoption <b>${scoreOf(scores.adoption)}</b></span><span>Governance <b>${scoreOf(scores.governance)}</b></span></div></div>`;
+  const statusParts = [['done', met.length], ['partial', partial.length], ['fail', fail.length], ['pending', pending.length]];
+  const cardControls = `<div class="rp-card"><h4>Controls status</h4><div class="rp-vis">
+      ${rpDonut(statusParts.map(([s, n]) => ({v: n, color: STATUS_COLOR[s]})), 88, 11, mid(assessedN, `of ${applicable}`, '#0f172a', 88))}
+      <div class="rp-leg">${statusParts.map(([s, n]) => `<div><i style="background:${STATUS_COLOR[s]}"></i>${STATUS_EN[s]}<b>${n}</b></div>`).join('')}</div></div></div>`;
+  const maxSev = Math.max(1, ...Object.keys(SEVERITY_EN).map(sevCount));
+  const cardSev = `<div class="rp-card"><h4>Findings by severity</h4>${Object.keys(SEVERITY_EN).map(k => `<div class="rp-sevrow">${rpSevPill(k)}<div class="rp-track"><i style="width:${(sevCount(k) / maxSev * 100).toFixed(1)}%;background:${SEVERITY_EN[k].color}"></i></div><b>${sevCount(k)}</b></div>`).join('')}
+      <div class="rp-sub2"><span>Total <b>${findings.length}</b></span><span>Not implemented <b>${fail.length}</b></span><span>Partial <b>${partial.length}</b></span></div></div>`;
+
+  // ── workstreams ──
+  const wsHtml = workstreams.map(w => {
+    const mt = w.score === null ? null : getMaturityLevel(w.score);
+    return `<div class="rp-ws"><div class="nm">${w.name}</div>
+      <div class="rp-track" style="height:10px"><i style="width:${w.score === null ? 0 : Math.max(w.score, 1)}%;background:${mt ? mt.color : '#cbd5e1'}"></i></div>
+      <div class="sc">${w.score === null ? '-' : w.score}</div>
+      <div class="cn">${w.assessed} of ${w.total} assessed · ${w.met} met · ${w.partial} partial · ${w.fail} not implemented</div>
+      <div>${mt ? `<span class="rp-pill" style="background:${mt.color};color:#fff">${mt.label}</span>` : '<span class="rp-note">Not enough data</span>'}</div></div>`;
+  }).join('');
+
+  // ── priority recommendations and roadmap ──
+  const prio = crit.slice(0, 8).map(f => `<tr><td class="id">${f.fid}</td><td>${rpSevPill(f.sev)}</td><td><b>${title(f)}</b><div class="rp-note">${PILLAR_EN[f.item.pillar]}</div></td><td>${rpStatus(f.status)}</td></tr>`).join('');
+  const waves = REPORT_WAVES.map((w, wi) => {
+    const list = findings.filter(f => waveOf(f.item) === wi);
+    return `<div class="rp-card rp-wave"><h5>${w.label}</h5><div class="wh">${w.when} · ${w.focus} · ${list.length} findings</div><ul>${list.slice(0, 6).map(f => `<li><i style="background:${SEVERITY_EN[f.sev].color}"></i><span><b>${f.fid}</b> ${title(f)}</span></li>`).join('')}${list.length > 6 ? `<li class="more">and ${list.length - 6} more</li>` : ''}${list.length ? '' : '<li class="more">No findings</li>'}</ul></div>`;
+  }).join('');
+
+  // ── findings ──
+  const findingCard = f => {
+    const sv = SEVERITY_EN[f.sev] || SEVERITY_EN.medium;
+    return `<div class="rp-find" data-sev="${f.sev}" data-st="${f.status}" data-ws="${f.item.pillar}" data-text="${escHtml((f.fid + ' ' + titleEn(f.item) + ' ' + findingText(f) + ' ' + (f.d.recommendation || '')).toLowerCase())}" style="border-left-color:${sv.color}">
+      <div class="rp-fh"><span class="rp-fid">${f.fid}</span>${rpSevPill(f.sev)}${rpStatus(f.status)}<span class="rp-fws">${PILLAR_EN[f.item.pillar]}</span></div>
+      <h4>${title(f)}</h4>
+      <div class="rp-cols"><div><b>Finding</b>${txtOrMissing(findingText(f))}</div><div><b>Recommendation</b>${txtOrMissing((f.d.recommendation || '').trim())}</div></div></div>`;
+  };
+  const filters = `<div class="rp-filters">
+      <input type="search" class="rp-q" placeholder="Search findings">
+      ${Object.keys(SEVERITY_EN).map(k => `<button type="button" data-sev="${k}" class="on">${SEVERITY_EN[k].label}</button>`).join('')}
+      <button type="button" data-st="fail" class="on">Not implemented</button><button type="button" data-st="partial" class="on">Partially met</button>
+      <select class="rp-ws-sel"><option value="">All workstreams</option>${PILLARS.map(p => `<option value="${p.id}">${PILLAR_EN[p.id]}</option>`).join('')}</select>
+      <span class="n"></span></div>`;
+  const findingsHtml = findings.length
+    ? filters + Object.keys(SEVERITY_EN).map(k => {
+        const g = findings.filter(f => f.sev === k);
+        return g.length ? `<div class="rp-grp" data-sev="${k}"><div class="rp-h3">${SEVERITY_EN[k].label} (${g.length})</div>${g.map(findingCard).join('')}</div>` : '';
+      }).join('')
+    : '<p>No findings were recorded.</p>';
+
+  // ── strengths, matrix, scope ──
+  const strengths = met.filter(r => r.sev === 'critical' || r.sev === 'high');
+  const matrixHtml = `<table class="rp-tbl"><thead><tr><th>Control</th><th>Workstream</th><th>Severity</th><th>Status</th></tr></thead><tbody>${matrix.map(r =>
+    `<tr><td>${escHtml(titleEn(r.item))}</td><td>${PILLAR_EN[r.item.pillar]}</td><td>${rpSevPill(r.sev)}</td><td>${rpStatus(r.status)}</td></tr>`).join('')}</tbody></table>`;
+
+  return `<div class="fr">
+    <div class="rp-top">
+      <div>
+        <div class="rp-brand">${brandLogoSvg(40)}<div><div class="nm">Cloud<b>Edge</b></div><div class="pt">${REPORT_BRAND.title}</div></div></div>
+        <h1 class="rp-h1">${escHtml(c.name)}</h1><div class="rp-sub">${REPORT_BRAND.tagline}</div>
+      </div>
+      <dl class="rp-meta"><div><dt>Report date</dt><dd>${today}</dd></div>${c.consultant ? `<div><dt>Prepared by</dt><dd>${escHtml(c.consultant)}</dd></div>` : ''}
+        <div><dt>Environment</dt><dd>${MODE_EN[c.mode] || '-'}</dd></div>${c.licenses ? `<div><dt>E5 licenses</dt><dd>${escHtml(c.licenses)}</dd></div>` : ''}
+        <div><dt>Coverage</dt><dd>${assessedN} of ${applicable} controls</dd></div></dl>
+    </div>
+
+    <div class="rp-sec"><h2 class="rp-h">Overview</h2><p class="rp-lead">${summaryText}</p>
+      <div class="rp-grid3">${cardPosture}${cardControls}${cardSev}</div>
+      <p class="rp-note" style="margin-top:8px">Scores cover assessed controls only (${assessedN} of ${applicable}) and appear once at least ${MIN_SCORED} controls are assessed. Not applicable controls (${na.length}) are excluded.</p></div>
+
+    <div class="rp-sec"><h2 class="rp-h">Posture by workstream</h2><div class="rp-wslist">${wsHtml}</div></div>
+
+    ${prio ? `<div class="rp-sec"><h2 class="rp-h">Priority recommendations <small>Critical and High</small></h2><div class="rp-card" style="padding:0"><table class="rp-tbl"><thead><tr><th>ID</th><th>Severity</th><th>Recommendation</th><th>Status</th></tr></thead><tbody>${prio}</tbody></table></div></div>` : ''}
+
+    ${findings.length ? `<div class="rp-sec"><h2 class="rp-h">Remediation roadmap <small>Suggested sequence</small></h2><div class="rp-waves">${waves}</div></div>` : ''}
+
+    <div class="rp-sec"><h2 class="rp-h">Findings <small>${findings.length} items</small></h2>${findingsHtml}</div>
+
+    ${strengths.length ? `<div class="rp-sec"><h2 class="rp-h">What is working well</h2><p class="rp-note">Critical and High controls assessed as fully in place (all ${met.length} Met controls are listed in the control matrix).</p><ul class="rp-list">${strengths.map(r => `<li>${escHtml(titleEn(r.item))}</li>`).join('')}</ul></div>` : ''}
+
+    <div class="rp-sec"><h2 class="rp-h">Control matrix <small>${matrix.length} assessed controls</small></h2>${matrixHtml}</div>
+
+    ${na.length ? `<div class="rp-sec"><h2 class="rp-h">Not applicable</h2><p class="rp-note">Controls outside the scope of this environment.</p><ul class="rp-list">${na.map(r => `<li>${escHtml(titleEn(r.item))}</li>`).join('')}</ul></div>` : ''}
+    ${limits.length ? `<div class="rp-sec"><h2 class="rp-h">Assessment limitations</h2><ul class="rp-list" style="columns:1">${limits.map(r => `<li><b>${escHtml(titleEn(r.item))}</b>: ${escHtml(r.d.blocker.trim())}</li>`).join('')}</ul></div>` : ''}
+
+    <div class="rp-sec"><h2 class="rp-h">Scope and method</h2>
+      <p>The assessment reviews the Microsoft 365 E5 security stack across identity, devices, endpoint, email, cloud apps, data protection, security operations, conditional access and AI governance. Each control is rated Met, Partially met, Not implemented or Not applicable. Evidence was collected read-only from the customer tenant.</p>
+      <p>Scores are priority-weighted (Critical 5, High 3, Medium 2, Low 1). Partially met controls earn half credit. The Security score weights identity 25%, endpoint 20%, email 15%, data 15%, cloud apps 10% and detection 15%; the Governance score covers ${govAssessedN} assessed process and oversight controls.</p>
+      <table class="rp-tbl" style="max-width:420px"><thead><tr><th>Maturity</th><th>Score range</th></tr></thead><tbody>${MATURITY_LEVELS.map((mt, i) => `<tr><td><span class="rp-pill" style="background:${mt.color};color:#fff">${mt.label}</span></td><td>${i === 0 ? 0 : MATURITY_LEVELS[i - 1].max + 1} to ${mt.max}</td></tr>`).join('')}</tbody></table></div>
+
+    <div class="rp-foot"><span>${REPORT_BRAND.name} | ${REPORT_BRAND.title} | Confidential</span><span>Prepared for ${escHtml(c.name)}, ${today}</span></div>
+  </div>`;
+}
+
+// Self-contained (it is also serialized into the exported HTML file): wires the findings filters inside `root`.
+function rpWireFilters(root) {
+  const bar = root.querySelector('.rp-filters'); if (!bar) return;
+  const sev = new Set(), st = new Set();
+  bar.querySelectorAll('button[data-sev]').forEach(b => sev.add(b.dataset.sev));
+  bar.querySelectorAll('button[data-st]').forEach(b => st.add(b.dataset.st));
+  const apply = () => {
+    const q = bar.querySelector('.rp-q').value.trim().toLowerCase(), ws = bar.querySelector('.rp-ws-sel').value; let n = 0;
+    root.querySelectorAll('.rp-find').forEach(f => {
+      const ok = sev.has(f.dataset.sev) && st.has(f.dataset.st) && (!ws || f.dataset.ws === ws) && (!q || f.dataset.text.includes(q));
+      f.style.display = ok ? '' : 'none'; if (ok) n++;
+    });
+    root.querySelectorAll('.rp-grp').forEach(g => { g.style.display = [...g.querySelectorAll('.rp-find')].some(f => f.style.display !== 'none') ? '' : 'none'; });
+    bar.querySelector('.n').textContent = n + ' shown';
+  };
+  bar.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    const set = b.dataset.sev ? sev : st, v = b.dataset.sev || b.dataset.st;
+    set.has(v) ? set.delete(v) : set.add(v); b.classList.toggle('on'); apply();
+  }));
+  bar.querySelector('.rp-q').addEventListener('input', apply);
+  bar.querySelector('.rp-ws-sel').addEventListener('change', apply);
+  apply();
+}
+
+function renderFindings(c) {
+  const m = buildReportModel(c);
+  const {rows, findings, pending, applicable, assessedN} = m;
   // ── internal readiness panel (screen only, Hebrew) ──
-  // The finding text is the Notes field; when only the Blocker field was filled (the earlier working habit),
-  // that text is the finding. It then must not be repeated under "Assessment limitations".
-  const findingText = r => (r.d.notes || '').trim() || (r.d.blocker || '').trim();
-  const blockerIsFinding = r => !(r.d.notes || '').trim() && !!(r.d.blocker || '').trim() && (r.status === 'fail' || r.status === 'partial');
+  // The finding text is the Notes field; when only the Blocker field was filled (the earlier working habit), that text is the finding.
   const noText = findings.filter(f => !findingText(f));
   const noRec = findings.filter(f => !(f.d.recommendation || '').trim());
   const chips = list => list.map(f => `<button onclick="openItemModal('${f.item.id}')">${f.fid}</button>`).join('');
@@ -2205,118 +2420,114 @@ function renderFindings(c) {
         ${Object.values(c.items).some(d => d.orig) ? '<button onclick="revertWordingUI()">↩️ שחזר ניסוח מקורי</button>' : ''}
       </div>
     </div>`;
+  const box = document.getElementById('findings-content');
+  box.innerHTML = readiness + renderReportHtml(m);
+  rpWireFilters(box);
+}
 
-  // ── executive summary ──
-  const barSegs = ['done', 'partial', 'fail', 'pending'].map(s => {
-    const n = rows.filter(r => r.status === s).length;
-    return n && applicable ? `<span style="width:${(n / applicable * 100).toFixed(2)}%;background:${STATUS_COLOR[s]}" title="${STATUS_EN[s]}: ${n}"></span>` : '';
-  }).join('');
-  const legend = ['done', 'partial', 'fail', 'pending'].map(s =>
-    `<span><i style="background:${STATUS_COLOR[s]}"></i>${STATUS_EN[s]}: <b>${rows.filter(r => r.status === s).length}</b></span>`).join('');
+// ── Export: PDF, HTML, Excel ──────────────────
+function reportCss() {
+  let css = '';
+  for (const sh of document.styleSheets) {
+    try { for (const r of sh.cssRules) if (r.cssText.includes('.rp-') || r.cssText.startsWith('.fr ') || r.cssText.startsWith('.fr{') || r.cssText.startsWith('.fr *')) css += r.cssText + '\n'; } catch (e) { /* cross-origin sheet */ }
+  }
+  return css;
+}
+function reportFileName(c, ext) { return `${c.name.replace(/[^\w\-]+/g, '_')}-CloudEdge-Security-Posture-Report-${new Date().toISOString().slice(0, 10)}.${ext}`; }
+function downloadBlob(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function setExportBusy(text) { const b = document.getElementById('btn-export'); if (b) { b.disabled = !!text; b.textContent = text || '⬇️ ייצוא דוח ▾'; } }
+function toggleExportMenu(ev) { ev.stopPropagation(); const m = document.getElementById('exp-menu'); m.hidden = !m.hidden; }
+document.addEventListener('click', () => { const m = document.getElementById('exp-menu'); if (m) m.hidden = true; });
 
-  const summaryText = assessedN
-    ? `We assessed <b>${assessedN}</b> of <b>${applicable}</b> applicable controls. <b>${met.length}</b> are fully in place, <b>${partial.length}</b> are partially in place and <b>${fail.length}</b> are not implemented. ` +
-      (critHigh.length
-        ? `<b>${sevCount('critical')}</b> Critical and <b>${sevCount('high')}</b> High findings need priority attention.`
-        : 'No Critical or High findings were recorded.')
-    : 'No controls have been assessed yet.';
+async function exportReport(fmt) {
+  const c = getClient(currentClientId); if (!c) return;
+  document.getElementById('exp-menu').hidden = true;
+  try {
+    if (fmt === 'pdf') return await downloadFindingsPDF();
+    setExportBusy('⏳ מכין...');
+    if (fmt === 'html') exportReportHtml(c);
+    if (fmt === 'xlsx') await exportReportXlsx(c);
+    toast('✅ הדוח ירד', 'success');
+  } catch (err) { toast('הייצוא נכשל: ' + (err.message || err), 'error'); }
+  finally { setExportBusy(''); }
+}
 
-  const topList = critHigh.slice(0, 5).map(f =>
-    `<li><b>${f.fid}</b> ${escHtml(titleEn(f.item))} <span class="fr-note">(${SEVERITY_EN[f.sev]?.label})</span></li>`).join('');
+function exportReportHtml(c) {
+  const m = buildReportModel(c);
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(c.name)} | ${REPORT_BRAND.name} ${REPORT_BRAND.title}</title><style>body{margin:0;background:#eef1f5;padding:24px 16px}@page{size:A4;margin:12mm}@media print{body{background:#fff;padding:0}}${reportCss()}</style></head><body>${renderReportHtml(m)}<script>(${rpWireFilters.toString()})(document);<\/script></body></html>`;
+  downloadBlob(new Blob([html], {type: 'text/html;charset=utf-8'}), reportFileName(c, 'html'));
+}
 
-  // ── workstream table ──
-  const wsRows = PILLARS.map(p => {
-    const its = rows.filter(r => r.item.pillar === p.id && r.status !== 'na');
-    const a = its.filter(r => r.status === 'done' || r.status === 'partial' || r.status === 'fail');
-    const score = a.length >= MIN_SCORED ? getPillarWeightedScore(c, p.id, true) : null;
-    return `<tr><td>${PILLAR_EN[p.id]}</td><td class="num">${a.length} / ${its.length}</td>
-      <td class="num">${a.filter(r => r.status === 'done').length}</td><td class="num">${a.filter(r => r.status === 'partial').length}</td><td class="num">${a.filter(r => r.status === 'fail').length}</td>
-      <td class="num"><b>${score === null ? '-' : score}</b></td><td>${score === null ? '' : maturityChip(score)}</td></tr>`;
-  }).join('');
-
-  // ── severity summary ──
-  const sevRows = Object.keys(SEVERITY_EN).map(k =>
-    `<td class="num"><span class="fr-chip" style="background:${SEVERITY_EN[k].color}">${SEVERITY_EN[k].label}</span><div style="font-size:1.4rem;font-weight:800;margin-top:4px">${sevCount(k)}</div></td>`).join('');
-
-  // ── detailed findings ──
-  const findingCard = f => {
-    const sv = SEVERITY_EN[f.sev] || SEVERITY_EN.medium;
-    const txt = findingText(f), rec = (f.d.recommendation || '').trim();
-    return `<div class="fr-finding" style="border-left-color:${sv.color}">
-      <div class="fr-f-head"><span class="fr-id">${f.fid}</span>
-        <span class="fr-chip" style="background:${sv.color}">${sv.label}</span>
-        <span class="fr-chip" style="background:${f.status === 'fail' ? STATUS_COLOR.fail : STATUS_COLOR.partial}">${STATUS_EN[f.status]}</span>
-        <span class="fr-ws">${PILLAR_EN[f.item.pillar]}</span></div>
-      <h4>${escHtml(titleEn(f.item))}</h4>
-      <div class="fr-row"><b>Finding</b><div dir="auto">${txt ? fmtText(txt) : '<span class="fr-missing">To be completed</span>'}</div></div>
-      <div class="fr-row"><b>Recommendation</b><div dir="auto">${rec ? fmtText(rec) : '<span class="fr-missing">To be completed</span>'}</div></div>
-    </div>`;
+async function exportReportXlsx(c) {
+  await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js', () => window.ExcelJS);
+  const m = buildReportModel(c);
+  const NAVY = 'FF0A2540', LINE = 'FFD6DDE6', HEAD = 'FFF3F5F8';
+  const argb = hex => 'FF' + hex.replace('#', '').toUpperCase();
+  const wb = new ExcelJS.Workbook(); wb.creator = REPORT_BRAND.name; wb.created = new Date();
+  const border = {style: 'thin', color: {argb: LINE}};
+  const allBorders = {top: border, left: border, bottom: border, right: border};
+  const head = (ws, row) => { row.eachCell(cell => { cell.font = {bold: true, color: {argb: 'FFFFFFFF'}}; cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: NAVY}}; cell.alignment = {vertical: 'middle', wrapText: true}; cell.border = allBorders; }); row.height = 22; };
+  const sevFill = (cell, sev) => { const s = SEVERITY_EN[sev]; if (!s) return; cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: argb(s.bg)}}; cell.font = {bold: true, color: {argb: argb(s.color)}}; };
+  const stFill = (cell, st) => { cell.font = {bold: true, color: {argb: argb(STATUS_COLOR[st])}}; };
+  const table = (ws, cols, data, opts) => {
+    ws.columns = cols.map(k => ({key: k.key, width: k.w}));
+    const h = ws.addRow(cols.map(k => k.h)); head(ws, h);
+    data.forEach(d => { const r = ws.addRow(cols.map(k => d[k.key])); r.alignment = {vertical: 'top', wrapText: true}; r.eachCell(cell => { cell.border = allBorders; }); opts && opts.row && opts.row(r, d); });
+    ws.views = [{state: 'frozen', ySplit: 1}];
+    ws.autoFilter = {from: {row: 1, column: 1}, to: {row: 1, column: cols.length}};
   };
-  const findingsHtml = findings.length
-    ? Object.keys(SEVERITY_EN).map(k => {
-        const g = findings.filter(f => f.sev === k);
-        return g.length ? `<h3>${SEVERITY_EN[k].label} (${g.length})</h3>${g.map(findingCard).join('')}` : '';
-      }).join('')
-    : '<p>No findings were recorded.</p>';
 
-  // ── what is working well / out of scope / limitations ──
-  const groupByWs = list => PILLARS.map(p => {
-    const g = list.filter(r => r.item.pillar === p.id);
-    return g.length ? `<div class="fr-ws-title">${PILLAR_EN[p.id]}</div><ul class="fr-list">${g.map(r => `<li>${escHtml(titleEn(r.item))}</li>`).join('')}</ul>` : '';
-  }).join('');
-  const limits = rows.filter(r => (r.d.blocker || '').trim() && !blockerIsFinding(r));
+  // Summary
+  const s = wb.addWorksheet('Summary', {properties: {tabColor: {argb: NAVY}}});
+  s.columns = [{width: 34}, {width: 18}, {width: 14}, {width: 14}, {width: 18}, {width: 22}];
+  const t = s.addRow([`${REPORT_BRAND.name} | ${REPORT_BRAND.title}`]); s.mergeCells('A1:F1'); t.height = 30;
+  t.getCell(1).font = {bold: true, size: 16, color: {argb: 'FFFFFFFF'}}; t.getCell(1).fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: NAVY}}; t.getCell(1).alignment = {vertical: 'middle'};
+  const kv = (k, v) => { const r = s.addRow([k, v]); r.getCell(1).font = {bold: true, color: {argb: 'FF64748B'}}; };
+  kv('Customer', c.name); kv('Report date', m.today); kv('Prepared by', c.consultant || ''); kv('Environment', MODE_EN[c.mode] || ''); kv('E5 licenses', c.licenses || '');
+  kv('Controls assessed', `${m.assessedN} of ${m.applicable}`); kv('Met / Partial / Not implemented', `${m.met.length} / ${m.partial.length} / ${m.fail.length}`); kv('Not assessed', m.pending.length);
+  s.addRow([]);
+  const hd = s.addRow(['Score', 'Value', 'Maturity']); head(s, hd);
+  Object.values(m.scores).forEach(sc => { const r = s.addRow([sc.label, sc.ok ? sc.v : 'n/a', sc.ok ? getMaturityLevel(sc.v).label : 'Not enough data']); r.eachCell(cell => { cell.border = allBorders; }); });
+  s.addRow([]);
+  const hs = s.addRow(['Findings by severity', 'Count']); head(s, hs);
+  Object.keys(SEVERITY_EN).forEach(k => { const r = s.addRow([SEVERITY_EN[k].label, m.sevCount(k)]); r.eachCell(cell => { cell.border = allBorders; }); sevFill(r.getCell(1), k); });
+  s.addRow([]);
+  const hw = s.addRow(['Workstream', 'Score', 'Assessed', 'Met', 'Partial', 'Not implemented']); head(s, hw);
+  m.workstreams.forEach(w => { const r = s.addRow([w.name, w.score === null ? 'n/a' : w.score, `${w.assessed} of ${w.total}`, w.met, w.partial, w.fail]); r.eachCell(cell => { cell.border = allBorders; }); });
 
-  const governanceAssessed = getGovernanceItems().filter(i => isAssessed(c, i)).length;
-  const appendix = pending.length ? `<details class="fr-appendix"><summary>Controls not assessed (${pending.length}), internal view only</summary>${groupByWs(pending)}</details>` : '';
+  // Findings
+  const wf = wb.addWorksheet('Findings');
+  table(wf, [{key: 'id', h: 'ID', w: 8}, {key: 'sev', h: 'Severity', w: 11}, {key: 'st', h: 'Status', w: 16}, {key: 'ws', h: 'Workstream', w: 30}, {key: 'ctl', h: 'Control', w: 42}, {key: 'f', h: 'Finding', w: 60}, {key: 'rec', h: 'Recommendation', w: 60}, {key: 'wave', h: 'Wave', w: 10}],
+    m.findings.map(f => ({id: f.fid, sev: SEVERITY_EN[f.sev].label, st: STATUS_EN[f.status], ws: PILLAR_EN[f.item.pillar], ctl: titleEn(f.item), f: findingText(f), rec: (f.d.recommendation || '').trim(), wave: REPORT_WAVES[waveOf(f.item)].label, _f: f})),
+    {row: (r, d) => { sevFill(r.getCell(2), d._f.sev); stFill(r.getCell(3), d._f.status); }});
 
-  document.getElementById('findings-content').innerHTML = `
-    ${readiness}
-    <div class="fr">
-      <div class="fr-cover">
-        <div class="fr-eyebrow">Microsoft 365 E5 Security, Governance and AI Assessment</div>
-        <h1>Findings Report</h1>
-        <div class="fr-client">${escHtml(c.name)}</div>
-        <div class="fr-meta">
-          <span>Date: ${today}</span>
-          ${c.consultant ? `<span>Prepared by: ${escHtml(c.consultant)}</span>` : ''}
-          <span>Environment: ${MODE_EN[c.mode] || ''}</span>
-          ${c.licenses ? `<span>E5 licenses: ${escHtml(c.licenses)}</span>` : ''}
-        </div>
-      </div>
+  // Roadmap
+  const wr = wb.addWorksheet('Roadmap');
+  const road = [];
+  REPORT_WAVES.forEach((w, wi) => m.findings.filter(f => waveOf(f.item) === wi).forEach(f => road.push({wave: `${w.label} (${w.when})`, focus: w.focus, id: f.fid, sev: SEVERITY_EN[f.sev].label, ctl: titleEn(f.item), rec: (f.d.recommendation || '').trim(), owner: '', _f: f})));
+  table(wr, [{key: 'wave', h: 'Wave', w: 22}, {key: 'focus', h: 'Focus', w: 32}, {key: 'id', h: 'ID', w: 8}, {key: 'sev', h: 'Severity', w: 11}, {key: 'ctl', h: 'Control', w: 42}, {key: 'rec', h: 'Recommendation', w: 70}, {key: 'owner', h: 'Owner / date', w: 20}],
+    road, {row: (r, d) => sevFill(r.getCell(4), d._f.sev)});
 
-      <h2>Executive summary</h2>
-      <p>${summaryText}</p>
-      <div class="fr-scores">${scores.map(s => {
-        const m = getMaturityLevel(s.v);
-        return `<div class="fr-score" style="border-color:${s.ok ? m.color : 'var(--border)'}"><div class="l">${s.label}</div><div class="v" style="color:${s.ok ? m.color : '#94a3b8'}">${s.ok ? s.v : '-'}</div>${s.ok ? `<span class="m" style="background:${m.color}">${m.label}</span>` : '<span class="fr-note">Not enough data</span>'}<div class="s">${s.sub}</div></div>`;
-      }).join('')}</div>
-      <div class="fr-bar">${barSegs}</div>
-      <div class="fr-legend">${legend}</div>
-      <p class="fr-note">Scores cover assessed controls only (${assessedN} of ${applicable}) and appear once at least ${MIN_SCORED} controls are assessed. Not applicable controls (${na.length}) are excluded.</p>
-      ${topList ? `<h3>Top priorities</h3><ul class="fr-list" style="columns:1">${topList}</ul>` : ''}
+  // Control matrix
+  const wm = wb.addWorksheet('Control matrix');
+  table(wm, [{key: 'ws', h: 'Workstream', w: 32}, {key: 'ctl', h: 'Control', w: 46}, {key: 'sev', h: 'Severity', w: 11}, {key: 'st', h: 'Status', w: 16}, {key: 'n', h: 'Observation', w: 70}],
+    m.matrix.map(r => ({ws: PILLAR_EN[r.item.pillar], ctl: titleEn(r.item), sev: SEVERITY_EN[r.sev].label, st: STATUS_EN[r.status], n: findingText(r), _r: r})),
+    {row: (r, d) => { sevFill(r.getCell(3), d._r.sev); stFill(r.getCell(4), d._r.status); }});
 
-      <h2>Results by workstream</h2>
-      <table class="fr-table"><thead><tr><th>Workstream</th><th class="num">Assessed</th><th class="num">Met</th><th class="num">Partial</th><th class="num">Not implemented</th><th class="num">Score</th><th>Maturity</th></tr></thead><tbody>${wsRows}</tbody></table>
+  // Method
+  const wd = wb.addWorksheet('Method');
+  wd.columns = [{width: 120}];
+  ['Scope: Microsoft 365 E5 security, governance and AI controls across identity, devices, endpoint, email, cloud apps, data, security operations, conditional access and AI governance. Evidence was collected read-only.',
+    'Status: Met, Partially met (half credit), Not implemented, Not applicable. Controls not assessed are excluded from scores.',
+    'Scores are priority-weighted: Critical 5, High 3, Medium 2, Low 1. Security score weights: identity 25%, endpoint 20%, email 15%, data 15%, cloud apps 10%, detection 15%.',
+    'Maturity: ' + MATURITY_LEVELS.map((l, i) => `${l.label} ${i === 0 ? 0 : MATURITY_LEVELS[i - 1].max + 1}-${l.max}`).join(', ') + '.',
+    'Waves are a suggested sequence derived from the implementation phases: Wave 1 Foundation, Wave 2 Devices and threats, Wave 3 Advanced identity, data and detection.'].forEach(tx => { const r = wd.addRow([tx]); r.alignment = {wrapText: true, vertical: 'top'}; });
 
-      <h2>Findings overview</h2>
-      <table class="fr-table"><tbody><tr>${sevRows}</tr></tbody></table>
-
-      <h2>Detailed findings</h2>
-      ${findingsHtml}
-
-      ${met.length ? `<h2>What is working well</h2><p class="fr-note">Controls assessed as fully in place.</p>${groupByWs(met)}` : ''}
-      ${na.length ? `<h2>Not applicable</h2><p class="fr-note">Controls outside the scope of this environment.</p><ul class="fr-list">${na.map(r => `<li>${escHtml(titleEn(r.item))}</li>`).join('')}</ul>` : ''}
-      ${limits.length ? `<h2>Assessment limitations</h2><ul class="fr-list" style="columns:1">${limits.map(r => `<li><b>${escHtml(titleEn(r.item))}</b>: ${escHtml(r.d.blocker.trim())}</li>`).join('')}</ul>` : ''}
-
-      <h2>Scope and method</h2>
-      <p>The assessment reviews the Microsoft 365 E5 security stack across identity, devices, endpoint, email, cloud apps, data protection, security operations, conditional access and AI governance. Each control is rated Met, Partially met, Not implemented or Not applicable.</p>
-      <p>Scores are priority-weighted (Critical 5, High 3, Medium 2, Low 1). Partially met controls earn half credit. The Security score weights identity 25%, endpoint 20%, email 15%, data 15%, cloud apps 10% and detection 15%; the Governance score covers ${governanceAssessed} assessed process and oversight controls.</p>
-      <table class="fr-table"><thead><tr><th>Maturity</th><th>Score range</th></tr></thead><tbody>
-        ${MATURITY_LEVELS.map((m, i) => `<tr><td>${maturityChip(m.max)}</td><td>${i === 0 ? 0 : MATURITY_LEVELS[i - 1].max + 1} to ${m.max}</td></tr>`).join('')}
-      </tbody></table>
-      ${appendix}
-      <div class="fr-footer">Confidential. Prepared for ${escHtml(c.name)}, ${today}.</div>
-    </div>`;
+  const buf = await wb.xlsx.writeBuffer();
+  downloadBlob(new Blob([buf], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), reportFileName(c, 'xlsx'));
 }
 
 // ── Wording tools for findings ────────────────
@@ -2446,10 +2657,10 @@ function buildPdfWrapper(el) {
   wrap.style.cssText = 'width:733px;padding:0 6px;box-sizing:border-box;direction:ltr;background:#fff;';
   const copy = el.cloneNode(true);
   copy.style.cssText = 'width:100%;max-width:none;margin:0;';
-  copy.querySelectorAll('.fr-appendix').forEach(n => n.remove());
+  copy.querySelectorAll('.fr-appendix, .rp-filters').forEach(n => n.remove());
   // keep the desktop layout even when the browser window is narrow (the mobile media query would stack the cards)
   const st = document.createElement('style');
-  st.textContent = '.fr-scores{grid-template-columns:repeat(3,1fr)!important}.fr-row{grid-template-columns:110px 1fr!important}.fr-list{columns:2!important}';
+  st.textContent = '.rp-grid3,.rp-waves{grid-template-columns:repeat(3,1fr)!important}.rp-cols{grid-template-columns:1fr 1fr!important}.rp-list{columns:2!important}.rp-ws{grid-template-columns:150px 1fr 34px 150px 84px!important}';
   wrap.appendChild(st);
   wrap.appendChild(copy);
   return wrap;
@@ -2462,7 +2673,7 @@ function pdfPageCuts(cv, pageH) {
   while (cv.height - start > pageH) {
     const target = start + pageH;
     const d = ctx.getImageData(0, start, W, pageH).data;
-    const white = y => { for (let x = 0; x < W; x += 3) { const p = (y * W + x) * 4; if (d[p] < 245 || d[p + 1] < 245 || d[p + 2] < 245) return false; } return true; };
+    const white = y => { for (let x = 0; x < W; x += 3) { const p = (y * W + x) * 4; if (d[p] < 238 || d[p + 1] < 238 || d[p + 2] < 238) return false; } return true; };
     const runs = []; let rs = -1;
     for (let y = 0; y < pageH; y++) {
       if (white(y)) { if (rs < 0) rs = y; } else if (rs >= 0) { if (y - rs >= MIN_GAP) runs.push([rs, y]); rs = -1; }
@@ -2472,8 +2683,9 @@ function pdfPageCuts(cv, pageH) {
     const usable = runs.filter(r => r[0] > pageH * 0.3);
     if (usable.length) {
       let idx = usable.length - 1;
-      // a thin block sitting under a wide gap is a heading: do not leave it alone at the bottom of a page, break above it instead
-      if (idx > 0 && usable[idx][0] - usable[idx - 1][1] < MIN_BLOCK && usable[idx - 1][1] - usable[idx - 1][0] >= 36) idx--;
+      // a thin block (a heading with its rule, or an item right under one) must not be left alone at the bottom of a page: break above it instead
+      // (up to 3 steps; stop at the first wide gap, which is a section or card boundary)
+      for (let steps = 0; idx > 0 && steps < 3 && usable[idx][0] - usable[idx - 1][1] < MIN_BLOCK; steps++) { idx--; if (usable[idx][1] - usable[idx][0] >= 36) break; }
       const r = usable[idx];
       cut = Math.min(pageH, Math.floor((r[0] + r[1]) / 2));
     }
@@ -2488,13 +2700,12 @@ async function downloadFindingsPDF() {
   const el = document.querySelector('#findings-content .fr');
   const view = document.getElementById('view-findings');
   if (!c || !el) return;
-  const btn = document.getElementById('btn-findings-pdf');
-  btn.disabled = true; btn.textContent = '⏳ מכין PDF...';
+  setExportBusy('⏳ מכין PDF...');
   try {
     await loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js', () => window.html2pdf);
     view.classList.add('pdf-mode');
     const wrap = buildPdfWrapper(el);
-    const filename = `${c.name.replace(/[^\w\-]+/g, '_')}-E5-Findings-Report-${new Date().toISOString().slice(0, 10)}.pdf`;
+    const filename = reportFileName(c, 'pdf');
     const opt = {
       margin: [10, 8, 14, 8], filename,
       image: {type: 'jpeg', quality: 0.9},
@@ -2518,7 +2729,7 @@ async function downloadFindingsPDF() {
     pdf.setFontSize(8); pdf.setTextColor(120);
     for (let i = 1; i <= n; i++) {
       pdf.setPage(i);
-      pdf.text(`${c.name}  |  Microsoft 365 E5 Findings Report  |  Confidential`, 8, h - 7);
+      pdf.text(`${REPORT_BRAND.name}  |  ${c.name}  |  ${REPORT_BRAND.title}  |  Confidential`, 8, h - 7);
       pdf.text(`Page ${i} of ${n}`, w - 8, h - 7, {align: 'right'});
     }
     pdf.save(filename);
@@ -2527,7 +2738,7 @@ async function downloadFindingsPDF() {
     toast('לא הצלחתי ליצור PDF. אפשר להשתמש בהדפסה', 'error');
   } finally {
     view.classList.remove('pdf-mode');
-    btn.disabled = false; btn.textContent = '⬇️ הורד PDF';
+    setExportBusy('');
   }
 }
 
