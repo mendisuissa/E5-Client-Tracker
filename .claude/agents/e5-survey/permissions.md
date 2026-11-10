@@ -10,8 +10,9 @@ No app registration, no consent, no API, no PowerShell connection to the tenant.
 | 3 | Defender XDR unified RBAC / MDE device groups | Read on **all device groups** | Device inventory. If it is scoped to some groups, the device list can look empty | p3 (onboarding, ASR, tamper, isolation) |
 | 4 | Purview role groups | **Information Protection Reader**, **View-Only DLP Compliance Management**, **View-Only Audit Logs**, **View-Only Retention Management**, **Insider Risk Management Auditors** | Labels, DLP, audit retention, retention, Insider Risk read | p6 |
 | 5 | Azure RBAC on the Sentinel subscription / workspace | **Reader** + **Microsoft Sentinel Reader** (+ **Log Analytics Reader** if workbooks and tables are needed) | Sentinel workspace, connectors, rules, automation. Without it the Defender portal shows "0 workspaces" | p7 (22 checks) |
-| 6 | Azure RBAC (optional) | **Security Reader** on the subscription | Defender for Cloud | none of the 194 directly |
-| 7 | Security Copilot | Reader on the Security Copilot capacity resource | Capacity and usage | p9-copilot |
+| 6 | Azure RBAC (optional) | **Security Reader** on the subscription | Defender for Cloud | none of the 271 directly |
+| 7 | Fabric admin portal (optional) | **Fabric Administrator** (read) | Fabric and Power BI tenant settings | p6-fab-* (9 checks) |
+| 8 | Security Copilot | Reader on the Security Copilot capacity resource | Capacity and usage | p9-copilot |
 
 ## Cannot be verified read-only (the agent marks these "not assessed" with the reason)
 

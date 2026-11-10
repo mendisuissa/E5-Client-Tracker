@@ -31,6 +31,17 @@ Purview (purview.microsoft.com)
 Microsoft 365 admin center (admin.cloud.microsoft)
 - Copilot: `#/copilot/overview` (licensed and active users, adoption score); Agents registry `#/agents/all` (total agents, agents without owners, connected platforms).
 
+SharePoint, Teams and Exchange admin centers (Global Reader sees them read-only)
+- SharePoint: admin.microsoft.com/sharepoint > Policies > Sharing (external sharing levels, domain limits, link defaults, guest expiry, verification-code reauthentication) and Policies > Access control (apps that do not use modern authentication). Settings page covers OneDrive.
+- Teams: admin.teams.microsoft.com > Users > External access; Meetings > Meeting policies > Global; Teams apps > Permission policies; Teams settings (files and channel email); Messaging policies.
+- Exchange: admin.exchange.microsoft.com > Roles > User roles (role assignment policy) and Settings > Mail flow. Some Exchange settings (MailTips, OWA policy, external tag) exist only as PowerShell properties: if the portal does not show them, mark the control `pending` with the reason "setting only visible through PowerShell". Do not run PowerShell.
+- Microsoft 365 admin center Org settings (admin.microsoft.com/#/Settings/OrganizationSettings): Security and privacy (password expiration, idle session timeout), Services (calendar, forms, bookings, user owned apps, Microsoft 365 on the web).
+- Fabric admin portal: app.fabric.microsoft.com/admin-portal/tenantSettings. A Global Reader may not see it; if the page is denied, mark the Fabric controls `pending` (access: Fabric Administrator read), not `fail`.
+- Entra tenant-wide settings: Users > User settings, Groups > General, Devices > Device settings, External Identities > External collaboration settings, Protection > Authentication methods > Settings and Policies, App management policies.
+
+Secure Score
+- security.microsoft.com/securescore?viewid=actions lists every improvement action with Status, Points and Category. Read all pages with get_page_text. Do not click actions.
+
 Other
 - Security Copilot: `securitycopilot.microsoft.com`; landing on `/tour/welcome` means no established use for the account.
 - Power Platform admin center shows only Home, Deployment and Licensing for a Global Reader: governance there is "not assessed".

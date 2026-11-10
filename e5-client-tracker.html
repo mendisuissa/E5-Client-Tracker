@@ -263,6 +263,18 @@ body{font-family:'Segoe UI','Arial Hebrew',system-ui,sans-serif;background:var(-
 .rp-list{columns:2;column-gap:28px;font-size:.82rem;padding-left:18px;margin:6px 0;}
 .rp-list li{margin-bottom:3px;break-inside:avoid;}
 .rp-note{font-size:.76rem;color:#64748b;}
+.rp-cis{font-size:.66rem;font-weight:600;color:#475569;background:#f1f5f9;border:1px solid #dfe5ec;border-radius:4px;padding:0 6px;white-space:nowrap;}
+.rp-stack{display:flex;height:8px;border-radius:4px;overflow:hidden;background:#eef1f5;}
+.rp-stack i{display:block;height:100%;}
+.rp-up{color:#16a34a;font-weight:700;white-space:nowrap;}
+.rp-down{color:#dc2626;font-weight:700;white-space:nowrap;}
+.rp-same{color:#64748b;white-space:nowrap;}
+.rp-cmprow{display:grid;grid-template-columns:86px 1fr auto;gap:8px;align-items:center;font-size:.82rem;margin:9px 0;}
+.rp-delta{font-size:.66rem;font-weight:700;border-radius:4px;padding:0 6px;white-space:nowrap;border:1px solid transparent;}
+.rp-delta-improved{color:#0e7490;background:#ecfeff;border-color:#a5f3fc;}
+.rp-delta-regressed{color:#b91c1c;background:#fef2f2;border-color:#fecaca;}
+.rp-delta-newOpen{color:#b45309;background:#fffbeb;border-color:#fde68a;}
+.rp-delta-open{color:#475569;background:#f1f5f9;border-color:#dfe5ec;}
 .rp-foot{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #dfe5ec;margin-top:30px;padding-top:12px;font-size:.74rem;color:#64748b;}
 .fr-readiness{direction:rtl;text-align:right;background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:14px 16px;margin:0 auto 18px;max-width:960px;font-size:.84rem;}
 .fr-readiness button{font-size:.72rem;padding:2px 8px;margin:2px;border:1px solid #fcd34d;background:#fff;border-radius:6px;cursor:pointer;}
@@ -1104,6 +1116,161 @@ const ITEMS = [
    guide:{portal:'Entra Admin Center',steps:['Entra → Conditional Access → Policies → לכל Policy: Assignments → Exclude (Users/Groups/Roles/Apps)','מטרה: רק Break-Glass + Service accounts מתועדים; אין Exclusions זמניים שנשכחו','Insights and reporting / What If → בדוק מי לא מכוסה בפועל','Access review על קבוצות Exclude + Naming אחיד (CA-Exclude-PolicyName)']}},
   {id:'p8-coverage',pillar:'p8',title:'CA Coverage Gaps — אין Apps/Platforms/Clients שלא מכוסים ב-MFA',priority:'high',phase:1,
    guide:{portal:'Entra Admin Center',steps:['Conditional Access → Insights and reporting (או What If על משתמשים שונים)','ודא ש-Policy חל על All cloud apps (לא רשימה סגורה) · Platforms: כולל Linux/Unknown · Client apps: Browser + Mobile/Desktop','Security Defaults כבוי אם יש CA (לא שניהם)','Sign-in logs → סנן Conditional Access = Not applied + Single-factor → סגור פערים']}},
+  /* ── Survey expansion (CIS Microsoft 365 Foundations topics) ── */
+  {id:'p1-adminlic',pillar:'p1',title:'חשבונות Admin עם רישיון מצומצם (ללא Exchange/Teams/SharePoint)',priority:'low',phase:1,
+   guide:{portal:'Microsoft 365 admin center',steps:['Users → Active users → סנן חשבונות Admin → Licenses and apps','הקצה רק Entra ID P1/P2 (בלי חבילת E5 מלאה) כדי שלא יהיו להם תיבת דואר ואפליקציות','עבודה יומיומית של ה-Admin נעשית בחשבון נפרד עם רישיון מלא']}},
+  {id:'p1-pwnoexpire',pillar:'p1',title:'סיסמאות ללא תפוגה (בשילוב MFA והגנת סיסמאות)',priority:'low',phase:1,
+   guide:{portal:'Microsoft 365 admin center',steps:['Settings → Org settings → Security & privacy → Password expiration policy','סמן Set passwords to never expire','ודא ש-MFA ו-Password protection פעילים לפני השינוי']}},
+  {id:'p1-idlesession',pillar:'p1',title:'Idle session timeout למכשירים לא מנוהלים (עד 3 שעות)',priority:'medium',phase:1,
+   guide:{portal:'Microsoft 365 admin center',steps:['Org settings → Security & privacy → Idle session timeout','הגדר עד 3 שעות (Sign out inactive users)','חל על Outlook Web, SharePoint, OneDrive במכשירים לא מנוהלים']}},
+  {id:'p1-appregblock',pillar:'p1',title:'משתמשים רגילים לא יכולים לרשום אפליקציות (App registrations)',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Identity → Users → User settings','Users can register applications = No','הרשאה לרישום אפליקציות רק דרך תפקיד Application Developer']}},
+  {id:'p1-tenantcreate',pillar:'p1',title:'משתמשים רגילים לא יכולים ליצור Tenants',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Identity → Users → User settings','Restrict non-admin users from creating tenants = Yes','יצירת Tenant רק דרך תפקיד Tenant Creator']}},
+  {id:'p1-secgroups',pillar:'p1',title:'יצירת Security Groups מוגבלת למנהלים',priority:'low',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Identity → Groups → General','Users can create security groups in Azure portals, API or PowerShell = No','הרשאת יצירה דרך תפקיד Groups Administrator או בקשה מסודרת']}},
+  {id:'p1-devjoin',pillar:'p1',title:'הצטרפות מכשירים ל-Entra מוגבלת, עם תקרת מכשירים למשתמש',priority:'medium',phase:2,
+   guide:{portal:'Entra Admin Center',steps:['Identity → Devices → Device settings','Users may join devices to Microsoft Entra = Selected (קבוצה מוגדרת) או None כשמשתמשים ב-Autopilot','Maximum number of devices per user = ערך סביר (למשל 10-20)']}},
+  {id:'p1-joinadmin',pillar:'p1',title:'הרשאות Local Admin בזמן Entra Join מוגבלות',priority:'medium',phase:2,
+   guide:{portal:'Entra Admin Center',steps:['Devices → Device settings → Manage Additional local administrators on all Microsoft Entra joined devices','הסר את Global Administrator מהרשימה (Global administrator role is added as local administrator = No)','Registering user is added as local administrator = None; ניהול מקומי דרך LAPS/EPM']}},
+  {id:'p1-bitlockerkeys',pillar:'p1',title:'משתמשים לא יכולים לשחזר מפתחות BitLocker בעצמם',priority:'medium',phase:2,
+   guide:{portal:'Entra Admin Center',steps:['Devices → Device settings','Restrict users from recovering the BitLocker key(s) for their owned devices = Yes','שחזור מפתח דרך Helpdesk עם אימות זהות']}},
+  {id:'p1-guestaccess',pillar:'p1',title:'גישת Guests מוגבלת (Guest user access restrictions)',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Entra → External Identities → External collaboration settings','Guest user access = Guest users have limited access / most restricted','בדוק שאין Guests עם הרשאות Directory רחבות']}},
+  {id:'p1-guestinvite',pillar:'p1',title:'הזמנת Guests מוגבלת לתפקידים מוגדרים',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['External collaboration settings → Guest invite settings','בחר: Only users assigned to specific admin roles can invite guest users (או Member users and specific admin roles)','לא Anyone in the organization, ובטח לא Anyone including guests']}},
+  {id:'p1-allowdomains',pillar:'p1',title:'הזמנות שיתוף פעולה רק לדומיינים מאושרים',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['External collaboration settings → Collaboration restrictions','Allow invitations only to the specified domains (או Deny רשימת דומיינים)','תחזוקה: רשימת הדומיינים נבדקת כל רבעון']}},
+  {id:'p1-appsecret',pillar:'p1',title:'מדיניות סודות אפליקציה: חסימת סיסמאות ותוקף עד 180 יום',priority:'medium',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['Entra → App registrations → App management policies (או Graph: defaultAppManagementPolicy)','Restrict password addition / max lifetime 180 days / system-generated secrets בלבד','מעבר מסודות ל-Certificates או Managed Identity / Workload identity federation']}},
+  {id:'p1-appcert',pillar:'p1',title:'תוקף תעודות אפליקציה מוגבל (עד 180 יום)',priority:'medium',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['App management policies → Key credentials','Maximum certificate lifetime = 180 ימים','Rotation אוטומטי (Key Vault) או תזכורת לפני פקיעה']}},
+  {id:'p1-sysmfa',pillar:'p1',title:'System-preferred MFA מופעל',priority:'low',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['Protection → Authentication methods → Settings','System-preferred multifactor authentication = Enabled (All users)','המערכת מציגה את השיטה החזקה ביותר שהמשתמש רשום אליה']}},
+  {id:'p1-emailotp',pillar:'p1',title:'שיטת Email OTP כבויה',priority:'medium',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['Protection → Authentication methods → Policies → Email OTP','Enable = Off (בהתחשב בשימוש של Guests)','עבור Guests: בדוק שיש חלופה (Entra B2B / Microsoft account)']}},
+  {id:'p1-companion',pillar:'p1',title:'Authenticator באפליקציות נלוות כבוי',priority:'low',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['Authentication methods → Microsoft Authenticator → Configure','Microsoft Authenticator on companion applications = Disabled','מונע אישור MFA מתוך אפליקציות כמו Outlook']}},
+  {id:'p1-pimapproval',pillar:'p1',title:'הפעלת Global Admin ו-Privileged Role Admin דורשת אישור',priority:'medium',phase:4,
+   guide:{portal:'Entra Admin Center',steps:['PIM → Entra roles → Settings → Global Administrator → Edit → Activation','Require approval to activate + Approvers (Admin נוסף)','אותו הדבר ל-Privileged Role Administrator']}},
+  {id:'p2-nopolicy',pillar:'p2',title:'מכשירים ללא Compliance policy מסומנים Not compliant',priority:'high',phase:2,
+   guide:{portal:'Intune Admin Center',steps:['Devices → Compliance → Compliance policy settings','Mark devices with no compliance policy assigned as = Not compliant','ודא שכל פלטפורמה מכוסה במדיניות לפני השינוי']}},
+  {id:'p2-personalblock',pillar:'p2',title:'רישום מכשירים אישיים חסום כברירת מחדל',priority:'medium',phase:2,
+   guide:{portal:'Intune Admin Center',steps:['Devices → Enrollment → Device platform restrictions','Personally owned devices = Block לכל פלטפורמה (חריגים לפי קבוצה)','BYOD נעשה דרך MAM/App Protection ולא דרך Enrollment מלא']}},
+  {id:'p4-attachfilter',pillar:'p4',title:'Common attachment types filter ופילטר קבצים מקיף',priority:'medium',phase:1,
+   guide:{portal:'Defender portal',steps:['Email & collaboration → Policies & rules → Threat policies → Anti-malware','Enable the common attachments filter + הרחבת הרשימה (exe, js, vbs, iso, img, lnk, html וכו׳)','פעולה: Quarantine או Reject']}},
+  {id:'p4-malwarenotify',pillar:'p4',title:'התראה על תוכנה זדונית משולחים פנימיים',priority:'medium',phase:1,
+   guide:{portal:'Defender portal',steps:['Anti-malware policy → Notifications','Notify an admin about undelivered messages from internal senders = On + כתובת מנהל','כתובת קבוצה (SOC) ולא תיבה אישית']}},
+  {id:'p4-spamnotify',pillar:'p4',title:'התראות על שליחת ספאם יוצא מוגדרות',priority:'medium',phase:1,
+   guide:{portal:'Defender portal',steps:['Anti-spam outbound policy → Notifications','Notify specified users and groups if a sender is blocked for sending spam = On','נמען: קבוצת SOC']}},
+  {id:'p4-outboundlimits',pillar:'p4',title:'מגבלות שליחה יוצאות מוגדרות (ספאם יוצא)',priority:'medium',phase:1,
+   guide:{portal:'Defender portal',steps:['Anti-spam outbound policy → Set message limits','External/Internal/Daily limits לפי הצורך העסקי','Action: Restrict the user from sending mail']}},
+  {id:'p4-allowlists',pillar:'p4',title:'אין דומיינים/שולחים ברשימת Allow באנטי-ספאם נכנס',priority:'high',phase:1,
+   guide:{portal:'Defender portal',steps:['Anti-spam inbound policies → Allowed and blocked senders and domains','הסר Allowed senders ו-Allowed domains','במקום: Tenant Allow/Block List עם תפוגה']}},
+  {id:'p4-connfilter',pillar:'p4',title:'Connection filter: IP Allow List ו-Safe list כבויים',priority:'medium',phase:1,
+   guide:{portal:'Defender portal',steps:['Anti-spam → Connection filter policy (Default)','ריקון IP Allow list; Turn on safe list = Off','מקורות לגיטימיים נכנסים דרך Connector או Enhanced Filtering']}},
+  {id:'p4-extsender',pillar:'p4',title:'דואר מגורמים חיצוניים מסומן (External tag)',priority:'low',phase:1,
+   guide:{portal:'Exchange Online PowerShell',steps:['Set-ExternalInOutlook -Enabled $true','או כלל Mail flow שמוסיף תגית/הערה להודעות חיצוניות','בדיקה בלקוחות Outlook (Windows/Web/Mobile)']}},
+  {id:'p4-addins',pillar:'p4',title:'התקנת Outlook add-ins על ידי משתמשים חסומה',priority:'medium',phase:1,
+   guide:{portal:'Exchange Admin Center',steps:['Exchange admin → Roles → User roles → Default Role Assignment Policy','בטל: My Custom Apps, My Marketplace Apps, My ReadWriteMailbox Apps','הפצת תוספים מאושרים דרך Integrated apps']}},
+  {id:'p4-personalaccts',pillar:'p4',title:'חיבור חשבונות דוא״ל אישיים ל-Outlook חסום',priority:'low',phase:1,
+   guide:{portal:'Exchange Online PowerShell',steps:['Set-OwaMailboxPolicy -Identity OwaMailboxPolicy-Default -PersonalAccountsEnabled $false','-PersonalAccountCalendarsEnabled $false','בדיקה על כל OWA mailbox policies']}},
+  {id:'p4-modernauth',pillar:'p4',title:'Modern authentication ב-Exchange Online מופעל',priority:'medium',phase:1,
+   guide:{portal:'Exchange Online PowerShell',steps:['Set-OrganizationConfig -OAuth2ClientProfileEnabled $true','בדוק גם שאין Clients ישנים שנשברים','ודא Legacy auth חסום ב-CA']}},
+  {id:'p4-mailtips',pillar:'p4',title:'MailTips מופעלים למשתמשים',priority:'low',phase:1,
+   guide:{portal:'Exchange Online PowerShell',steps:['Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true','-MailTipsLargeAudienceThreshold 25','בדיקה ב-Outlook']}},
+  {id:'p4-owastorage',pillar:'p4',title:'ספקי אחסון חיצוניים ב-Outlook on the web חסומים',priority:'medium',phase:1,
+   guide:{portal:'Exchange Online PowerShell',steps:['Set-OwaMailboxPolicy -Identity OwaMailboxPolicy-Default -AdditionalStorageProvidersAvailable $false','בדיקה על כל ה-OWA policies','חריגים רק עם נימוק']}},
+  {id:'p4-mbxaudit',pillar:'p4',title:'Mailbox auditing פעיל ללא עקיפות (AuditBypass)',priority:'high',phase:1,
+   guide:{portal:'Exchange Online PowerShell',steps:['Get-OrganizationConfig | fl AuditDisabled (צריך False)','Get-MailboxAuditBypassAssociation: אין חשבונות עם AuditBypassEnabled','בדיקת פעולות Audit ברירת מחדל לכל סוגי הכניסה (Owner, Delegate, Admin)']}},
+  {id:'p4-calsharing',pillar:'p4',title:'שיתוף יומנים עם גורמים חיצוניים כבוי',priority:'medium',phase:1,
+   guide:{portal:'Microsoft 365 admin center',steps:['Settings → Org settings → Calendar','Let your users share their calendars with people outside of your organization = לא מסומן','או Sharing policy ב-Exchange שמגביל לפרטי פנוי/עסוק בלבד']}},
+  {id:'p6-userapps',pillar:'p6',title:'User owned apps and services מוגבלים',priority:'medium',phase:5,
+   guide:{portal:'Microsoft 365 admin center',steps:['Org settings → Services → User owned apps and services','בטל: Let users access the Office Store, Let users start trials on behalf of your organization','התקנת אפליקציות דרך Integrated apps']}},
+  {id:'p6-forms-phish',pillar:'p6',title:'Forms: הגנת פישינג פנימית מופעלת',priority:'medium',phase:5,
+   guide:{portal:'Microsoft 365 admin center',steps:['Org settings → Services → Microsoft Forms','Internal phishing protection = On','בדיקה: Forms מזהים בקשות לסיסמאות / מידע רגיש']}},
+  {id:'p6-thirdparty',pillar:'p6',title:'אחסון צד שלישי ב-Microsoft 365 on the web חסום',priority:'medium',phase:5,
+   guide:{portal:'Microsoft 365 admin center',steps:['Org settings → Services → Microsoft 365 on the web','בטל: Let users open files stored in third-party storage services in Microsoft 365 on the web','אחסון מאושר בלבד: SharePoint / OneDrive']}},
+  {id:'p6-bookings',pillar:'p6',title:'דפי Bookings משותפים מוגבלים למשתמשים נבחרים',priority:'low',phase:5,
+   guide:{portal:'Microsoft 365 admin center',steps:['Org settings → Services → Bookings','Allow only selected users to access Bookings = On (+ קבוצה)','בדיקת דפי Bookings קיימים']}},
+  {id:'p6-spo-modernauth',pillar:'p6',title:'SharePoint דורש Modern authentication (אין Legacy)',priority:'high',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['SharePoint admin → Policies → Access control → Apps that do not use modern authentication','Block access','או Set-SPOTenant -LegacyAuthProtocolsEnabled $false']}},
+  {id:'p6-spo-b2b',pillar:'p6',title:'שילוב SharePoint/OneDrive עם Entra B2B מופעל',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → More external sharing settings','ודא שאורחים מזוהים דרך Entra B2B (ברירת מחדל בטננטים חדשים)','Get-SPOTenant | fl EnableAzureADB2BIntegration']}},
+  {id:'p6-od-sharing',pillar:'p6',title:'שיתוף ב-OneDrive לא פתוח יותר מאשר ב-SharePoint',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → External sharing: OneDrive slider','OneDrive חייב להיות באותה רמה או מחמירה מ-SharePoint','מומלץ: New and existing guests']}},
+  {id:'p6-spo-reshare',pillar:'p6',title:'אורחים לא יכולים לשתף פריטים שאינם בבעלותם',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → More external sharing settings','Allow guests to share items they don\'t own = לא מסומן','Set-SPOTenant -PreventExternalUsersFromResharing $true']}},
+  {id:'p6-spo-domains',pillar:'p6',title:'שיתוף חיצוני מוגבל לרשימת דומיינים',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → Limit external sharing by domain','Allow only specific domains (מועדף) או Block specific domains','סקירה רבעונית של הרשימה']}},
+  {id:'p6-spo-linkdefault',pillar:'p6',title:'קישור שיתוף ברירת מחדל: אנשים ספציפיים, הרשאת View',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → File and folder links','Default link type = Specific people','Default permission = View']}},
+  {id:'p6-spo-sgroup',pillar:'p6',title:'שיתוף חיצוני מוגבל לקבוצת אבטחה',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → More external sharing settings','Allow only users in specific security groups to share externally','קבוצה מוגדרת ומתוחזקת']}},
+  {id:'p6-spo-guestexpire',pillar:'p6',title:'גישת אורחים לאתר/OneDrive פגה אוטומטית',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → Guest access to a site or OneDrive will expire automatically after this many days','ערך 30 ימים או פחות','Set-SPOTenant -ExternalUserExpireInDays 30 -ExternalUserExpirationRequired $true']}},
+  {id:'p6-spo-otp',pillar:'p6',title:'אימות מחדש עם קוד אימות מוגבל (עד 15 יום)',priority:'medium',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Policies → Sharing → People who use a verification code must reauthenticate after this many days','ערך 15 ימים או פחות','Set-SPOTenant -EmailAttestationRequired $true -EmailAttestationReAuthDays 15']}},
+  {id:'p6-spo-infected',pillar:'p6',title:'הורדת קבצים נגועים ב-SharePoint חסומה',priority:'high',phase:5,
+   guide:{portal:'SharePoint admin center',steps:['Set-SPOTenant -DisallowInfectedFileDownload $true','דורש Safe Attachments for SharePoint, OneDrive and Teams','בדיקה: קובץ EICAR בסביבת בדיקה']}},
+  {id:'p6-dlp-teams',pillar:'p6',title:'DLP מכסה הודעות Teams (צ׳אט וערוצים)',priority:'medium',phase:5,
+   guide:{portal:'Microsoft Purview portal',steps:['Purview → Data loss prevention → Policies','Locations: Teams chat and channel messages = On','בדיקה שהכללים כוללים סוגי מידע רגיש רלוונטיים']}},
+  {id:'p6-teams-storage',pillar:'p6',title:'שיתוף קבצים ב-Teams רק לשירותי ענן מאושרים',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Teams settings → Files','כבה: Citrix ShareFile, Dropbox, Box, Google Drive, Egnyte (פרט למאושרים)','Get-CsTeamsClientConfiguration']}},
+  {id:'p6-teams-chanemail',pillar:'p6',title:'שליחת דוא״ל לכתובת ערוץ Teams חסומה',priority:'low',phase:5,
+   guide:{portal:'Teams admin center',steps:['Teams settings → Email integration','Users can send emails to a channel email address = Off','Set-CsTeamsClientConfiguration -AllowEmailIntoChannel $false']}},
+  {id:'p6-teams-extdomains',pillar:'p6',title:'External access ב-Teams מוגבל לדומיינים מאושרים',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Users → External access','Teams and Skype for Business users in external organizations = Allow only specific external domains','סקירת הרשימה רבעונית']}},
+  {id:'p6-teams-unmanaged',pillar:'p6',title:'תקשורת עם משתמשי Teams לא מנוהלים (אישיים) חסומה',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Users → External access → Teams accounts not managed by an organization = Off','External users with Teams accounts not managed by an organization can contact users in my organization = Off','Set-CsExternalAccessPolicy / Set-CsTenantFederationConfiguration -AllowTeamsConsumer $false']}},
+  {id:'p6-teams-trial',pillar:'p6',title:'תקשורת עם Tenants בגרסת ניסיון חסומה',priority:'low',phase:5,
+   guide:{portal:'Teams admin center',steps:['Users → External access → Block all external trial-only Microsoft 365 tenants','Set-CsTenantFederationConfiguration -ExternalAccessWithTrialTenants Blocked','בדיקה: יש שותפים שעובדים עם Trial?']}},
+  {id:'p6-teams-apps',pillar:'p6',title:'App permission policies ב-Teams מוגדרות',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Teams apps → Permission policies → Global','Third-party apps / Custom apps = Block all או Allow specific','מנגנון אישור אפליקציות מתועד']}},
+  {id:'p6-teams-anon',pillar:'p6',title:'משתתפים אנונימיים לא יכולים להצטרף או להתחיל פגישה',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Meetings → Meeting policies → Global → Meeting join & lobby','Anonymous users can join a meeting = Off','Anonymous users and dial-in callers can start a meeting = Off']}},
+  {id:'p6-teams-lobby',pillar:'p6',title:'עקיפת Lobby רק לאנשי הארגון, חייגים נכנסים ממתינים',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Meeting policies → Global → Meeting join & lobby','Who can bypass the lobby = People in my org','People dialing in can bypass the lobby = Off']}},
+  {id:'p6-teams-chat',pillar:'p6',title:'צ׳אט פגישה חסום לאנונימיים ולחיצוניים',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Meeting policies → Global → Meeting engagement','Meeting chat = On for everyone but anonymous users','External meeting chat = Off']}},
+  {id:'p6-teams-control',pillar:'p6',title:'משתתפים חיצוניים לא יכולים לתת או לבקש שליטה',priority:'medium',phase:5,
+   guide:{portal:'Teams admin center',steps:['Meeting policies → Global → Content sharing','Allow an external participant to give or request control = Off','Set-CsTeamsMeetingPolicy -AllowExternalParticipantGiveRequestControl $false']}},
+  {id:'p6-teams-presenter',pillar:'p6',title:'רק מארגנים ומארגנים משותפים יכולים להציג',priority:'low',phase:5,
+   guide:{portal:'Teams admin center',steps:['Meeting policies → Global → Content sharing','Who can present = Only organizers and co-organizers','DesignatedPresenterRoleMode = OrganizerOnlyUserOverride']}},
+  {id:'p6-teams-recording',pillar:'p6',title:'הקלטת פגישות כבויה כברירת מחדל',priority:'low',phase:5,
+   guide:{portal:'Teams admin center',steps:['Meeting policies → Global → Recording & transcription','Meeting recording = Off (הפעלה לפי קבוצות מוגדרות)','AllowCloudRecording = $false בכללי הדיפולט']}},
+  {id:'p6-teams-report',pillar:'p6',title:'משתמשים יכולים לדווח על איומי אבטחה ב-Teams',priority:'medium',phase:3,
+   guide:{portal:'Teams admin center',steps:['Teams admin → Messaging policies → Global: Report a security concern = On','Defender portal → Settings → Email & collaboration → User reported settings: Monitor reported messages in Microsoft Teams = On','ודא שהדיווחים מגיעים לתיבת SecOps']}},
+  {id:'p9-dlp-copilot',pillar:'p9',title:'DLP מכסה את Microsoft 365 Copilot',priority:'high',phase:5,
+   guide:{portal:'Microsoft Purview portal',steps:['Purview → Data loss prevention → Policies → New policy','Location: Microsoft 365 Copilot and Copilot Chat','כללים: חסימת עיבוד של תוכן עם Sensitivity label רגיש / סוגי מידע רגיש']}},
+  {id:'p6-fab-guests',pillar:'p6',title:'Fabric: גישת אורחים וגלישה בתוכן מוגבלות',priority:'medium',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Fabric admin portal → Tenant settings → Export and sharing settings','Allow Microsoft Entra guest users to access Microsoft Fabric = Off (או קבוצה מוגדרת)','Guest users can browse and access Fabric content = Off']}},
+  {id:'p6-fab-invite',pillar:'p6',title:'Fabric: הזמנת אורחים חיצוניים מוגבלת',priority:'medium',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → Invite external users to your organization','Off או Specific security groups','תיעוד מי רשאי להזמין']}},
+  {id:'p6-fab-publishweb',pillar:'p6',title:'Fabric: Publish to web חסום',priority:'high',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → Publish to web','Disabled או Specific security groups','בדיקת Embed codes קיימים: Admin portal → Embed codes']}},
+  {id:'p6-fab-visuals',pillar:'p6',title:'Fabric: ויזואליזציות R ו-Python כבויות',priority:'medium',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → R and Python visuals settings','Interact with and share R and Python visuals = Disabled','חריג לקבוצת אנליסטים אם נדרש']}},
+  {id:'p6-fab-labels',pillar:'p6',title:'Fabric: Sensitivity labels מופעלים',priority:'medium',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → Information protection','Allow users to apply sensitivity labels for content = Enabled','Domain-level: Automatically apply labels from upstream']}},
+  {id:'p6-fab-links',pillar:'p6',title:'Fabric: קישורי שיתוף לכל הארגון מוגבלים',priority:'low',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → Allow shareable links to grant access to everyone in your organization','Disabled או Specific security groups','הגדרות ברירת מחדל ל-Link type']}},
+  {id:'p6-fab-extshare',pillar:'p6',title:'Fabric: שיתוף חיצוני של Semantic models מוגבל',priority:'medium',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → Allow specific users to turn on external data sharing','Disabled או Specific security groups','מיפוי מי משתף Dataset עם ארגונים חיצוניים']}},
+  {id:'p6-fab-reskey',pillar:'p6',title:'Fabric: אימות ResourceKey חסום',priority:'medium',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → Block ResourceKey Authentication','Enabled (חסום)','מעבר לאימות Entra ID']}},
+  {id:'p6-fab-sp',pillar:'p6',title:'Fabric: גישת Service principals ל-APIs מוגבלת',priority:'medium',phase:5,
+   guide:{portal:'Fabric admin portal',steps:['Tenant settings → Service principals can call Fabric public APIs → Specific security groups','Allow service principals to create and use profiles → Specific security groups','Service principals can access read-only admin APIs → Specific security groups']}},
+  {id:'p8-devicecode',pillar:'p8',title:'CA: זרימת Device code חסומה',priority:'high',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → New policy: Block device code flow','Conditions → Authentication flows → Device code flow = Yes → Block','ראשית Report-only, בדיקת Sign-in logs לשימושים לגיטימיים (Teams Rooms, מדפסות)']}},
+  {id:'p8-authtransfer',pillar:'p8',title:'CA: Authentication transfer חסום',priority:'high',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → New policy: Block authentication transfer','Conditions → Authentication flows → Authentication transfer = Yes → Block','Report-only קודם, בדיקת שימושים לגיטימיים']}},
+  {id:'p8-adminsession',pillar:'p8',title:'CA: Sign-in frequency וסשן לא מתמיד למנהלים',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → Policy for Directory roles (Admins)','Session → Sign-in frequency = 4 שעות (או Every time) + Persistent browser session = Never persistent','Target: Directory roles מיוחסים']}},
+  {id:'p8-regsecinfo',pillar:'p8',title:'CA: רישום Security info דורש מכשיר מנוהל או מיקום מהימן',priority:'medium',phase:1,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → New policy: User actions → Register security information','Grant: Require compliant device (או Hybrid joined) OR Trusted location','חריג: Temporary Access Pass לעובד חדש']}},
+  {id:'p8-intuneenroll',pillar:'p8',title:'CA: Sign-in frequency לרישום Intune = Every time',priority:'medium',phase:2,
+   guide:{portal:'Entra Admin Center',steps:['Conditional Access → New policy: Cloud apps → Microsoft Intune Enrollment','Session → Sign-in frequency = Every time','מונע רישום מכשיר עם טוקן ישן']}},
 ];
 
 // Per-item assessment criteria: how to verify the real state at a client, and what counts as Pass.
@@ -1328,6 +1495,87 @@ Object.assign(VERIFY, {
   'p9-agentgov': {check:`Power Platform admin → DLP / Environments; Publishing approval.`, pass:`Governance framework מתועד ואכוף.`},
   'p9-agentinventory': {check:`Entra → Agent identities (Export) + Power Platform → Agents.`, pass:`Inventory מלא עם Owners, וסוכנים שנרשמו בשיטה ישנה (App registration) זוהו.`},
   'p9-agentlifecycle': {check:`תהליך Onboarding / Review / Decommission לסוכנים.`, pass:`Lifecycle מוגדר ונבדק רבעונית.`},
+});
+
+Object.assign(VERIFY, {
+  'p1-adminlic': {check:`Admin center → Users → Active users: לכל חשבון עם תפקיד Admin בדוק אילו רישיונות והאם יש לו תיבת דואר.`, pass:`חשבונות Admin ללא תיבת דואר וללא רישיונות אפליקציה (Exchange, SharePoint, Teams, Office), פרט לרישיון זהות.`},
+  'p1-pwnoexpire': {check:`Org settings → Security & privacy → Password expiration policy: האם מוגדר Never expire.`, pass:`התפוגה כבויה, ובמקומה MFA ו-Password protection פעילים.`},
+  'p1-idlesession': {check:`Org settings → Security & privacy → Idle session timeout: האם מופעל וכמה זמן.`, pass:`מופעל עם 3 שעות או פחות (למכשירים לא מנוהלים).`},
+  'p1-appregblock': {check:`Entra → Users → User settings → App registrations: Users can register applications.`, pass:`No (רישום אפליקציות מוגבל לתפקידים).`},
+  'p1-tenantcreate': {check:`Entra → Users → User settings: Restrict non-admin users from creating tenants.`, pass:`Yes.`},
+  'p1-secgroups': {check:`Entra → Groups → General: Users can create security groups.`, pass:`No.`},
+  'p1-devjoin': {check:`Entra → Devices → Device settings: Users may join devices, Maximum number of devices per user.`, pass:`הצטרפות מוגבלת לקבוצה או ל-Autopilot ויש תקרת מכשירים למשתמש.`},
+  'p1-joinadmin': {check:`Entra → Devices → Device settings: Global Administrator role added as local admin, Registering user added as local admin.`, pass:`לא Global Admin ולא המשתמש הרושם הופכים ל-Local Admin אוטומטית.`},
+  'p1-bitlockerkeys': {check:`Entra → Devices → Device settings: Restrict users from recovering the BitLocker keys.`, pass:`Yes.`},
+  'p1-guestaccess': {check:`External collaboration settings → Guest user access.`, pass:`Limited access או Most restricted (לא same as members).`},
+  'p1-guestinvite': {check:`External collaboration settings → Guest invite settings.`, pass:`הזמנה רק לתפקיד Guest Inviter / מנהלים (או Members בלבד).`},
+  'p1-allowdomains': {check:`External collaboration settings → Collaboration restrictions.`, pass:`Allow list מוגדרת לדומיינים עסקיים מאושרים (או Deny list מנוהלת).`},
+  'p1-appsecret': {check:`App management policies: האם מוגדרת Default policy עם הגבלות על Password credentials.`, pass:`חסימת סיסמאות חדשות, או תוקף עד 180 יום וסודות שנוצרו על ידי המערכת.`},
+  'p1-appcert': {check:`App management policies → Key credentials restrictions.`, pass:`תוקף מרבי של 180 יום מוגדר ונאכף.`},
+  'p1-sysmfa': {check:`Authentication methods → Settings → System-preferred MFA.`, pass:`Enabled לכל המשתמשים.`},
+  'p1-emailotp': {check:`Authentication methods → Policies → Email OTP.`, pass:`Disabled (או מוגבל לקבוצה מוגדרת עם נימוק).`},
+  'p1-companion': {check:`Authentication methods → Microsoft Authenticator → Configure → companion applications.`, pass:`Disabled.`},
+  'p1-pimapproval': {check:`PIM → Entra roles → Settings: Global Administrator ו-Privileged Role Administrator, Require approval.`, pass:`נדרש אישור על שני התפקידים, עם Approvers מוגדרים.`},
+  'p2-nopolicy': {check:`Intune → Devices → Compliance → Compliance policy settings.`, pass:`Not compliant.`},
+  'p2-personalblock': {check:`Intune → Devices → Enrollment → Device platform restrictions → Default restriction.`, pass:`Personally owned = Blocked בברירת המחדל לכל הפלטפורמות.`},
+  'p4-attachfilter': {check:`Anti-malware policy (Default ו-Preset): Common attachments filter ורשימת סוגי הקבצים.`, pass:`הפילטר מופעל עם רשימה מורחבת של סוגי קבצים מסוכנים.`},
+  'p4-malwarenotify': {check:`Anti-malware policy → Notifications.`, pass:`התראה לאדמין על הודעות פנימיות חסומות מופעלת עם נמען מוגדר.`},
+  'p4-spamnotify': {check:`Anti-spam policies → Outbound: Notifications.`, pass:`התראה מופעלת עם נמען מוגדר.`},
+  'p4-outboundlimits': {check:`Anti-spam outbound policy (Default): Message limits.`, pass:`מגבלות מוגדרות והחלטה מתועדת על Restrict.`},
+  'p4-allowlists': {check:`Anti-spam inbound policies (כל המדיניות): Allowed senders / Allowed domains.`, pass:`הרשימות ריקות.`},
+  'p4-connfilter': {check:`Connection filter policy: IP Allow List, IP Block List, Enable safe list.`, pass:`Allow list ריקה ו-Safe list כבויה.`},
+  'p4-extsender': {check:`הפקודה למטה, או כלל Mail flow שמסמן הודעות חיצוניות.`, pass:`התיוג מופעל ל-Outlook (Get-ExternalInOutlook = Enabled).`, cmd:`Get-ExternalInOutlook`},
+  'p4-addins': {check:`Default Role Assignment Policy: שלוש ההרשאות (או Get-RoleAssignmentPolicy).`, pass:`שלוש ההרשאות כבויות.`, cmd:`Get-EXOMailbox -PropertySets Minimum -ResultSize 5 | % { Get-ManagementRoleAssignment -RoleAssignee $_.UserPrincipalName -Delegating:$false } | ? Role -match "My(Custom|Marketplace|ReadWriteMailbox)Apps"`},
+  'p4-personalaccts': {check:`הפקודה למטה על כל ה-OWA mailbox policies.`, pass:`PersonalAccountsEnabled ו-PersonalAccountCalendarsEnabled = False.`, cmd:`Get-OwaMailboxPolicy | fl Name,PersonalAccountsEnabled,PersonalAccountCalendarsEnabled`},
+  'p4-modernauth': {check:`הפקודה למטה.`, pass:`OAuth2ClientProfileEnabled = True.`, cmd:`Get-OrganizationConfig | fl OAuth2ClientProfileEnabled`},
+  'p4-mailtips': {check:`הפקודה למטה.`, pass:`כל MailTips מופעלים וסף Large audience מוגדר.`, cmd:`Get-OrganizationConfig | fl MailTips*`},
+  'p4-owastorage': {check:`הפקודה למטה.`, pass:`AdditionalStorageProvidersAvailable = False בכל המדיניות.`, cmd:`Get-OwaMailboxPolicy | fl Name,AdditionalStorageProvidersAvailable`},
+  'p4-mbxaudit': {check:`הפקודות למטה.`, pass:`AuditDisabled = False, אין AuditBypassEnabled, וקיימות פעולות Audit לכל סוגי הכניסה.`, cmd:`Get-OrganizationConfig | fl AuditDisabled
+Get-MailboxAuditBypassAssociation -ResultSize Unlimited | ? AuditBypassEnabled`},
+  'p4-calsharing': {check:`Org settings → Calendar, או Get-SharingPolicy.`, pass:`שיתוף יומנים חיצוני כבוי (או מוגבל ל-Free/Busy).`},
+  'p6-userapps': {check:`Org settings → Services → User owned apps and services.`, pass:`שתי האפשרויות כבויות.`},
+  'p6-forms-phish': {check:`Org settings → Services → Microsoft Forms.`, pass:`Internal phishing protection מופעל.`},
+  'p6-thirdparty': {check:`Org settings → Services → Microsoft 365 on the web.`, pass:`האפשרות כבויה.`},
+  'p6-bookings': {check:`Org settings → Services → Bookings.`, pass:`מוגבל למשתמשים/קבוצה מוגדרת.`},
+  'p6-spo-modernauth': {check:`SharePoint admin → Policies → Access control, או Get-SPOTenant.`, pass:`LegacyAuthProtocolsEnabled = False.`, cmd:`Get-SPOTenant | fl LegacyAuthProtocolsEnabled`},
+  'p6-spo-b2b': {check:`הפקודה למטה או Sharing settings.`, pass:`השילוב מופעל (EnableAzureADB2BIntegration = True או ברירת המחדל הנוכחית).`, cmd:`Get-SPOTenant | fl EnableAzureADB2BIntegration`},
+  'p6-od-sharing': {check:`SharePoint admin → Policies → Sharing: רמת OneDrive מול SharePoint.`, pass:`OneDrive אינו מתירים יותר מ-SharePoint; לא Anyone אלא אם מתועד.`},
+  'p6-spo-reshare': {check:`הפקודה למטה או Sharing settings.`, pass:`PreventExternalUsersFromResharing = True.`, cmd:`Get-SPOTenant | fl PreventExternalUsersFromResharing`},
+  'p6-spo-domains': {check:`Get-SPOTenant או Sharing settings.`, pass:`SharingDomainRestrictionMode = AllowList (או BlockList מנוהל).`, cmd:`Get-SPOTenant | fl SharingDomainRestrictionMode,SharingAllowedDomainList,SharingBlockedDomainList`},
+  'p6-spo-linkdefault': {check:`Get-SPOTenant: DefaultSharingLinkType, DefaultLinkPermission.`, pass:`DefaultSharingLinkType = Direct, DefaultLinkPermission = View.`, cmd:`Get-SPOTenant | fl DefaultSharingLinkType,DefaultLinkPermission`},
+  'p6-spo-sgroup': {check:`SharePoint admin → Policies → Sharing.`, pass:`השיתוף החיצוני מוגבל לקבוצה מוגדרת.`},
+  'p6-spo-guestexpire': {check:`הפקודה למטה.`, pass:`ExternalUserExpirationRequired = True ו-30 יום או פחות.`, cmd:`Get-SPOTenant | fl ExternalUserExpirationRequired,ExternalUserExpireInDays`},
+  'p6-spo-otp': {check:`הפקודה למטה.`, pass:`EmailAttestationRequired = True ו-15 ימים או פחות.`, cmd:`Get-SPOTenant | fl EmailAttestationRequired,EmailAttestationReAuthDays`},
+  'p6-spo-infected': {check:`הפקודה למטה.`, pass:`DisallowInfectedFileDownload = True.`, cmd:`Get-SPOTenant | fl DisallowInfectedFileDownload`},
+  'p6-dlp-teams': {check:`Purview → DLP → Policies: Location Teams chat and channel messages.`, pass:`לפחות Policy אחת פעילה (לא Test בלבד) כוללת Teams.`},
+  'p6-teams-storage': {check:`הפקודה למטה.`, pass:`רק שירותים מאושרים פעילים.`, cmd:`Get-CsTeamsClientConfiguration | fl AllowDropBox,AllowBox,AllowGoogleDrive,AllowShareFile,AllowEgnyte`},
+  'p6-teams-chanemail': {check:`הפקודה למטה.`, pass:`AllowEmailIntoChannel = False.`, cmd:`Get-CsTeamsClientConfiguration | fl AllowEmailIntoChannel`},
+  'p6-teams-extdomains': {check:`Get-CsTenantFederationConfiguration או External access.`, pass:`AllowedDomains מוגדר (לא Allow all), או External access כבוי.`, cmd:`Get-CsTenantFederationConfiguration | fl AllowFederatedUsers,AllowedDomains,BlockedDomains`},
+  'p6-teams-unmanaged': {check:`הפקודה למטה.`, pass:`AllowTeamsConsumer ו-AllowTeamsConsumerInbound = False.`, cmd:`Get-CsTenantFederationConfiguration | fl AllowTeamsConsumer,AllowTeamsConsumerInbound`},
+  'p6-teams-trial': {check:`הפקודה למטה.`, pass:`ExternalAccessWithTrialTenants = Blocked.`, cmd:`Get-CsTenantFederationConfiguration | fl ExternalAccessWithTrialTenants`},
+  'p6-teams-apps': {check:`Teams admin → Teams apps → Permission policies (Global).`, pass:`אפליקציות צד שלישי ומותאמות חסומות או מותרות לפי רשימה מאושרת.`},
+  'p6-teams-anon': {check:`הפקודה למטה.`, pass:`AllowAnonymousUsersToJoinMeeting ו-AllowAnonymousUsersToStartMeeting = False.`, cmd:`Get-CsTeamsMeetingPolicy -Identity Global | fl AllowAnonymousUsersToJoinMeeting,AllowAnonymousUsersToStartMeeting`},
+  'p6-teams-lobby': {check:`הפקודה למטה.`, pass:`AutoAdmittedUsers = EveryoneInCompanyExcludingGuests ו-AllowPSTNUsersToBypassLobby = False.`, cmd:`Get-CsTeamsMeetingPolicy -Identity Global | fl AutoAdmittedUsers,AllowPSTNUsersToBypassLobby`},
+  'p6-teams-chat': {check:`הפקודה למטה.`, pass:`MeetingChatEnabledType = EnabledExceptAnonymous ו-AllowExternalNonTrustedMeetingChat = False.`, cmd:`Get-CsTeamsMeetingPolicy -Identity Global | fl MeetingChatEnabledType,AllowExternalNonTrustedMeetingChat`},
+  'p6-teams-control': {check:`הפקודה למטה.`, pass:`AllowExternalParticipantGiveRequestControl = False.`, cmd:`Get-CsTeamsMeetingPolicy -Identity Global | fl AllowExternalParticipantGiveRequestControl`},
+  'p6-teams-presenter': {check:`הפקודה למטה.`, pass:`DesignatedPresenterRoleMode = OrganizerOnlyUserOverride.`, cmd:`Get-CsTeamsMeetingPolicy -Identity Global | fl DesignatedPresenterRoleMode`},
+  'p6-teams-recording': {check:`הפקודה למטה.`, pass:`AllowCloudRecording = False במדיניות Global (הקלטה מופעלת ידנית לקבוצות).`, cmd:`Get-CsTeamsMeetingPolicy -Identity Global | fl AllowCloudRecording`},
+  'p6-teams-report': {check:`Messaging policies + User reported settings.`, pass:`שני ההגדרות מופעלות.`},
+  'p9-dlp-copilot': {check:`Purview → DLP → Policies: Location Microsoft 365 Copilot.`, pass:`Policy פעילה אחת לפחות מכסה את Copilot.`},
+  'p6-fab-guests': {check:`Tenant settings: הגדרות אורחים.`, pass:`מכובה או מוגבל לקבוצה מוגדרת.`},
+  'p6-fab-invite': {check:`Tenant settings → Invite external users.`, pass:`Off או קבוצה מוגדרת.`},
+  'p6-fab-publishweb': {check:`Tenant settings → Publish to web + Embed codes.`, pass:`Disabled (או קבוצה מוגדרת), ואין Embed codes פעילים שלא אושרו.`},
+  'p6-fab-visuals': {check:`Tenant settings → R and Python visuals.`, pass:`Disabled.`},
+  'p6-fab-labels': {check:`Tenant settings → Information protection.`, pass:`Enabled.`},
+  'p6-fab-links': {check:`Tenant settings → Export and sharing settings.`, pass:`Disabled או קבוצה מוגדרת.`},
+  'p6-fab-extshare': {check:`Tenant settings → Export and sharing settings.`, pass:`Disabled או קבוצה מוגדרת.`},
+  'p6-fab-reskey': {check:`Tenant settings → Developer settings.`, pass:`Block ResourceKey Authentication = Enabled.`},
+  'p6-fab-sp': {check:`Tenant settings → Developer settings + Admin API settings.`, pass:`שלוש ההגדרות מוגבלות לקבוצות מוגדרות או כבויות.`},
+  'p8-devicecode': {check:`Conditional Access → Policies: Policy עם Authentication flows = Device code flow, Grant = Block, State = On.`, pass:`Policy במצב On, All users, למעט Exclusions מתועדים.`},
+  'p8-authtransfer': {check:`Conditional Access → Policies: Authentication flows = Authentication transfer, Block.`, pass:`Policy במצב On.`},
+  'p8-adminsession': {check:`Conditional Access: Policy על Directory roles עם Session controls.`, pass:`Sign-in frequency ≤ 4 שעות ו-Never persistent, על כל תפקידי ה-Admin.`},
+  'p8-regsecinfo': {check:`Conditional Access: Policy עם User action = Register security information.`, pass:`Policy במצב On עם דרישת מכשיר מנוהל או מיקום מהימן.`},
+  'p8-intuneenroll': {check:`Conditional Access: Policy על Microsoft Intune Enrollment.`, pass:`Sign-in frequency = Every time.`},
 });
 
 // English control titles for the client-facing findings report (the Hebrew `title` stays for the working UI).
@@ -2177,6 +2425,89 @@ function renderReport(c) {
 // ══════════════════════════════════════════════
 //  CLIENT-FACING FINDINGS REPORT (English, LTR)
 // ══════════════════════════════════════════════
+Object.assign(TITLE_EN, {
+  'p1-adminlic': 'Administrative accounts use reduced-footprint licenses',
+  'p1-pwnoexpire': 'Password expiration policy set to never expire',
+  'p1-idlesession': 'Idle session timeout configured for unmanaged devices',
+  'p1-appregblock': 'Users cannot register applications',
+  'p1-tenantcreate': 'Non-admin users cannot create tenants',
+  'p1-secgroups': 'Users cannot create security groups',
+  'p1-devjoin': 'Entra device join and registration restricted',
+  'p1-joinadmin': 'Local administrator assignment limited during Entra join',
+  'p1-bitlockerkeys': 'Users restricted from recovering BitLocker keys',
+  'p1-guestaccess': 'Guest user access is restricted',
+  'p1-guestinvite': 'Guest invitations are limited',
+  'p1-allowdomains': 'Collaboration invitations sent to allowed domains only',
+  'p1-appsecret': 'Application secret policy (blocked or max 180 days, system-generated)',
+  'p1-appcert': 'Maximum certificate lifetime for applications',
+  'p1-sysmfa': 'System-preferred multifactor authentication enabled',
+  'p1-emailotp': 'Email OTP authentication method disabled',
+  'p1-companion': 'Authenticator on companion applications disabled',
+  'p1-pimapproval': 'Approval required for Global Administrator and Privileged Role Administrator activation',
+  'p2-nopolicy': 'Devices without a compliance policy marked not compliant',
+  'p2-personalblock': 'Enrollment of personally owned devices blocked by default',
+  'p4-attachfilter': 'Common attachment types filter and comprehensive attachment filtering',
+  'p4-malwarenotify': 'Notification for internal users sending malware',
+  'p4-spamnotify': 'Outbound spam notifications configured',
+  'p4-outboundlimits': 'Outbound spam message limits in place',
+  'p4-allowlists': 'Inbound anti-spam policies contain no allowed senders or domains',
+  'p4-connfilter': 'Connection filter IP allow list and safe list not used',
+  'p4-extsender': 'Email from external senders is identified',
+  'p4-addins': 'Users installing Outlook add-ins not allowed',
+  'p4-personalaccts': 'Adding personal email accounts and calendars disabled',
+  'p4-modernauth': 'Modern authentication for Exchange Online enabled',
+  'p4-mailtips': 'MailTips enabled for end users',
+  'p4-owastorage': 'Additional storage providers restricted in Outlook on the web',
+  'p4-mbxaudit': 'Mailbox auditing enabled with no bypass',
+  'p4-calsharing': 'External sharing of calendars not available',
+  'p6-userapps': 'User owned apps and services restricted',
+  'p6-forms-phish': 'Internal phishing protection for Forms enabled',
+  'p6-thirdparty': 'Third-party storage services restricted in Microsoft 365 on the web',
+  'p6-bookings': 'Shared Bookings pages restricted to select users',
+  'p6-spo-modernauth': 'Modern authentication for SharePoint applications required',
+  'p6-spo-b2b': 'SharePoint and OneDrive integration with Entra B2B enabled',
+  'p6-od-sharing': 'OneDrive content sharing restricted',
+  'p6-spo-reshare': 'Guest users cannot share items they do not own',
+  'p6-spo-domains': 'External sharing managed through domain allow or block list',
+  'p6-spo-linkdefault': 'Default sharing link type and permission restricted',
+  'p6-spo-sgroup': 'External sharing restricted by security group',
+  'p6-spo-guestexpire': 'Guest access to a site or OneDrive expires automatically',
+  'p6-spo-otp': 'Reauthentication with verification code restricted',
+  'p6-spo-infected': 'Download of infected SharePoint files disallowed',
+  'p6-dlp-teams': 'DLP policies cover Microsoft Teams',
+  'p6-teams-storage': 'Teams external file sharing limited to approved storage services',
+  'p6-teams-chanemail': 'Users cannot send emails to a channel email address',
+  'p6-teams-extdomains': 'External domains restricted in Teams',
+  'p6-teams-unmanaged': 'Communication with unmanaged Teams users disabled',
+  'p6-teams-trial': 'Communication with accounts in trial Teams tenants blocked',
+  'p6-teams-apps': 'Teams app permission policies configured',
+  'p6-teams-anon': 'Anonymous users cannot join or start a meeting',
+  'p6-teams-lobby': 'Only people in my org bypass the lobby; dial-in users wait',
+  'p6-teams-chat': 'Meeting chat does not allow anonymous or external participants',
+  'p6-teams-control': 'External participants cannot give or request control',
+  'p6-teams-presenter': 'Only organizers and co-organizers can present',
+  'p6-teams-recording': 'Meeting recording off by default',
+  'p6-teams-report': 'Users can report security concerns in Teams',
+  'p9-dlp-copilot': 'DLP policies published for Copilot users',
+  'p6-fab-guests': 'Fabric guest access and content browsing restricted',
+  'p6-fab-invite': 'Fabric external guest invitations restricted',
+  'p6-fab-publishweb': 'Public publishing of Fabric reports restricted',
+  'p6-fab-visuals': 'R and Python visuals disabled in Fabric',
+  'p6-fab-labels': 'Sensitivity labels enabled for Fabric content',
+  'p6-fab-links': 'Organization-wide Fabric links restricted',
+  'p6-fab-extshare': 'External sharing of semantic models restricted',
+  'p6-fab-reskey': 'Resource-key authentication blocked for Fabric datasets',
+  'p6-fab-sp': 'Service principal access to Fabric APIs and profiles restricted',
+  'p8-devicecode': 'CA: device code sign-in flow blocked',
+  'p8-authtransfer': 'CA: authentication transfer blocked',
+  'p8-adminsession': 'CA: sign-in frequency and non-persistent sessions for administrators',
+  'p8-regsecinfo': 'CA: managed device required to register security information',
+  'p8-intuneenroll': 'CA: sign-in frequency for Intune enrollment set to every time'
+});
+
+// CIS Microsoft 365 Foundations Benchmark references (IDs follow the v5.0.0 numbering used by the Maester test suite; recommendation text is not reproduced).
+const CIS_MAP = {'p1-adminaccts':['1.1.1'], 'p1-gacount':['1.1.3'], 'p6-m365groups':['1.2.1','5.1.3.4'], 'p4-sharedmbx':['1.2.2'], 'p6-lockbox':['1.3.6'], 'p4-safelinks':['2.1.1'], 'p4-safeatt':['2.1.4','2.1.5'], 'p4-antiphish':['2.1.7'], 'p4-dmarc':['2.1.8','2.1.9','2.1.10'], 'p4-preset':['2.4.1','2.4.2'], 'p4-zap':['2.4.4'], 'p6-auditon':['3.1.1'], 'p6-dlp':['3.2.1'], 'p6-labels':['3.3.1'], 'p2-laps':['5.1.4.5'], 'p1-consent':['5.1.5.1','5.1.5.2'], 'p1-hybrid':['5.1.8.1'], 'p8-mfa-admin':['5.2.2.1','5.2.2.5'], 'p8-mfa-all':['5.2.2.2'], 'p8-legacy':['5.2.2.3'], 'p8-signin-risk':['5.2.2.7','5.2.2.8'], 'p8-user-risk':['5.2.2.6'], 'p8-device':['5.2.2.9'], 'p8-session':['5.2.2.13'], 'p8-locations':['5.2.2.14','5.2.2.15'], 'p8-tokenprotect':['5.2.2.16'], 'p1-authenticator':['5.2.3.1'], 'p1-pwprotect':['5.2.3.2','5.2.3.3','5.2.3.8','5.2.3.9'], 'p1-mfa':['5.2.3.4'], 'p1-authmethods':['5.2.3.5'], 'p1-pim':['5.3.1'], 'p1-reviews':['5.3.2','5.3.3'], 'p4-extfwd':['6.2.1'], 'p4-transport':['6.2.2'], 'p4-smtpauth':['6.5.4'], 'p4-directsend':['6.5.5'], 'p6-spo-sharing':['7.2.3'], 'p1-adminlic':['1.1.4'], 'p1-pwnoexpire':['1.3.1'], 'p1-idlesession':['1.3.2'], 'p1-appregblock':['5.1.2.2'], 'p1-tenantcreate':['5.1.2.3'], 'p1-secgroups':['5.1.3.1'], 'p1-devjoin':['5.1.4.1','5.1.4.2'], 'p1-joinadmin':['5.1.4.3','5.1.4.4'], 'p1-bitlockerkeys':['5.1.4.6'], 'p1-guestaccess':['5.1.6.2'], 'p1-guestinvite':['5.1.6.3'], 'p1-allowdomains':['5.1.6.1'], 'p1-appsecret':['5.1.5.3','5.1.5.4','5.1.5.5'], 'p1-appcert':['5.1.5.6'], 'p1-sysmfa':['5.2.3.6'], 'p1-emailotp':['5.2.3.7'], 'p1-companion':['5.2.3.10'], 'p1-pimapproval':['5.3.4','5.3.5'], 'p2-nopolicy':['4.1'], 'p2-personalblock':['4.2'], 'p4-attachfilter':['2.1.2','2.1.11'], 'p4-malwarenotify':['2.1.3'], 'p4-spamnotify':['2.1.6'], 'p4-outboundlimits':['2.1.15'], 'p4-allowlists':['2.1.14'], 'p4-connfilter':['2.1.12','2.1.13'], 'p4-extsender':['6.2.3'], 'p4-addins':['6.3.1'], 'p4-personalaccts':['6.3.2'], 'p4-modernauth':['6.5.1'], 'p4-mailtips':['6.5.2'], 'p4-owastorage':['6.5.3'], 'p4-mbxaudit':['6.1.1','6.1.2','6.1.3'], 'p4-calsharing':['1.3.3'], 'p6-userapps':['1.3.4'], 'p6-forms-phish':['1.3.5'], 'p6-thirdparty':['1.3.7'], 'p6-bookings':['1.3.9'], 'p6-spo-modernauth':['7.2.1'], 'p6-spo-b2b':['7.2.2'], 'p6-od-sharing':['7.2.4'], 'p6-spo-reshare':['7.2.5'], 'p6-spo-domains':['7.2.6'], 'p6-spo-linkdefault':['7.2.7','7.2.11'], 'p6-spo-sgroup':['7.2.8'], 'p6-spo-guestexpire':['7.2.9'], 'p6-spo-otp':['7.2.10'], 'p6-spo-infected':['7.3.1'], 'p6-dlp-teams':['3.2.2'], 'p6-teams-storage':['8.1.1'], 'p6-teams-chanemail':['8.1.2'], 'p6-teams-extdomains':['8.2.1'], 'p6-teams-unmanaged':['8.2.2','8.2.3'], 'p6-teams-trial':['8.2.4'], 'p6-teams-apps':['8.4.1'], 'p6-teams-anon':['8.5.1','8.5.2'], 'p6-teams-lobby':['8.5.3','8.5.4'], 'p6-teams-chat':['8.5.5','8.5.8'], 'p6-teams-control':['8.5.7'], 'p6-teams-presenter':['8.5.6'], 'p6-teams-recording':['8.5.9'], 'p6-teams-report':['8.6.1'], 'p9-dlp-copilot':['3.2.3'], 'p6-fab-guests':['9.1.1','9.1.3'], 'p6-fab-invite':['9.1.2'], 'p6-fab-publishweb':['9.1.4'], 'p6-fab-visuals':['9.1.5'], 'p6-fab-labels':['9.1.6'], 'p6-fab-links':['9.1.7'], 'p6-fab-extshare':['9.1.8'], 'p6-fab-reskey':['9.1.9'], 'p6-fab-sp':['9.1.10','9.1.11','9.1.12'], 'p8-devicecode':['5.2.2.12'], 'p8-authtransfer':['5.2.2.17'], 'p8-adminsession':['5.2.2.4'], 'p8-regsecinfo':['5.2.2.10'], 'p8-intuneenroll':['5.2.2.11']};
+
 const PILLAR_EN = {
   p1: 'Identity (Entra ID)', p2: 'Devices (Intune)', p3: 'Endpoint (Defender for Endpoint)',
   p4: 'Email (Exchange, Defender for Office 365)', p5: 'Cloud Apps (Defender for Cloud Apps)',
@@ -2234,7 +2565,7 @@ function rpDonut(parts, size, thick, mid) {
 const rpSevPill = sev => { const s = SEVERITY_EN[sev] || SEVERITY_EN.medium; return `<span class="rp-pill" style="background:${s.bg};color:${s.color};border-color:${s.color}40">${s.label}</span>`; };
 const rpStatus = st => `<span class="rp-st" style="--c:${STATUS_COLOR[st]}">${STATUS_EN[st]}</span>`;
 
-function buildReportModel(c) {
+function buildReportModel(c, noCmp) {
   const rows = ITEMS.map((item, idx) => {
     const d = c.items[item.id] || {};
     return {item, idx, d, status: d.status || 'pending', sev: d.priority || item.priority};
@@ -2266,7 +2597,362 @@ function buildReportModel(c) {
     .sort((a, b) => PILLARS.findIndex(p => p.id === a.item.pillar) - PILLARS.findIndex(p => p.id === b.item.pillar) || a.idx - b.idx);
   const limits = rows.filter(r => (r.d.blocker || '').trim() && !blockerIsFinding(r));
   const today = new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'});
-  return {c, rows, met, partial, fail, pending, na, applicable, assessedN, findings, scores, sevCount, workstreams, matrix, limits, today, MIN_SCORED, govAssessedN};
+  const model = {c, rows, met, partial, fail, pending, na, applicable, assessedN, findings, scores, sevCount, workstreams, matrix, limits, today, MIN_SCORED, govAssessedN, cmp: null};
+  const snap = noCmp ? null : compareSnapOf(c.id);
+  if (snap) { try { model.cmp = buildComparison(model, snap); } catch (e) { console.warn('comparison failed', e); } }
+  return model;
+}
+
+// ── Framework alignment (CIS) and Microsoft Secure Score import ──────────────
+const CIS_SECTIONS = {1: 'Microsoft 365 admin center', 2: 'Defender for Office 365', 3: 'Microsoft Purview', 4: 'Intune', 5: 'Entra ID', 6: 'Exchange Online', 7: 'SharePoint and OneDrive', 8: 'Microsoft Teams', 9: 'Fabric and Power BI'};
+const cisOf = item => CIS_MAP[item.id] || [];
+const cisTag = item => { const l = cisOf(item); return l.length ? `<span class="rp-cis" title="CIS Microsoft 365 Foundations Benchmark">CIS ${l.join(', ')}</span>` : ''; };
+
+// One status per CIS recommendation, derived from the assessed controls that map to it (worst case wins).
+function cisAlignment(m) {
+  const byId = new Map(m.rows.map(r => [r.item.id, r]));
+  const recs = {};
+  for (const [cid, list] of Object.entries(CIS_MAP)) { const r = byId.get(cid); if (r) list.forEach(x => (recs[x] = recs[x] || []).push(r)); }
+  const out = Object.entries(recs).map(([id, rs]) => {
+    const live = rs.filter(r => r.status !== 'na');
+    let st = 'na';
+    if (live.length) st = live.some(r => r.status === 'fail') ? 'fail' : live.some(r => r.status === 'partial') ? 'partial' : live.every(r => r.status === 'done') ? 'done' : 'pending';
+    return {id, section: id.split('.')[0], status: st, controls: rs};
+  }).sort((a, b) => a.id.localeCompare(b.id, undefined, {numeric: true}));
+  const sections = Object.keys(CIS_SECTIONS).map(k => {
+    const l = out.filter(o => o.section === k && o.status !== 'na');
+    const n = s => l.filter(o => o.status === s).length;
+    return {key: k, name: CIS_SECTIONS[k], total: l.length, done: n('done'), partial: n('partial'), fail: n('fail'), pending: n('pending')};
+  }).filter(s => s.total);
+  const live = out.filter(o => o.status !== 'na');
+  const assessed = live.filter(o => o.status !== 'pending');
+  return {recs: out, sections, total: live.length, assessed: assessed.length, done: live.filter(o => o.status === 'done').length, partial: live.filter(o => o.status === 'partial').length, fail: live.filter(o => o.status === 'fail').length, pending: live.filter(o => o.status === 'pending').length};
+}
+function renderCisSection(m) {
+  const a = cisAlignment(m);
+  if (!a.assessed) return '';
+  const pct = a.assessed ? Math.round(a.done / a.assessed * 100) : 0;
+  const rows = a.sections.map(s => {
+    const tot = s.total, w = n => (n / tot * 100).toFixed(1);
+    return `<tr><td><b>${s.key}</b> ${s.name}</td><td style="width:34%"><div class="rp-stack"><i style="width:${w(s.done)}%;background:${STATUS_COLOR.done}"></i><i style="width:${w(s.partial)}%;background:${STATUS_COLOR.partial}"></i><i style="width:${w(s.fail)}%;background:${STATUS_COLOR.fail}"></i><i style="width:${w(s.pending)}%;background:${STATUS_COLOR.pending}"></i></div></td><td>${s.done}</td><td>${s.partial}</td><td>${s.fail}</td><td>${s.pending}</td></tr>`;
+  }).join('');
+  return `<div class="rp-sec"><h2 class="rp-h">CIS alignment <small>CIS Microsoft 365 Foundations Benchmark</small></h2>
+    <p class="rp-lead"><b>${a.done}</b> of <b>${a.assessed}</b> assessed CIS recommendations are fully met (${pct}%). <b>${a.pending}</b> mapped recommendations are not assessed yet.</p>
+    <div class="rp-card" style="padding:0"><table class="rp-tbl"><thead><tr><th>CIS section</th><th>Status</th><th>Met</th><th>Partial</th><th>Not met</th><th>Not assessed</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="rp-note" style="margin-top:6px">Indicative mapping from the assessed controls to CIS recommendation numbers (v5.0.0 numbering). It is not a CIS certification.</p></div>`;
+}
+
+// ── Microsoft Secure Score import (Defender portal export or survey-agent JSON) ──
+function ssStatusKey(s) {
+  s = String(s || '').toLowerCase();
+  if (s.includes('complet') || s.includes('implemented') || s.includes('resolved')) return s.includes('third') || s.includes('alternate') ? 'mitigated' : 'done';
+  if (s.includes('risk accepted') || s.includes('accepted')) return 'accepted';
+  if (s.includes('third') || s.includes('alternate')) return 'mitigated';
+  if (s.includes('planned')) return 'planned';
+  return 'open';
+}
+const SS_STATUS_EN = {done: 'Completed', open: 'To address', planned: 'Planned', accepted: 'Risk accepted', mitigated: 'Mitigated'};
+function parseCsvRows(text) {
+  text = text.replace(/^﻿/, '');
+  const rows = []; let row = [], cur = '', q = false;
+  const delim = (text.split('\n')[0].match(/\t/g) || []).length > (text.split('\n')[0].match(/,/g) || []).length ? '\t' : ',';
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === delim) { row.push(cur); cur = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cur); cur = ''; if (row.some(x => x.trim())) rows.push(row); row = []; }
+    else cur += ch;
+  }
+  row.push(cur); if (row.some(x => x.trim())) rows.push(row);
+  return rows;
+}
+function parseSecureScoreCsv(text) {
+  const rows = parseCsvRows(text);
+  if (rows.length < 2) throw new Error('empty');
+  const head = rows[0].map(h => h.trim().toLowerCase());
+  const col = (...keys) => head.findIndex(h => keys.some(k => h.includes(k)));
+  const ci = {name: col('recommended action', 'improvement action', 'action'), pts: col('points achieved', 'points'), impact: col('score impact'), st: col('status'), cat: col('category'), prod: col('product'), rank: col('rank'), lic: col('license')};
+  if (ci.name < 0) throw new Error('no action column');
+  const num = v => { const n = parseFloat(String(v || '').replace(/[^\d.\-]/g, '')); return isNaN(n) ? null : n; };
+  const actions = rows.slice(1).map(r => {
+    const g = i => i >= 0 ? (r[i] || '').trim() : '';
+    const pts = g(ci.pts); let ach = null, max = null;
+    const m = pts.match(/(-?[\d.]+)\s*\/\s*(-?[\d.]+)/);
+    if (m) { ach = parseFloat(m[1]); max = parseFloat(m[2]); } else if (pts) ach = num(pts);
+    return {name: g(ci.name), category: g(ci.cat), product: g(ci.prod), status: ssStatusKey(g(ci.st)), statusRaw: g(ci.st), points: ach, max, impact: g(ci.impact), rank: num(g(ci.rank))};
+  }).filter(a => a.name);
+  return {actions};
+}
+function normalizeSecureScore(raw) {
+  const actions = (raw.actions || []).map(a => ({name: String(a.name || '').trim(), category: a.category || '', product: a.product || '', status: ['done', 'open', 'planned', 'accepted', 'mitigated'].includes(a.status) ? a.status : ssStatusKey(a.status || a.statusRaw), points: a.points == null ? null : Number(a.points), max: a.max == null ? null : Number(a.max), impact: a.impact || ''})).filter(a => a.name);
+  let ach = 0, max = 0;
+  actions.forEach(a => { if (a.max != null) { max += a.max; ach += a.points || 0; } });
+  return {capturedAt: raw.capturedAt || new Date().toISOString().slice(0, 10), score: raw.score != null ? Number(raw.score) : ach, max: raw.max != null ? Number(raw.max) : max, actions};
+}
+function secureScoreStats(ss) {
+  const by = k => ss.actions.filter(a => a.status === k);
+  const cats = {};
+  ss.actions.forEach(a => { const k = a.category || 'Other'; const c = cats[k] = cats[k] || {name: k, ach: 0, max: 0, n: 0, open: 0}; c.n++; if (a.max != null) { c.max += a.max; c.ach += a.points || 0; } if (a.status === 'open') c.open++; });
+  const open = by('open').filter(a => a.max != null).map(a => ({...a, gap: Math.max(0, (a.max || 0) - (a.points || 0))})).sort((x, y) => y.gap - x.gap);
+  return {by, cats: Object.values(cats).sort((a, b) => b.max - a.max), open, pct: ss.max ? Math.round(ss.score / ss.max * 100) : null};
+}
+function renderSecureScoreSection(c) {
+  const ss = c.secureScore; if (!ss || !ss.actions || !ss.actions.length) return '';
+  const st = secureScoreStats(ss);
+  const parts = [['done', '#16a34a'], ['planned', '#0ea5e9'], ['accepted', '#a78bfa'], ['mitigated', '#64748b'], ['open', '#dc2626']];
+  const catRows = st.cats.map(k => {
+    const p = k.max ? Math.round(k.ach / k.max * 100) : 0;
+    return `<div class="rp-sevrow" style="grid-template-columns:130px 1fr 74px"><span>${escHtml(k.name)}</span><div class="rp-track"><i style="width:${p}%;background:#0f4c81"></i></div><b>${k.max ? `${Math.round(k.ach * 10) / 10}/${Math.round(k.max * 10) / 10}` : k.n}</b></div>`;
+  }).join('');
+  const top = st.open.slice(0, 15).map(a => `<tr><td>${escHtml(a.name)}</td><td>${escHtml(a.category)}</td><td>${escHtml(a.product)}</td><td style="white-space:nowrap">${Math.round((a.points || 0) * 10) / 10} / ${Math.round(a.max * 10) / 10}</td></tr>`).join('');
+  return `<div class="rp-sec"><h2 class="rp-h">Microsoft Secure Score <small>Captured ${escHtml(ss.capturedAt)}</small></h2>
+    <div class="rp-grid3">
+      <div class="rp-card"><h4>Score</h4><div class="rp-vis">${rpDonut([{v: st.pct || 0, color: '#0f4c81'}, {v: 100 - (st.pct || 0), color: '#eef1f5'}], 92, 11, `<text x="50%" y="46%" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="700" fill="#0f4c81" font-family="Segoe UI,Arial,sans-serif">${st.pct == null ? '-' : st.pct + '%'}</text>`)}<div><div class="rp-big" style="font-size:1.4rem">${Math.round(ss.score * 10) / 10}</div><div class="rp-cap">of ${Math.round(ss.max * 10) / 10} points</div></div></div></div>
+      <div class="rp-card"><h4>Improvement actions</h4><div class="rp-leg">${parts.map(([k, col]) => `<div><i style="background:${col}"></i>${SS_STATUS_EN[k]}<b>${st.by(k).length}</b></div>`).join('')}</div></div>
+      <div class="rp-card"><h4>Points by category</h4>${catRows}</div>
+    </div>
+    ${top ? `<h3 class="rp-h3">Largest open opportunities</h3><div class="rp-card" style="padding:0"><table class="rp-tbl"><thead><tr><th>Improvement action</th><th>Category</th><th>Product</th><th>Points</th></tr></thead><tbody>${top}</tbody></table></div>` : ''}
+    <p class="rp-note" style="margin-top:6px">Source: Microsoft Secure Score improvement actions at the capture date. Includes actions across all licensed products.</p></div>`;
+}
+function importSecureScoreFile(input) {
+  const file = input.files[0]; input.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const c = getClient(currentClientId);
+      const txt = e.target.result;
+      let raw;
+      if (/\.json$/i.test(file.name) || txt.trim().startsWith('{')) { const j = JSON.parse(txt); raw = j.secureScore || j; }
+      else raw = parseSecureScoreCsv(txt);
+      const ss = normalizeSecureScore(raw);
+      if (!ss.actions.length) throw new Error('no actions');
+      if (c.secureScore && !confirm(`להחליף את נתוני ה-Secure Score הקיימים (${c.secureScore.capturedAt}) ב-${ss.actions.length} פעולות חדשות?`)) return;
+      c.secureScore = ss; save(c.id); renderFindings(c);
+      toast(`✅ יובאו ${ss.actions.length} פעולות Secure Score`, 'success');
+    } catch (err) { alert('קובץ Secure Score לא תקין: ' + (err.message || err)); }
+  };
+  reader.readAsText(file);
+}
+function clearSecureScore() {
+  const c = getClient(currentClientId);
+  if (!c.secureScore || !confirm('למחוק את נתוני ה-Secure Score מהלקוח?')) return;
+  delete c.secureScore; save(c.id); renderFindings(c);
+}
+
+// ── Snapshots and version comparison (re-assessment vs a saved baseline) ──────
+// Snapshots live in their own localStorage key, not inside the client record: the SharePoint DataJson field is capped at 65,535
+// characters and the client record already carries every control. A snapshot can be exported and imported as a JSON file.
+const SNAP_KEY = 'e5tracker_snaps_v1';
+let SNAPS = null;
+function ensureSnaps() {
+  if (SNAPS) return;
+  SNAPS = {snaps: {}, cmp: {}};
+  try { const j = JSON.parse(localStorage.getItem(SNAP_KEY) || 'null'); if (j && j.snaps) SNAPS = {snaps: j.snaps, cmp: j.cmp || {}}; } catch (e) { /* unreadable: start empty */ }
+}
+function persistSnaps() {
+  try { localStorage.setItem(SNAP_KEY, JSON.stringify(SNAPS)); return true; }
+  catch (e) { toast('לא הצלחתי לשמור תמונת מצב (אחסון הדפדפן מלא). ייצא קובץ ונקה מקום', 'error'); return false; }
+}
+const snapsOf = cid => { ensureSnaps(); return SNAPS.snaps[cid] || []; };
+function compareSnapOf(cid) { ensureSnaps(); const id = SNAPS.cmp[cid]; return id ? (snapsOf(cid).find(s => s.id === id) || null) : null; }
+const fmtDateEn = iso => new Date(iso).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'});
+const fmtDateHe = iso => new Date(iso).toLocaleDateString('he-IL');
+
+// Compact picture of the survey at one moment: status and severity per assessed control, finding text only for open findings.
+function snapshotOf(c, label) {
+  const items = {};
+  ITEMS.forEach(item => {
+    const d = c.items[item.id] || {}, st = d.status || 'pending';
+    if (st === 'pending') return;
+    const sev = d.priority || item.priority;
+    const t = (st === 'fail' || st === 'partial') ? findingText({d}).replace(/\s+/g, ' ').slice(0, 300) : '';
+    items[item.id] = t ? [st, sev, t] : [st, sev];
+  });
+  const m = buildReportModel(c, true);
+  const sc = k => ({v: m.scores[k].v, ok: m.scores[k].ok});
+  return {
+    id: genId(), label: label, takenAt: new Date().toISOString(), itemCount: ITEMS.length, items,
+    scores: {security: sc('security'), adoption: sc('adoption'), governance: sc('governance')},
+    counts: {met: m.met.length, partial: m.partial.length, fail: m.fail.length, assessed: m.assessedN, applicable: m.applicable},
+    ss: c.secureScore ? {score: c.secureScore.score, max: c.secureScore.max, capturedAt: c.secureScore.capturedAt} : null,
+  };
+}
+function addSnapshot(c, label) {
+  ensureSnaps();
+  const s = snapshotOf(c, label);
+  (SNAPS.snaps[c.id] = SNAPS.snaps[c.id] || []).push(s);
+  if (!persistSnaps()) { SNAPS.snaps[c.id].pop(); return null; }
+  return s;
+}
+
+function buildComparison(m, snap) {
+  const RANK = {fail: 0, partial: 1, done: 2};
+  const prevOf = id => { const p = snap.items[id]; return p ? {st: p[0], sev: p[1], text: p[2] || ''} : null; };
+  const g = {resolved: [], improved: [], regressed: [], open: [], kept: [], newOpen: [], newMet: [], notRechecked: [], outOfScope: []};
+  const byId = {}, common = new Set();
+  m.rows.forEach(r => {
+    const p = prevOf(r.item.id), now = r.status;
+    const had = !!p && RANK[p.st] !== undefined, has = RANK[now] !== undefined, e = {r, p};
+    let k = null;
+    if (had && has) {
+      common.add(r.item.id);
+      k = RANK[now] > RANK[p.st] ? (now === 'done' ? 'resolved' : 'improved') : RANK[now] < RANK[p.st] ? 'regressed' : (now === 'done' ? 'kept' : 'open');
+    } else if (!had && has) k = now === 'done' ? 'newMet' : 'newOpen';
+    else if (had && now === 'na') k = 'outOfScope';
+    else if (had) k = 'notRechecked';
+    if (k) { g[k].push(e); byId[r.item.id] = k; }
+  });
+  const sevRank = e => SEVERITY_EN[e.r.sev]?.rank ?? 2;
+  Object.values(g).forEach(list => list.sort((a, b) => sevRank(a) - sevRank(b) || a.r.idx - b.r.idx));
+
+  // Scores on the controls assessed in both reviews, so adding controls to the survey does not distort the movement.
+  const rowById = new Map(m.rows.map(r => [r.item.id, r]));
+  const mk = (stOf, sevOf) => ({items: Object.fromEntries(ITEMS.map(i => [i.id, common.has(i.id) ? {status: stOf(i.id), priority: sevOf(i.id)} : {status: 'pending', priority: i.priority}]))});
+  const before = mk(id => snap.items[id][0], id => snap.items[id][1]);
+  const after = mk(id => rowById.get(id).status, id => rowById.get(id).sev);
+  const govN = getGovernanceItems().filter(i => common.has(i.id)).length;
+  const sc = (label, fn, n) => n >= m.MIN_SCORED ? {label, ok: true, a: fn(before, true), b: fn(after, true)} : {label, ok: false};
+  const scores = {security: sc('Security', getSecurityScore, common.size), adoption: sc('Adoption', getAdoptionScore, common.size), governance: sc('Governance', getGovernanceScore, govN)};
+
+  const cisB = cisAlignment({rows: ITEMS.map(item => ({item, status: snap.items[item.id]?.[0] || 'pending'}))}), cisA = cisAlignment(m);
+  const cis = cisB.assessed && cisA.assessed ? {a: cisB.done, aOf: cisB.assessed, b: cisA.done, bOf: cisA.assessed} : null;
+  const pct = s => s && s.max ? Math.round(s.score / s.max * 100) : null;
+  const cs = m.c.secureScore;
+  const ss = snap.ss && cs && cs.capturedAt !== snap.ss.capturedAt && pct(snap.ss) !== null && pct(cs) !== null ? {a: pct(snap.ss), b: pct(cs)} : null;
+  const baseOpen = Object.values(snap.items).filter(p => p[0] === 'fail' || p[0] === 'partial').length;
+  return {snap, label: snap.label, date: fmtDateEn(snap.takenAt), baseOpen, ...g, byId, common: common.size, scores, cis, ss,
+    coverage: {a: snap.counts ? snap.counts.assessed : Object.keys(snap.items).length, b: m.assessedN}};
+}
+
+const cmpArrow = (a, b, unit) => { const d = b - a, u = unit || ''; return d > 0 ? `<span class="rp-up">&#9650; +${d}${u}</span>` : d < 0 ? `<span class="rp-down">&#9660; ${d}${u}</span>` : '<span class="rp-same">no change</span>'; };
+const CMP_CHIP = {improved: 'Improved since baseline', regressed: 'Regressed since baseline', newOpen: 'New since baseline', open: 'Unchanged since baseline'};
+const deltaChip = (m, f) => { const t = m.cmp && m.cmp.byId[f.item.id]; return t && CMP_CHIP[t] ? `<span class="rp-delta rp-delta-${t}">${CMP_CHIP[t]}</span>` : ''; };
+
+function renderComparisonSection(m) {
+  const k = m.cmp; if (!k) return '';
+  const nRes = k.resolved.length, nImp = k.improved.length, nReg = k.regressed.length, nOpen = k.open.length, nNew = k.newOpen.length;
+  const pctRes = k.baseOpen ? Math.round(nRes / k.baseOpen * 100) : null;
+  const sec = k.scores.security;
+  const lead = (k.baseOpen
+    ? `Compared with the baseline <b>${escHtml(k.label)}</b> (${k.date}), <b>${nRes}</b> of the <b>${k.baseOpen}</b> findings open at that time are now fully resolved` + (nImp ? `, <b>${nImp}</b> improved` : '') + ` and <b>${nOpen}</b> ${nOpen === 1 ? 'remains' : 'remain'} unchanged.`
+    : `Compared with the baseline <b>${escHtml(k.label)}</b> (${k.date}), no findings were open at that time.`) +
+    (nReg ? ` <b>${nReg}</b> control${nReg > 1 ? 's' : ''} regressed.` : '') +
+    (nNew ? ` <b>${nNew}</b> new finding${nNew > 1 ? 's come' : ' comes'} from controls that were not assessed in the baseline.` : '') +
+    (sec.ok ? ` The Security score moved from <b>${sec.a}</b> to <b>${sec.b}</b>.` : '');
+  const scoreRows = Object.values(k.scores).map(s => `<div class="rp-cmprow"><span>${s.label}</span>${s.ok ? `<b>${s.a} &rarr; ${s.b}</b>${cmpArrow(s.a, s.b)}` : '<span class="rp-note">Not enough data</span><span></span>'}</div>`).join('');
+  const legend = [['Resolved', nRes, '#16a34a'], ['Improved', nImp, '#0891b2'], ['Unchanged', nOpen, '#64748b'], ['Regressed', nReg, '#dc2626'], ['New findings', nNew, '#d97706']];
+  const mid = (big, small) => `<text x="50%" y="44%" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="700" fill="#16a34a" font-family="Segoe UI,Arial,sans-serif">${big}</text><text x="50%" y="66%" text-anchor="middle" font-size="8" fill="#64748b" font-family="Segoe UI,Arial,sans-serif">${small}</text>`;
+  const donut = rpDonut(k.baseOpen ? [{v: nRes, color: '#16a34a'}, {v: nImp, color: '#0891b2'}, {v: Math.max(0, k.baseOpen - nRes - nImp), color: '#e2e8f0'}] : [{v: 1, color: '#e2e8f0'}], 88, 11, mid(pctRes === null ? '-' : pctRes + '%', 'resolved'));
+  const other = [
+    `<div class="rp-cmprow"><span>Coverage</span><b>${k.coverage.a} &rarr; ${k.coverage.b}</b><span class="rp-same">controls assessed</span></div>`,
+    k.cis ? `<div class="rp-cmprow"><span>CIS met</span><b>${k.cis.a}/${k.cis.aOf} &rarr; ${k.cis.b}/${k.cis.bOf}</b>${cmpArrow(Math.round(k.cis.a / k.cis.aOf * 100), Math.round(k.cis.b / k.cis.bOf * 100), '%')}</div>` : '',
+    k.ss ? `<div class="rp-cmprow"><span>Secure Score</span><b>${k.ss.a}% &rarr; ${k.ss.b}%</b>${cmpArrow(k.ss.a, k.ss.b, ' pts')}</div>` : '',
+  ].join('');
+
+  const row = e => `<tr><td><b>${escHtml(titleEn(e.r.item))}</b><div class="rp-note">${PILLAR_EN[e.r.item.pillar]}${cisOf(e.r.item).length ? ' · CIS ' + cisOf(e.r.item).join(', ') : ''}</div></td><td>${rpSevPill(e.r.sev)}</td><td>${e.p ? rpStatus(e.p.st) : '<span class="rp-note">Not assessed</span>'}</td><td>${rpStatus(e.r.status)}</td></tr>`;
+  const tbl = (h, list, cap) => list.length ? `<h3 class="rp-h3">${h} (${list.length})</h3><div class="rp-card" style="padding:0"><table class="rp-tbl"><thead><tr><th>Control</th><th>Severity</th><th>Before</th><th>Now</th></tr></thead><tbody>${list.slice(0, cap).map(row).join('')}</tbody></table>${list.length > cap ? `<div class="rp-note" style="padding:6px 12px">and ${list.length - cap} more, listed in the Excel export</div>` : ''}</div>` : '';
+  const notes = [
+    `Scores compare the ${k.common} controls assessed in both reviews.`,
+    (k.newOpen.length + k.newMet.length) ? `${k.newOpen.length + k.newMet.length} controls were not assessed in the baseline and are reported as new (${k.newMet.length} met, ${k.newOpen.length} with findings).` : '',
+    k.notRechecked.length ? `${k.notRechecked.length} controls assessed in the baseline were not re-assessed in this review and are excluded.` : '',
+    k.outOfScope.length ? `${k.outOfScope.length} controls are now marked not applicable.` : '',
+  ].filter(Boolean).join(' ');
+  return `<div class="rp-sec"><h2 class="rp-h">Progress since last assessment <small>Baseline: ${escHtml(k.label)}, ${k.date}</small></h2>
+    <p class="rp-lead">${lead}</p>
+    <div class="rp-grid3">
+      <div class="rp-card"><h4>Score movement</h4>${scoreRows}</div>
+      <div class="rp-card"><h4>Baseline findings</h4><div class="rp-vis">${donut}<div class="rp-leg">${legend.map(([l, n, col]) => `<div><i style="background:${col}"></i>${l}<b>${n}</b></div>`).join('')}</div></div></div>
+      <div class="rp-card"><h4>Other indicators</h4>${other}</div>
+    </div>
+    ${tbl('Resolved', k.resolved, 25)}${tbl('Improved', k.improved, 15)}${tbl('Regressed', k.regressed, 15)}${tbl('New findings', k.newOpen, 15)}${tbl('Still open', k.open, 12)}
+    <p class="rp-note" style="margin-top:8px">${notes}</p></div>`;
+}
+
+// ── Snapshot controls (internal panel, Hebrew) ──
+function renderSnapshotPanel(c, m) {
+  const list = snapsOf(c.id), cur = compareSnapOf(c.id);
+  const opts = list.map(s => `<option value="${s.id}" ${cur && cur.id === s.id ? 'selected' : ''}>${escHtml(s.label)} (${fmtDateHe(s.takenAt)})</option>`).join('');
+  const rows = list.map(s => `<div style="margin:3px 0">📸 <b>${escHtml(s.label)}</b> · ${fmtDateHe(s.takenAt)} · נבדקו ${s.counts ? s.counts.assessed : '?'} · עומד ${s.counts ? s.counts.met : '?'} · חלקי ${s.counts ? s.counts.partial : '?'} · לא מיושם ${s.counts ? s.counts.fail : '?'}
+      <button onclick="exportSnapshot('${s.id}')">⬇️ ייצוא</button><button onclick="restoreSnapshotStatuses('${s.id}')">↩️ החזר סטטוסים</button><button onclick="deleteSnapshot('${s.id}')">🗑️</button></div>`).join('');
+  return `<div style="margin-top:12px;padding-top:10px;border-top:1px dashed #fcd34d">
+      <strong>השוואת גרסאות (סקר חוזר)</strong><br>
+      <button onclick="saveSnapshotUI()">📸 שמור תמונת מצב</button>
+      <button onclick="startRecheckUI()">🔁 התחל סקר חוזר</button>
+      <label class="btn btn-outline btn-sm" style="cursor:pointer;font-size:.72rem">📥 ייבוא תמונת מצב<input type="file" accept=".json" hidden onchange="importSnapshotFile(this)"></label>
+      ${m && m.cmp && m.cmp.notRechecked.length ? `<div style="color:#b45309;margin-top:6px">⚠️ ${m.cmp.notRechecked.length} בקרות שנבדקו בסקר הקודם עדיין לא נבדקו מחדש ולכן לא נכללות בהשוואה. השלם את הסקר לפני שמוסרים ללקוח.</div>` : ''}${list.length ? `<div style="margin-top:6px">${rows}<div style="margin-top:6px">השווה בדוח מול: <select onchange="setCompareSnap(this.value)"><option value="">ללא השוואה</option>${opts}</select></div></div>` : '<div style="color:#64748b;margin-top:4px">אין תמונות מצב. שמור אחת אחרי מסירת הסקר הראשון, ואחרי הפרויקט הרץ סקר חוזר.</div>'}
+    </div>`;
+}
+function saveSnapshotUI() {
+  const c = getClient(currentClientId); if (!c) return;
+  const label = prompt('שם לתמונת המצב (יופיע בדוח, באנגלית):', 'Initial assessment');
+  if (!label || !label.trim()) return;
+  const s = addSnapshot(c, label.trim()); if (!s) return;
+  renderFindings(c);
+  toast(`📸 נשמרה תמונת מצב "${s.label}" (${s.counts.assessed} בקרות)`, 'success');
+}
+// Saves a snapshot, then sets every assessed control back to "not assessed" so the new round starts clean.
+// Notes and recommendations stay untouched: they are overwritten when each control is verified again. The comparison is switched on.
+function startRecheckUI() {
+  const c = getClient(currentClientId); if (!c) return;
+  const n = ITEMS.filter(i => ['done', 'partial', 'fail'].includes((c.items[i.id] || {}).status)).length;
+  if (!n) { alert('אין בקרות שנבדקו, אין מה לשמור כבסיס.'); return; }
+  if (!confirm(`להתחיל סקר חוזר ללקוח "${c.name}"?\n\n1. נשמרת תמונת מצב אוטומטית של ${n} הבקרות שנבדקו.\n2. כל הבקרות האלה חוזרות ל"טרם נבדק" כדי שייבדקו מחדש (טקסטים והמלצות לא נמחקים).\n3. ההשוואה לתמונה הזו נדלקת בדוח.\n\nאפשר לשחזר את הסטטוסים מתוך רשימת תמונות המצב.`)) return;
+  const label = prompt('שם לתמונת המצב של הסקר הקודם (באנגלית):', 'Initial assessment');
+  if (!label || !label.trim()) return;
+  const s = addSnapshot(c, label.trim()); if (!s) return;
+  ITEMS.forEach(i => { const d = c.items[i.id]; if (d && ['done', 'partial', 'fail'].includes(d.status)) d.status = 'pending'; });
+  SNAPS.cmp[c.id] = s.id; persistSnaps();
+  save(c.id); renderFindings(c);
+  toast(`🔁 הסקר החוזר התחיל. ${n} בקרות ממתינות לבדיקה, ההשוואה מול "${s.label}" פעילה`, 'success');
+}
+function setCompareSnap(id) {
+  const c = getClient(currentClientId); ensureSnaps();
+  if (id) SNAPS.cmp[c.id] = id; else delete SNAPS.cmp[c.id];
+  persistSnaps(); renderFindings(c);
+}
+function deleteSnapshot(id) {
+  const c = getClient(currentClientId); ensureSnaps();
+  const s = snapsOf(c.id).find(x => x.id === id); if (!s) return;
+  if (!confirm(`למחוק את תמונת המצב "${s.label}"? אי אפשר לשחזר (אפשר לייצא קודם לקובץ).`)) return;
+  SNAPS.snaps[c.id] = SNAPS.snaps[c.id].filter(x => x.id !== id);
+  if (SNAPS.cmp[c.id] === id) delete SNAPS.cmp[c.id];
+  persistSnaps(); renderFindings(c);
+}
+function restoreSnapshotStatuses(id) {
+  const c = getClient(currentClientId);
+  const s = snapsOf(c.id).find(x => x.id === id); if (!s) return;
+  const todo = ITEMS.filter(i => s.items[i.id] && (c.items[i.id] || {}).status === 'pending');
+  if (!todo.length) { alert('אין בקרות במצב "טרם נבדק" שאפשר להחזיר.'); return; }
+  if (!confirm(`להחזיר את הסטטוס מתמונת המצב "${s.label}" ל-${todo.length} בקרות שכרגע "טרם נבדק"? בקרות שכבר נבדקו מחדש לא ישתנו.`)) return;
+  todo.forEach(i => { c.items[i.id].status = s.items[i.id][0]; });
+  save(c.id); renderFindings(c);
+  toast(`↩️ הוחזרו ${todo.length} סטטוסים`, 'success');
+}
+function exportSnapshot(id) {
+  const c = getClient(currentClientId);
+  const s = snapsOf(c.id).find(x => x.id === id); if (!s) return;
+  downloadBlob(new Blob([JSON.stringify({type: 'e5-snapshot', version: 1, client: c.name, snapshot: s})], {type: 'application/json'}),
+    `${c.name.replace(/[^\w\-]+/g, '_')}-snapshot-${s.takenAt.slice(0, 10)}.json`);
+}
+function importSnapshotFile(input) {
+  const file = input.files[0]; input.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const c = getClient(currentClientId), j = JSON.parse(e.target.result), s = j && j.snapshot;
+      if (!j || j.type !== 'e5-snapshot' || !s || typeof s.items !== 'object' || !s.takenAt) throw new Error('bad file');
+      if (j.client && j.client !== c.name && !confirm(`הקובץ שייך ללקוח "${j.client}". לייבא אותו ללקוח "${c.name}"?`)) return;
+      ensureSnaps();
+      s.id = genId(); s.label = String(s.label || 'Imported');
+      (SNAPS.snaps[c.id] = SNAPS.snaps[c.id] || []).push(s);
+      if (!persistSnaps()) { SNAPS.snaps[c.id].pop(); return; }
+      renderFindings(c); toast('📥 תמונת המצב יובאה', 'success');
+    } catch (err) { alert('קובץ תמונת מצב לא תקין'); }
+  };
+  reader.readAsText(file);
 }
 
 function renderReportHtml(m) {
@@ -2316,8 +3002,8 @@ function renderReportHtml(m) {
   // ── findings ──
   const findingCard = f => {
     const sv = SEVERITY_EN[f.sev] || SEVERITY_EN.medium;
-    return `<div class="rp-find" data-sev="${f.sev}" data-st="${f.status}" data-ws="${f.item.pillar}" data-text="${escHtml((f.fid + ' ' + titleEn(f.item) + ' ' + findingText(f) + ' ' + (f.d.recommendation || '')).toLowerCase())}" style="border-left-color:${sv.color}">
-      <div class="rp-fh"><span class="rp-fid">${f.fid}</span>${rpSevPill(f.sev)}${rpStatus(f.status)}<span class="rp-fws">${PILLAR_EN[f.item.pillar]}</span></div>
+    return `<div class="rp-find" data-sev="${f.sev}" data-st="${f.status}" data-ws="${f.item.pillar}" data-text="${escHtml((f.fid + ' ' + titleEn(f.item) + ' ' + findingText(f) + ' ' + (f.d.recommendation || '') + ' ' + cisOf(f.item).join(' ')).toLowerCase())}" style="border-left-color:${sv.color}">
+      <div class="rp-fh"><span class="rp-fid">${f.fid}</span>${rpSevPill(f.sev)}${rpStatus(f.status)}${cisTag(f.item)}${deltaChip(m, f)}<span class="rp-fws">${PILLAR_EN[f.item.pillar]}</span></div>
       <h4>${title(f)}</h4>
       <div class="rp-cols"><div><b>Finding</b>${txtOrMissing(findingText(f))}</div><div><b>Recommendation</b>${txtOrMissing((f.d.recommendation || '').trim())}</div></div></div>`;
   };
@@ -2336,25 +3022,30 @@ function renderReportHtml(m) {
 
   // ── strengths, matrix, scope ──
   const strengths = met.filter(r => r.sev === 'critical' || r.sev === 'high');
-  const matrixHtml = `<table class="rp-tbl"><thead><tr><th>Control</th><th>Workstream</th><th>Severity</th><th>Status</th></tr></thead><tbody>${matrix.map(r =>
-    `<tr><td>${escHtml(titleEn(r.item))}</td><td>${PILLAR_EN[r.item.pillar]}</td><td>${rpSevPill(r.sev)}</td><td>${rpStatus(r.status)}</td></tr>`).join('')}</tbody></table>`;
+  const matrixHtml = `<table class="rp-tbl"><thead><tr><th>Control</th><th>Workstream</th><th>CIS</th><th>Severity</th><th>Status</th></tr></thead><tbody>${matrix.map(r =>
+    `<tr><td>${escHtml(titleEn(r.item))}</td><td>${PILLAR_EN[r.item.pillar]}</td><td class="rp-note">${cisOf(r.item).join(', ')}</td><td>${rpSevPill(r.sev)}</td><td>${rpStatus(r.status)}</td></tr>`).join('')}</tbody></table>`;
 
   return `<div class="fr">
     <div class="rp-top">
       <div>
         <div class="rp-brand">${brandLogoSvg(40)}<div><div class="nm">Cloud<b>Edge</b></div><div class="pt">${REPORT_BRAND.title}</div></div></div>
-        <h1 class="rp-h1">${escHtml(c.name)}</h1><div class="rp-sub">${REPORT_BRAND.tagline}</div>
+        <h1 class="rp-h1">${escHtml(c.name)}</h1><div class="rp-sub">${REPORT_BRAND.tagline}${m.cmp ? ' | Re-assessment' : ''}</div>
       </div>
       <dl class="rp-meta"><div><dt>Report date</dt><dd>${today}</dd></div>${c.consultant ? `<div><dt>Prepared by</dt><dd>${escHtml(c.consultant)}</dd></div>` : ''}
         <div><dt>Environment</dt><dd>${MODE_EN[c.mode] || '-'}</dd></div>${c.licenses ? `<div><dt>E5 licenses</dt><dd>${escHtml(c.licenses)}</dd></div>` : ''}
-        <div><dt>Coverage</dt><dd>${assessedN} of ${applicable} controls</dd></div></dl>
+        <div><dt>Coverage</dt><dd>${assessedN} of ${applicable} controls</dd></div>${m.cmp ? `<div><dt>Compared with</dt><dd>${escHtml(m.cmp.label)}, ${m.cmp.date}</dd></div>` : ''}</dl>
     </div>
 
     <div class="rp-sec"><h2 class="rp-h">Overview</h2><p class="rp-lead">${summaryText}</p>
       <div class="rp-grid3">${cardPosture}${cardControls}${cardSev}</div>
       <p class="rp-note" style="margin-top:8px">Scores cover assessed controls only (${assessedN} of ${applicable}) and appear once at least ${MIN_SCORED} controls are assessed. Not applicable controls (${na.length}) are excluded.</p></div>
 
+    ${renderComparisonSection(m)}
+
     <div class="rp-sec"><h2 class="rp-h">Posture by workstream</h2><div class="rp-wslist">${wsHtml}</div></div>
+
+    ${renderSecureScoreSection(c)}
+    ${renderCisSection(m)}
 
     ${prio ? `<div class="rp-sec"><h2 class="rp-h">Priority recommendations <small>Critical and High</small></h2><div class="rp-card" style="padding:0"><table class="rp-tbl"><thead><tr><th>ID</th><th>Severity</th><th>Recommendation</th><th>Status</th></tr></thead><tbody>${prio}</tbody></table></div></div>` : ''}
 
@@ -2417,8 +3108,11 @@ function renderFindings(c) {
       ${findings.length ? `ממצאים ללא טקסט ממצא: <b>${noText.length}</b> ${chips(noText)}<br>ממצאים ללא המלצה: <b>${noRec.length}</b> ${chips(noRec)}` : 'עדיין אין ממצאים (סמן פריטים כ"חלקי" או "לא מיושם").'}
       <div style="margin-top:8px">
         <label class="btn btn-outline btn-sm" style="cursor:pointer">📥 החל קובץ ניסוח (JSON)<input type="file" accept=".json" hidden onchange="applyWordingFile(this)"></label>
+        <label class="btn btn-outline btn-sm" style="cursor:pointer">📥 ייבוא Secure Score (CSV/JSON)<input type="file" accept=".csv,.json" hidden onchange="importSecureScoreFile(this)"></label>
+        ${c.secureScore ? `<span style="font-size:.75rem">Secure Score: ${c.secureScore.actions.length} פעולות (${c.secureScore.capturedAt}) <button onclick="clearSecureScore()">🗑️</button></span>` : ''}
         ${Object.values(c.items).some(d => d.orig) ? '<button onclick="revertWordingUI()">↩️ שחזר ניסוח מקורי</button>' : ''}
       </div>
+      ${renderSnapshotPanel(c, m)}
     </div>`;
   const box = document.getElementById('findings-content');
   box.innerHTML = readiness + renderReportHtml(m);
@@ -2433,7 +3127,7 @@ function reportCss() {
   }
   return css;
 }
-function reportFileName(c, ext) { return `${c.name.replace(/[^\w\-]+/g, '_')}-CloudEdge-Security-Posture-Report-${new Date().toISOString().slice(0, 10)}.${ext}`; }
+function reportFileName(c, ext) { return `${c.name.replace(/[^\w\-]+/g, '_')}-CloudEdge-Security-Posture-${compareSnapOf(c.id) ? 'Re-assessment' : 'Report'}-${new Date().toISOString().slice(0, 10)}.${ext}`; }
 function downloadBlob(blob, name) {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
@@ -2488,6 +3182,7 @@ async function exportReportXlsx(c) {
   const kv = (k, v) => { const r = s.addRow([k, v]); r.getCell(1).font = {bold: true, color: {argb: 'FF64748B'}}; };
   kv('Customer', c.name); kv('Report date', m.today); kv('Prepared by', c.consultant || ''); kv('Environment', MODE_EN[c.mode] || ''); kv('E5 licenses', c.licenses || '');
   kv('Controls assessed', `${m.assessedN} of ${m.applicable}`); kv('Met / Partial / Not implemented', `${m.met.length} / ${m.partial.length} / ${m.fail.length}`); kv('Not assessed', m.pending.length);
+  if (m.cmp) { kv('Compared with', `${m.cmp.label}, ${m.cmp.date}`); Object.values(m.cmp.scores).forEach(x => { if (x.ok) kv(`${x.label} score (before to after)`, `${x.a} to ${x.b}`); }); kv('Baseline findings resolved', `${m.cmp.resolved.length} of ${m.cmp.baseOpen}`); }
   s.addRow([]);
   const hd = s.addRow(['Score', 'Value', 'Maturity']); head(s, hd);
   Object.values(m.scores).forEach(sc => { const r = s.addRow([sc.label, sc.ok ? sc.v : 'n/a', sc.ok ? getMaturityLevel(sc.v).label : 'Not enough data']); r.eachCell(cell => { cell.border = allBorders; }); });
@@ -2498,10 +3193,20 @@ async function exportReportXlsx(c) {
   const hw = s.addRow(['Workstream', 'Score', 'Assessed', 'Met', 'Partial', 'Not implemented']); head(s, hw);
   m.workstreams.forEach(w => { const r = s.addRow([w.name, w.score === null ? 'n/a' : w.score, `${w.assessed} of ${w.total}`, w.met, w.partial, w.fail]); r.eachCell(cell => { cell.border = allBorders; }); });
 
+  // Progress vs baseline
+  if (m.cmp) {
+    const k = m.cmp, wp = wb.addWorksheet('Progress');
+    const MV = [['resolved', 'Resolved'], ['improved', 'Improved'], ['regressed', 'Regressed'], ['newOpen', 'New finding'], ['open', 'Unchanged (open)'], ['newMet', 'New (met)'], ['notRechecked', 'Not re-assessed'], ['outOfScope', 'Now not applicable']];
+    const data = [];
+    MV.forEach(([key, lab]) => k[key].forEach(e => data.push({mv: lab, ws: PILLAR_EN[e.r.item.pillar], ctl: titleEn(e.r.item), cis: cisOf(e.r.item).join(', '), sev: SEVERITY_EN[e.r.sev].label, b: e.p ? STATUS_EN[e.p.st] : 'Not assessed', a: STATUS_EN[e.r.status], pf: e.p ? e.p.text : '', cf: findingText(e.r), _e: e})));
+    table(wp, [{key: 'mv', h: 'Movement', w: 18}, {key: 'ws', h: 'Workstream', w: 30}, {key: 'ctl', h: 'Control', w: 44}, {key: 'cis', h: 'CIS', w: 14}, {key: 'sev', h: 'Severity', w: 11}, {key: 'b', h: 'Before (' + k.label + ')', w: 18}, {key: 'a', h: 'Now', w: 16}, {key: 'pf', h: 'Previous finding', w: 50}, {key: 'cf', h: 'Current observation', w: 50}],
+      data, {row: (r, d) => { sevFill(r.getCell(5), d._e.r.sev); if (d._e.p) stFill(r.getCell(6), d._e.p.st); stFill(r.getCell(7), d._e.r.status); }});
+  }
+
   // Findings
   const wf = wb.addWorksheet('Findings');
-  table(wf, [{key: 'id', h: 'ID', w: 8}, {key: 'sev', h: 'Severity', w: 11}, {key: 'st', h: 'Status', w: 16}, {key: 'ws', h: 'Workstream', w: 30}, {key: 'ctl', h: 'Control', w: 42}, {key: 'f', h: 'Finding', w: 60}, {key: 'rec', h: 'Recommendation', w: 60}, {key: 'wave', h: 'Wave', w: 10}],
-    m.findings.map(f => ({id: f.fid, sev: SEVERITY_EN[f.sev].label, st: STATUS_EN[f.status], ws: PILLAR_EN[f.item.pillar], ctl: titleEn(f.item), f: findingText(f), rec: (f.d.recommendation || '').trim(), wave: REPORT_WAVES[waveOf(f.item)].label, _f: f})),
+  table(wf, [{key: 'id', h: 'ID', w: 8}, {key: 'sev', h: 'Severity', w: 11}, {key: 'st', h: 'Status', w: 16}, {key: 'ws', h: 'Workstream', w: 30}, {key: 'ctl', h: 'Control', w: 42}, {key: 'cis', h: 'CIS', w: 14}, {key: 'f', h: 'Finding', w: 60}, {key: 'rec', h: 'Recommendation', w: 60}, {key: 'wave', h: 'Wave', w: 10}],
+    m.findings.map(f => ({id: f.fid, sev: SEVERITY_EN[f.sev].label, st: STATUS_EN[f.status], ws: PILLAR_EN[f.item.pillar], ctl: titleEn(f.item), cis: cisOf(f.item).join(', '), f: findingText(f), rec: (f.d.recommendation || '').trim(), wave: REPORT_WAVES[waveOf(f.item)].label, _f: f})),
     {row: (r, d) => { sevFill(r.getCell(2), d._f.sev); stFill(r.getCell(3), d._f.status); }});
 
   // Roadmap
@@ -2513,9 +3218,24 @@ async function exportReportXlsx(c) {
 
   // Control matrix
   const wm = wb.addWorksheet('Control matrix');
-  table(wm, [{key: 'ws', h: 'Workstream', w: 32}, {key: 'ctl', h: 'Control', w: 46}, {key: 'sev', h: 'Severity', w: 11}, {key: 'st', h: 'Status', w: 16}, {key: 'n', h: 'Observation', w: 70}],
-    m.matrix.map(r => ({ws: PILLAR_EN[r.item.pillar], ctl: titleEn(r.item), sev: SEVERITY_EN[r.sev].label, st: STATUS_EN[r.status], n: findingText(r), _r: r})),
-    {row: (r, d) => { sevFill(r.getCell(3), d._r.sev); stFill(r.getCell(4), d._r.status); }});
+  table(wm, [{key: 'ws', h: 'Workstream', w: 32}, {key: 'ctl', h: 'Control', w: 46}, {key: 'cis', h: 'CIS', w: 14}, {key: 'sev', h: 'Severity', w: 11}, {key: 'st', h: 'Status', w: 16}, {key: 'n', h: 'Observation', w: 70}],
+    m.matrix.map(r => ({ws: PILLAR_EN[r.item.pillar], ctl: titleEn(r.item), cis: cisOf(r.item).join(', '), sev: SEVERITY_EN[r.sev].label, st: STATUS_EN[r.status], n: findingText(r), _r: r})),
+    {row: (r, d) => { sevFill(r.getCell(4), d._r.sev); stFill(r.getCell(5), d._r.status); }});
+
+  // CIS alignment
+  const ca = cisAlignment(m);
+  if (ca.assessed) {
+    const wc = wb.addWorksheet('CIS alignment');
+    table(wc, [{key: 'id', h: 'CIS', w: 12}, {key: 'sec', h: 'Section', w: 28}, {key: 'st', h: 'Status', w: 16}, {key: 'ctl', h: 'Mapped controls', w: 90}],
+      ca.recs.filter(o => o.status !== 'na').map(o => ({id: o.id, sec: CIS_SECTIONS[o.section], st: o.status === 'pending' ? 'Not assessed' : STATUS_EN[o.status], ctl: o.controls.map(r => titleEn(r.item)).join('; '), _o: o})),
+      {row: (r, d) => { if (d._o.status !== 'pending') stFill(r.getCell(3), d._o.status); }});
+  }
+  // Secure Score
+  if (c.secureScore && c.secureScore.actions.length) {
+    const wsx = wb.addWorksheet('Secure Score');
+    table(wsx, [{key: 'name', h: 'Improvement action', w: 70}, {key: 'cat', h: 'Category', w: 16}, {key: 'prod', h: 'Product', w: 24}, {key: 'st', h: 'Status', w: 16}, {key: 'pts', h: 'Points achieved', w: 14}, {key: 'max', h: 'Max points', w: 12}],
+      c.secureScore.actions.map(a => ({name: a.name, cat: a.category, prod: a.product, st: SS_STATUS_EN[a.status] || a.status, pts: a.points, max: a.max})));
+  }
 
   // Method
   const wd = wb.addWorksheet('Method');
@@ -2631,6 +3351,7 @@ function applyWordingFile(input) {
       const statusCount = Object.entries(data.items || {}).filter(([id, w]) => w && w.status && c.items[id] && w.status !== c.items[id].status).length;
       if (!confirm(`להחיל ניסוח על ${count} בקרות בלקוח "${c.name}"?${statusCount ? `\nכולל תיקון סטטוס ב-${statusCount} בקרות.` : ''}\nהטקסט והסטטוס המקוריים נשמרים ואפשר לשחזר.`)) return;
       const {applied, skipped, statusChanged} = applyWordingData(c, data);
+      if (data.secureScore && data.secureScore.actions) c.secureScore = normalizeSecureScore(data.secureScore);
       save(c.id);
       renderFindings(c);
       toast(`✅ הוחל ניסוח על ${applied} בקרות${statusChanged ? `, סטטוס תוקן ב-${statusChanged}` : ''}${skipped ? ` (${skipped} דולגו)` : ''}`, 'success');

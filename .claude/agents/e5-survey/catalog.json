@@ -1,7 +1,7 @@
 {
- "generated": "2026-11-04",
- "source": "e5-client-tracker.html ITEMS + VERIFY",
- "count": 194,
+ "generated": "2026-11-10",
+ "source": "e5-client-tracker.html ITEMS + VERIFY; CIS references follow the Maester v5.0.0 numbering",
+ "count": 271,
  "items": [
   {
    "id": "p1-mfa",
@@ -15,7 +15,10 @@
    "check": "Entra → Protection → Authentication methods → Activity → User registration details: חשב % משתמשים פעילים עם MFA רשום. בנוסף Sign-in logs ל-30 יום: סנן Authentication requirement = Single-factor ובדוק מי נכנס בלי MFA.",
    "pass": "99% ומעלה מהמשתמשים הפעילים רשומים ל-MFA, ואין Sign-in מוצלח ב-Single-factor (למעט Break-Glass מתועד).",
    "evidence": "ייצוא User registration details + צילום Sign-in logs מסונן.",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.3.4"
+   ]
   },
   {
    "id": "p1-legacy",
@@ -85,7 +88,10 @@
    "check": "Entra → ID Governance → PIM → Entra roles → Assignments: ספור Permanent Active מול Eligible. Settings: MFA + Justification לכל תפקיד מיוחס.",
    "pass": "כל תפקידי Admin Eligible (למעט Break-Glass מתועד), Activation דורש MFA + Justification, Duration עד 8 שעות.",
    "evidence": "ייצוא Assignments (Eligible/Active) + הגדרות תפקידים מרכזיים.",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.3.1"
+   ]
   },
   {
    "id": "p1-pim-groups",
@@ -141,7 +147,11 @@
    "check": "Entra → ID Governance → Access reviews: האם קיימות סקירות פעילות ל-Guests, לקבוצות מיוחסות ולתפקידי Admin; סטטוס Completed/Applied ב-12 חודשים אחרונים.",
    "pass": "סקירות רבעוניות ל-Guests, Privileged groups ו-Admin roles עם Auto-apply או Reviewer מוגדר, ותוצאות מיושמות.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.3.2",
+    "5.3.3"
+   ]
   },
   {
    "id": "p1-passwordless",
@@ -855,7 +865,10 @@
    "check": "security.microsoft.com → Email & collaboration → Policies → Safe Links: Policies / Preset ו-Scope. Explorer → URL clicks.",
    "pass": "Safe Links חל על כל המשתמשים (Standard/Strict preset או Custom) כולל Teams ו-Office apps, ו-Track clicks פעיל.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.1"
+   ]
   },
   {
    "id": "p4-safeatt",
@@ -869,7 +882,11 @@
    "check": "Safe Attachments policies + Global settings (Safe Documents, SharePoint / OneDrive / Teams). Reports → Safe Attachments.",
    "pass": "Safe Attachments לכל המשתמשים (Block / Dynamic delivery) והגנה ל-SharePoint/OneDrive/Teams מופעלת.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.4",
+    "2.1.5"
+   ]
   },
   {
    "id": "p4-antiphish",
@@ -883,7 +900,10 @@
    "check": "Anti-phishing policies → Impersonation: Users / Domains protected, Mailbox intelligence, Thresholds.",
    "pass": "משתמשי VIP ו-Domains ארגוניים/שותפים מוגנים, ו-Mailbox intelligence פעיל.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.7"
+   ]
   },
   {
    "id": "p4-zap",
@@ -897,7 +917,10 @@
    "check": "Anti-spam / Anti-malware policy: ZAP (Spam / Phish / Malware) Enabled. Explorer → Delivery action = ZAP.",
    "pass": "ZAP מופעל לכל הסוגים בכל ה-Policies.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "2.4.4"
+   ]
   },
   {
    "id": "p4-dmarc",
@@ -911,7 +934,12 @@
    "check": "בדוק SPF, DMARC ו-DKIM לכל Domain עם הסקריפט למטה. רשומות ה-DNS ציבוריות ולא דורשות תפקיד; רק מצב Enabled של DKIM דורש קריאה בטננט (Global Reader אמור להספיק — לא אומת מול Get-DkimSigningConfig, בדוק אצל הלקוח). חלופה בלי הרשאות: שלח מייל לתיבה חיצונית ובדוק ב-Headers dkim=pass עם header.d של הדומיין שלך. בפורטל: Defender → Email authentication settings → DKIM.",
    "pass": "SPF עם -all (או ~all מנומק) ועד 10 DNS lookups (ספור includes מקוננים; 9-10 = אין מרווח לספק חדש). DKIM מופעל (Enabled=True, Status=Valid) לכל Domain; ה-CNAME יכול להצביע ל-onmicrosoft.com (פורמט ישן) או ל-dkim.mail.microsoft (פורמט חדש) — שניהם תקינים. DMARC ב-p=quarantine או reject עם rua לתיבה/שירות שנקרא בפועל.",
    "evidence": "פלט MXToolbox / Resolve-DnsName לכל Domain.",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "2.1.8",
+    "2.1.9",
+    "2.1.10"
+   ]
   },
   {
    "id": "p4-sim",
@@ -967,7 +995,11 @@
    "check": "Threat policies → Preset security policies: Standard / Strict מופעלים ל-Users/Groups. Settings → Priority accounts: תיוג.",
    "pass": "Standard לכל הארגון, Strict ל-Priority accounts, ו-Custom policies לא סותרות.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "2.4.1",
+    "2.4.2"
+   ]
   },
   {
    "id": "p4-tenantallowblock",
@@ -1247,7 +1279,10 @@
    "check": "purview.microsoft.com → Information protection → Sensitivity labels + Label policies (Published to). Content explorer: כמות תוכן מתויג.",
    "pass": "היררכיית Labels מפורסמת לכל הארגון עם Default label, ו-% תוכן מתויג במגמת עלייה.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "3.3.1"
+   ]
   },
   {
    "id": "p6-autolabel",
@@ -1275,7 +1310,10 @@
    "check": "Data loss prevention → Policies: Mode (Test / Enforce), Locations. Activity explorer / Alerts.",
    "pass": "Policies פעילות ב-Enforce (או Test עם תאריך מעבר) על Exchange / SharePoint / OneDrive / Teams / Endpoint.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "3.2.1"
+   ]
   },
   {
    "id": "p6-edlp",
@@ -1905,7 +1943,10 @@
    "check": "Policy: Users = All, Apps = All, Grant = MFA, State = On. Sign-in logs → תוצאות CA.",
    "pass": "Policy במצב On לכל המשתמשים והאפליקציות עם Exclusions מתועדים.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.2"
+   ]
   },
   {
    "id": "p8-legacy",
@@ -1919,7 +1960,10 @@
    "check": "Policy: Client apps = Other clients + EAS → Block, State = On.",
    "pass": "Policy On ואפס Sign-in Legacy מוצלח ב-30 יום.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.3"
+   ]
   },
   {
    "id": "p8-mfa-admin",
@@ -1933,7 +1977,11 @@
    "check": "Policy: Directory roles → Require authentication strength = Phishing-resistant.",
    "pass": "Admins מכוסים ב-Phishing-resistant MFA (On).",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.1",
+    "5.2.2.5"
+   ]
   },
   {
    "id": "p8-device",
@@ -1947,7 +1995,10 @@
    "check": "Policy Compliant device ל-Office 365.",
    "pass": "Policy במצב On, Exclusions מתועדים.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.9"
+   ]
   },
   {
    "id": "p8-locations",
@@ -1961,7 +2012,11 @@
    "check": "Named locations + Policy Block countries.",
    "pass": "Named locations מוגדרות ו-Policy אוכפת, או החלטה מתועדת שלא להשתמש.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.14",
+    "5.2.2.15"
+   ]
   },
   {
    "id": "p8-signin-risk",
@@ -1975,7 +2030,11 @@
    "check": "Policy Sign-in risk: High = Block, Medium = MFA.",
    "pass": "Policy במצב On.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.7",
+    "5.2.2.8"
+   ]
   },
   {
    "id": "p8-user-risk",
@@ -1989,7 +2048,10 @@
    "check": "Policy User risk: High = Password change.",
    "pass": "Policy במצב On + SSPR.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.6"
+   ]
   },
   {
    "id": "p8-session",
@@ -2003,7 +2065,10 @@
    "check": "Policy Session: Sign-in frequency / Persistent browser.",
    "pass": "Admins ו-BYOD מכוסים.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.13"
+   ]
   },
   {
    "id": "p8-mam",
@@ -2045,7 +2110,10 @@
    "check": "Policy עם Session → Token protection ל-Exchange / SharePoint / Teams.",
    "pass": "Policy במצב On (אחרי Report-only) למכשירי Windows נתמכים.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.16"
+   ]
   },
   {
    "id": "p9-copilot",
@@ -2199,7 +2267,10 @@
    "check": "Entra → Roles & admins → Global Administrator → Assignments (Eligible + Active): ספור חשבונות, בדוק Source (Cloud-only מול Synced) והאם יש חשבונות משותפים.",
    "pass": "2-4 Global Admins + 2 Break-Glass (סה\"כ עד 5), כולם Cloud-only עם PIM Eligible, ואין חשבון משותף.",
    "evidence": "ייצוא רשימת Global Administrators עם מצב Active/Eligible.",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "1.1.3"
+   ]
   },
   {
    "id": "p1-adminaccts",
@@ -2213,7 +2284,10 @@
    "check": "לכל חשבון Admin: האם Cloud-only (Entra → Users → On-premises sync enabled = No), האם יש Mailbox/רישיון Teams, והאם נפרד מחשבון יומיומי.",
    "pass": "כל ה-Admins עם חשבון ייעודי Cloud-only, ללא רישיון דואר/Teams, ועם MFA עמיד-פישינג.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "1.1.1"
+   ]
   },
   {
    "id": "p1-consent",
@@ -2227,7 +2301,11 @@
    "check": "Entra → Enterprise applications → Consent and permissions → User consent settings + Admin consent settings. Enterprise apps: סנן Consented by users ובדוק Permissions.",
    "pass": "User consent מוגבל (Verified publishers + הרשאות Low-risk, או חסום), Admin consent workflow פעיל עם Reviewers, ואין אפליקציות עם הרשאות רחבות שאושרו על ידי משתמשים.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.5.1",
+    "5.1.5.2"
+   ]
   },
   {
    "id": "p1-sspr",
@@ -2255,7 +2333,13 @@
    "check": "Entra → Protection → Authentication methods → Password protection: Custom banned list, Mode, Smart lockout. בסביבה היברידית: הרץ את הפקודה למטה לבדיקת סוכני Password Protection.",
    "pass": "Custom banned list פעיל במצב Enforced, Smart lockout מכוונן, ובסביבה היברידית הסוכנים פעילים ב-Enforced.",
    "evidence": "",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "5.2.3.2",
+    "5.2.3.3",
+    "5.2.3.8",
+    "5.2.3.9"
+   ]
   },
   {
    "id": "p1-smsvoice",
@@ -2283,7 +2367,10 @@
    "check": "Authentication methods → Policies → Manage migration: סטטוס. Users → Per-user MFA: מצב Enabled/Enforced. MFA service settings ו-SSPR legacy.",
    "pass": "Migration Complete, כל המשתמשים Per-user MFA = Disabled (אכיפה ב-CA), ואין הגדרות Legacy כפולות או סותרות.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.3.5"
+   ]
   },
   {
    "id": "p1-authenticator",
@@ -2297,7 +2384,10 @@
    "check": "Authentication methods → Microsoft Authenticator → Configure: Number matching, Show application name / geographic location; Registration campaign.",
    "pass": "Number matching + Application name + Geographic location מופעלים לכל המשתמשים, ו-Registration campaign פעיל.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.3.1"
+   ]
   },
   {
    "id": "p1-stale",
@@ -2339,7 +2429,10 @@
    "check": "Entra → Entra Connect → Connect Sync / Cloud Sync: Last sync, Errors, Version. Connect Health: Alerts. ודא Password Hash Sync Enabled.",
    "pass": "Sync פחות מ-30 דקות, 0 Errors, גרסה נתמכת עם Auto-upgrade, PHS פעיל. (N/A בלקוח Cloud-only)",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.8.1"
+   ]
   },
   {
    "id": "p1-ispm",
@@ -2395,7 +2488,10 @@
    "check": "Entra → Devices → Device settings: LAPS enabled. Intune LAPS policy וכיסוי. Entra → Devices → Local administrator password recovery.",
    "pass": "LAPS פרוס ל-100% ממכשירי Windows, Rotation עד 30 יום, Backup ל-Entra/AD.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.4.5"
+   ]
   },
   {
    "id": "p2-avhealth",
@@ -2479,7 +2575,10 @@
    "check": "Threat policies → Anti-spam → Outbound policy: Automatic forwarding rules. Reports → Auto forwarded messages report. סרוק Inbox rules עם Forward/Redirect חיצוני (הפקודה למטה; כבדה בטננט גדול — הרץ על דגימה).",
    "pass": "Automatic forwarding חיצוני = Off (או System-controlled), אין Inbox rules חיצוניות פעילות ללא חריג מתועד, ו-Alert פעיל.",
    "evidence": "הגדרת Outbound policy + דוח Auto-forwarded.",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "6.2.1"
+   ]
   },
   {
    "id": "p4-smtpauth",
@@ -2493,7 +2592,10 @@
    "check": "בדוק ברמת Tenant ובתיבות (הפקודות למטה; ערך ריק בתיבה = יורש את הגדרת ה-Tenant). בנוסף Sign-in logs: Client app = Authenticated SMTP.",
    "pass": "SMTP AUTH כבוי ברמת Tenant (או חריגים מתועדים בלבד), ותכנית מעבר ל-OAuth/Graph לפני סוף דצמבר 2026.",
    "evidence": "פלט Get-TransportConfig + רשימת אפליקציות/מדפסות תלויות.",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "6.5.4"
+   ]
   },
   {
    "id": "p4-directsend",
@@ -2507,7 +2609,10 @@
    "check": "בדוק את ההגדרה ב-Tenant (הפקודה למטה). ב-Message trace חפש מקורות Direct Send: אותו Domain כשולח, ללא אימות.",
    "pass": "RejectDirectSend = True, ומקורות לגיטימיים עוברים דרך Connector או SMTP AUTH עם OAuth.",
    "evidence": "",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "6.5.5"
+   ]
   },
   {
    "id": "p4-legacyprotos",
@@ -2535,7 +2640,10 @@
    "check": "ספור את ה-Shared mailboxes ובדוק כמה מהן עם Sign-in פעיל (הפקודות למטה). על מאות תיבות הריצה איטית (קריאה נפרדת לכל תיבה), המתן עד שחוזר ה-prompt.",
    "pass": "100% מה-Shared mailboxes עם Sign-in חסום (Sign-in enabled = 0) וללא רישיון מיותר. ספירה 0 = לא רלוונטי.",
    "evidence": "שתי שורות הפלט: Shared mailboxes ו-Sign-in enabled.",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "1.2.2"
+   ]
   },
   {
    "id": "p4-transport",
@@ -2549,7 +2657,10 @@
    "check": "הרץ את הפקודות למטה: (1) כללים שעוקפים סינון, כולל התנאים שלהם (שדה Description). (2) מחברים נכנסים: איך כל אחד מזוהה (IP או תעודה) והאם TLS נדרש. (3) מחברים יוצאים וכללים שמנתבים דרכם. (4) לאן ה-MX מצביע. בנוסף Anti-spam policies: Allowed senders/domains.",
    "pass": "אין כלל עוקף סינון שמבוסס על כתובת שולח בלבד: עקיפה רק לפי IP של שולחים מוכרים, מתועדת עם בעלים וסיבה. כל מחבר נכנס מזוהה לפי IP או תעודה (מחברי שותף עם TLS), ואף מחבר אינו מוגדר TreatMessagesAsInternal ללא צורך. מחברים וכללים מושבתים הוסרו. אם MX מצביע ישירות ל-Microsoft, עקיפת IP של שרת מקומי משפיעה רק על דואר שעובר דרכו.",
    "evidence": "פלט הכללים (Description) + טבלת המחברים הנכנסים (IP, תעודה, TLS).",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "6.2.2"
+   ]
   },
   {
    "id": "p6-auditon",
@@ -2563,7 +2674,10 @@
    "check": "בדוק שה-Audit Log מופעל (הפקודות למטה) ושחיפוש ב-Purview → Audit → Search ל-7 ימים מחזיר אירועים.",
    "pass": "UnifiedAuditLogIngestionEnabled = True, AuditDisabled = False, וחיפוש מחזיר אירועים.",
    "evidence": "פלט הפקודות + צילום תוצאות חיפוש.",
-   "powershellAlternative": true
+   "powershellAlternative": true,
+   "cis": [
+    "3.1.1"
+   ]
   },
   {
    "id": "p6-spo-sharing",
@@ -2577,7 +2691,10 @@
    "check": "SharePoint admin → Policies → Sharing: External sharing level, Default link type, Anyone links, Expiration.",
    "pass": "לא Anyone ללא תפוגה, Default link = Specific people, ו-Guest expiration מוגדר.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "7.2.3"
+   ]
   },
   {
    "id": "p6-teams-external",
@@ -2605,7 +2722,11 @@
    "check": "Entra → Groups → General (יצירה מוגבלת), Expiration, Naming policy. דוח Ownerless groups.",
    "pass": "יצירה מוגבלת, Expiration פעיל, וללא Groups יתומות.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "1.2.1",
+    "5.1.3.4"
+   ]
   },
   {
    "id": "p6-lockbox",
@@ -2619,7 +2740,10 @@
    "check": "M365 admin → Settings → Org settings → Security & privacy → Customer Lockbox.",
    "pass": "Customer Lockbox מופעל עם Approvers.",
    "evidence": "",
-   "powershellAlternative": false
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.6"
+   ]
   },
   {
    "id": "p6-dataowners",
@@ -2718,6 +2842,1332 @@
    "pass": "אין Apps / Platforms / Client apps / Users שאינם מכוסים ב-MFA (פרט לחריגים מתועדים).",
    "evidence": "",
    "powershellAlternative": false
+  },
+  {
+   "id": "p1-adminlic",
+   "pillar": "p1",
+   "priority": "low",
+   "title": "Administrative accounts use reduced-footprint licenses",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Admin center → Users → Active users: לכל חשבון עם תפקיד Admin בדוק אילו רישיונות והאם יש לו תיבת דואר. נתיב בפורטל: Users → Active users → סנן חשבונות Admin → Licenses and apps ; הקצה רק Entra ID P1/P2 (בלי חבילת E5 מלאה) כדי שלא יהיו להם תיבת דואר ואפליקציות",
+   "pass": "חשבונות Admin ללא תיבת דואר וללא רישיונות אפליקציה (Exchange, SharePoint, Teams, Office), פרט לרישיון זהות.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.1.4"
+   ]
+  },
+  {
+   "id": "p1-pwnoexpire",
+   "pillar": "p1",
+   "priority": "low",
+   "title": "Password expiration policy set to never expire",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Org settings → Security & privacy → Password expiration policy: האם מוגדר Never expire. נתיב בפורטל: Settings → Org settings → Security & privacy → Password expiration policy ; סמן Set passwords to never expire",
+   "pass": "התפוגה כבויה, ובמקומה MFA ו-Password protection פעילים.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.1"
+   ]
+  },
+  {
+   "id": "p1-idlesession",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Idle session timeout configured for unmanaged devices",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Org settings → Security & privacy → Idle session timeout: האם מופעל וכמה זמן. נתיב בפורטל: Org settings → Security & privacy → Idle session timeout ; הגדר עד 3 שעות (Sign out inactive users)",
+   "pass": "מופעל עם 3 שעות או פחות (למכשירים לא מנוהלים).",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.2"
+   ]
+  },
+  {
+   "id": "p1-appregblock",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Users cannot register applications",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Entra → Users → User settings → App registrations: Users can register applications. נתיב בפורטל: Identity → Users → User settings ; Users can register applications = No",
+   "pass": "No (רישום אפליקציות מוגבל לתפקידים).",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.2.2"
+   ]
+  },
+  {
+   "id": "p1-tenantcreate",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Non-admin users cannot create tenants",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Entra → Users → User settings: Restrict non-admin users from creating tenants. נתיב בפורטל: Identity → Users → User settings ; Restrict non-admin users from creating tenants = Yes",
+   "pass": "Yes.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.2.3"
+   ]
+  },
+  {
+   "id": "p1-secgroups",
+   "pillar": "p1",
+   "priority": "low",
+   "title": "Users cannot create security groups",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Entra → Groups → General: Users can create security groups. נתיב בפורטל: Identity → Groups → General ; Users can create security groups in Azure portals, API or PowerShell = No",
+   "pass": "No.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.3.1"
+   ]
+  },
+  {
+   "id": "p1-devjoin",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Entra device join and registration restricted",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Entra → Devices → Device settings: Users may join devices, Maximum number of devices per user. נתיב בפורטל: Identity → Devices → Device settings ; Users may join devices to Microsoft Entra = Selected (קבוצה מוגדרת) או None כשמשתמשים ב-Autopilot",
+   "pass": "הצטרפות מוגבלת לקבוצה או ל-Autopilot ויש תקרת מכשירים למשתמש.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.4.1",
+    "5.1.4.2"
+   ]
+  },
+  {
+   "id": "p1-joinadmin",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Local administrator assignment limited during Entra join",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Entra → Devices → Device settings: Global Administrator role added as local admin, Registering user added as local admin. נתיב בפורטל: Devices → Device settings → Manage Additional local administrators on all Microsoft Entra joined devices ; הסר את Global Administrator מהרשימה (Global administrator role is added as local administrator = No)",
+   "pass": "לא Global Admin ולא המשתמש הרושם הופכים ל-Local Admin אוטומטית.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.4.3",
+    "5.1.4.4"
+   ]
+  },
+  {
+   "id": "p1-bitlockerkeys",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Users restricted from recovering BitLocker keys",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Entra → Devices → Device settings: Restrict users from recovering the BitLocker keys. נתיב בפורטל: Devices → Device settings ; Restrict users from recovering the BitLocker key(s) for their owned devices = Yes",
+   "pass": "Yes.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.4.6"
+   ]
+  },
+  {
+   "id": "p1-guestaccess",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Guest user access is restricted",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "External collaboration settings → Guest user access. נתיב בפורטל: Entra → External Identities → External collaboration settings ; Guest user access = Guest users have limited access / most restricted",
+   "pass": "Limited access או Most restricted (לא same as members).",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.6.2"
+   ]
+  },
+  {
+   "id": "p1-guestinvite",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Guest invitations are limited",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "External collaboration settings → Guest invite settings. נתיב בפורטל: External collaboration settings → Guest invite settings ; בחר: Only users assigned to specific admin roles can invite guest users (או Member users and specific admin roles)",
+   "pass": "הזמנה רק לתפקיד Guest Inviter / מנהלים (או Members בלבד).",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.6.3"
+   ]
+  },
+  {
+   "id": "p1-allowdomains",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Collaboration invitations sent to allowed domains only",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "External collaboration settings → Collaboration restrictions. נתיב בפורטל: External collaboration settings → Collaboration restrictions ; Allow invitations only to the specified domains (או Deny רשימת דומיינים)",
+   "pass": "Allow list מוגדרת לדומיינים עסקיים מאושרים (או Deny list מנוהלת).",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.6.1"
+   ]
+  },
+  {
+   "id": "p1-appsecret",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Application secret policy (blocked or max 180 days, system-generated)",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "App management policies: האם מוגדרת Default policy עם הגבלות על Password credentials. נתיב בפורטל: Entra → App registrations → App management policies (או Graph: defaultAppManagementPolicy) ; Restrict password addition / max lifetime 180 days / system-generated secrets בלבד",
+   "pass": "חסימת סיסמאות חדשות, או תוקף עד 180 יום וסודות שנוצרו על ידי המערכת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.5.3",
+    "5.1.5.4",
+    "5.1.5.5"
+   ]
+  },
+  {
+   "id": "p1-appcert",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Maximum certificate lifetime for applications",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "App management policies → Key credentials restrictions. נתיב בפורטל: App management policies → Key credentials ; Maximum certificate lifetime = 180 ימים",
+   "pass": "תוקף מרבי של 180 יום מוגדר ונאכף.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.1.5.6"
+   ]
+  },
+  {
+   "id": "p1-sysmfa",
+   "pillar": "p1",
+   "priority": "low",
+   "title": "System-preferred multifactor authentication enabled",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Authentication methods → Settings → System-preferred MFA. נתיב בפורטל: Protection → Authentication methods → Settings ; System-preferred multifactor authentication = Enabled (All users)",
+   "pass": "Enabled לכל המשתמשים.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.3.6"
+   ]
+  },
+  {
+   "id": "p1-emailotp",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Email OTP authentication method disabled",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Authentication methods → Policies → Email OTP. נתיב בפורטל: Protection → Authentication methods → Policies → Email OTP ; Enable = Off (בהתחשב בשימוש של Guests)",
+   "pass": "Disabled (או מוגבל לקבוצה מוגדרת עם נימוק).",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.3.7"
+   ]
+  },
+  {
+   "id": "p1-companion",
+   "pillar": "p1",
+   "priority": "low",
+   "title": "Authenticator on companion applications disabled",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Authentication methods → Microsoft Authenticator → Configure → companion applications. נתיב בפורטל: Authentication methods → Microsoft Authenticator → Configure ; Microsoft Authenticator on companion applications = Disabled",
+   "pass": "Disabled.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.3.10"
+   ]
+  },
+  {
+   "id": "p1-pimapproval",
+   "pillar": "p1",
+   "priority": "medium",
+   "title": "Approval required for Global Administrator and Privileged Role Administrator activation",
+   "mode": "portal",
+   "portal": "Entra admin center",
+   "startUrl": "https://entra.microsoft.com",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "PIM → Entra roles → Settings: Global Administrator ו-Privileged Role Administrator, Require approval. נתיב בפורטל: PIM → Entra roles → Settings → Global Administrator → Edit → Activation ; Require approval to activate + Approvers (Admin נוסף)",
+   "pass": "נדרש אישור על שני התפקידים, עם Approvers מוגדרים.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.3.4",
+    "5.3.5"
+   ]
+  },
+  {
+   "id": "p2-nopolicy",
+   "pillar": "p2",
+   "priority": "high",
+   "title": "Devices without a compliance policy marked not compliant",
+   "mode": "portal",
+   "portal": "Intune admin center",
+   "startUrl": "https://intune.microsoft.com",
+   "minimumRole": "Global Reader (Entra) or Intune Read Only Operator",
+   "check": "Intune → Devices → Compliance → Compliance policy settings. נתיב בפורטל: Devices → Compliance → Compliance policy settings ; Mark devices with no compliance policy assigned as = Not compliant",
+   "pass": "Not compliant.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "4.1"
+   ]
+  },
+  {
+   "id": "p2-personalblock",
+   "pillar": "p2",
+   "priority": "medium",
+   "title": "Enrollment of personally owned devices blocked by default",
+   "mode": "portal",
+   "portal": "Intune admin center",
+   "startUrl": "https://intune.microsoft.com",
+   "minimumRole": "Global Reader (Entra) or Intune Read Only Operator",
+   "check": "Intune → Devices → Enrollment → Device platform restrictions → Default restriction. נתיב בפורטל: Devices → Enrollment → Device platform restrictions ; Personally owned devices = Block לכל פלטפורמה (חריגים לפי קבוצה)",
+   "pass": "Personally owned = Blocked בברירת המחדל לכל הפלטפורמות.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "4.2"
+   ]
+  },
+  {
+   "id": "p4-attachfilter",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Common attachment types filter and comprehensive attachment filtering",
+   "mode": "portal",
+   "portal": "Defender portal (Email and collaboration)",
+   "startUrl": "https://security.microsoft.com/antimalwarev2",
+   "minimumRole": "Security Reader",
+   "check": "Anti-malware policy (Default ו-Preset): Common attachments filter ורשימת סוגי הקבצים. נתיב בפורטל: Email & collaboration → Policies & rules → Threat policies → Anti-malware ; Enable the common attachments filter + הרחבת הרשימה (exe, js, vbs, iso, img, lnk, html וכו׳)",
+   "pass": "הפילטר מופעל עם רשימה מורחבת של סוגי קבצים מסוכנים.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.2",
+    "2.1.11"
+   ]
+  },
+  {
+   "id": "p4-malwarenotify",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Notification for internal users sending malware",
+   "mode": "portal",
+   "portal": "Defender portal (Email and collaboration)",
+   "startUrl": "https://security.microsoft.com/antimalwarev2",
+   "minimumRole": "Security Reader",
+   "check": "Anti-malware policy → Notifications. נתיב בפורטל: Anti-malware policy → Notifications ; Notify an admin about undelivered messages from internal senders = On + כתובת מנהל",
+   "pass": "התראה לאדמין על הודעות פנימיות חסומות מופעלת עם נמען מוגדר.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.3"
+   ]
+  },
+  {
+   "id": "p4-spamnotify",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Outbound spam notifications configured",
+   "mode": "portal",
+   "portal": "Defender portal (Email and collaboration)",
+   "startUrl": "https://security.microsoft.com/antispam",
+   "minimumRole": "Security Reader",
+   "check": "Anti-spam policies → Outbound: Notifications. נתיב בפורטל: Anti-spam outbound policy → Notifications ; Notify specified users and groups if a sender is blocked for sending spam = On",
+   "pass": "התראה מופעלת עם נמען מוגדר.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.6"
+   ]
+  },
+  {
+   "id": "p4-outboundlimits",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Outbound spam message limits in place",
+   "mode": "portal",
+   "portal": "Defender portal (Email and collaboration)",
+   "startUrl": "https://security.microsoft.com/antispam",
+   "minimumRole": "Security Reader",
+   "check": "Anti-spam outbound policy (Default): Message limits. נתיב בפורטל: Anti-spam outbound policy → Set message limits ; External/Internal/Daily limits לפי הצורך העסקי",
+   "pass": "מגבלות מוגדרות והחלטה מתועדת על Restrict.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.15"
+   ]
+  },
+  {
+   "id": "p4-allowlists",
+   "pillar": "p4",
+   "priority": "high",
+   "title": "Inbound anti-spam policies contain no allowed senders or domains",
+   "mode": "portal",
+   "portal": "Defender portal (Email and collaboration)",
+   "startUrl": "https://security.microsoft.com/antispam",
+   "minimumRole": "Security Reader",
+   "check": "Anti-spam inbound policies (כל המדיניות): Allowed senders / Allowed domains. נתיב בפורטל: Anti-spam inbound policies → Allowed and blocked senders and domains ; הסר Allowed senders ו-Allowed domains",
+   "pass": "הרשימות ריקות.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.14"
+   ]
+  },
+  {
+   "id": "p4-connfilter",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Connection filter IP allow list and safe list not used",
+   "mode": "portal",
+   "portal": "Defender portal (Email and collaboration)",
+   "startUrl": "https://security.microsoft.com/antispam",
+   "minimumRole": "Security Reader",
+   "check": "Connection filter policy: IP Allow List, IP Block List, Enable safe list. נתיב בפורטל: Anti-spam → Connection filter policy (Default) ; ריקון IP Allow list; Turn on safe list = Off",
+   "pass": "Allow list ריקה ו-Safe list כבויה.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "2.1.12",
+    "2.1.13"
+   ]
+  },
+  {
+   "id": "p4-extsender",
+   "pillar": "p4",
+   "priority": "low",
+   "title": "Email from external senders is identified",
+   "mode": "portal",
+   "portal": "Exchange admin center",
+   "startUrl": "https://admin.exchange.microsoft.com",
+   "minimumRole": "Global Reader (Exchange View-Only)",
+   "check": "הפקודה למטה, או כלל Mail flow שמסמן הודעות חיצוניות. נתיב בפורטל: Set-ExternalInOutlook -Enabled $true ; או כלל Mail flow שמוסיף תגית/הערה להודעות חיצוניות",
+   "pass": "התיוג מופעל ל-Outlook (Get-ExternalInOutlook = Enabled).",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "6.2.3"
+   ]
+  },
+  {
+   "id": "p4-addins",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Users installing Outlook add-ins not allowed",
+   "mode": "portal",
+   "portal": "Exchange admin center",
+   "startUrl": "https://admin.exchange.microsoft.com",
+   "minimumRole": "Global Reader (Exchange View-Only)",
+   "check": "Default Role Assignment Policy: שלוש ההרשאות (או Get-RoleAssignmentPolicy). נתיב בפורטל: Exchange admin → Roles → User roles → Default Role Assignment Policy ; בטל: My Custom Apps, My Marketplace Apps, My ReadWriteMailbox Apps",
+   "pass": "שלוש ההרשאות כבויות.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "6.3.1"
+   ]
+  },
+  {
+   "id": "p4-personalaccts",
+   "pillar": "p4",
+   "priority": "low",
+   "title": "Adding personal email accounts and calendars disabled",
+   "mode": "portal",
+   "portal": "Exchange admin center",
+   "startUrl": "https://admin.exchange.microsoft.com",
+   "minimumRole": "Global Reader (Exchange View-Only)",
+   "check": "הפקודה למטה על כל ה-OWA mailbox policies. נתיב בפורטל: Set-OwaMailboxPolicy -Identity OwaMailboxPolicy-Default -PersonalAccountsEnabled $false ; -PersonalAccountCalendarsEnabled $false",
+   "pass": "PersonalAccountsEnabled ו-PersonalAccountCalendarsEnabled = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "6.3.2"
+   ]
+  },
+  {
+   "id": "p4-modernauth",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Modern authentication for Exchange Online enabled",
+   "mode": "portal",
+   "portal": "Exchange admin center",
+   "startUrl": "https://admin.exchange.microsoft.com",
+   "minimumRole": "Global Reader (Exchange View-Only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Set-OrganizationConfig -OAuth2ClientProfileEnabled $true ; בדוק גם שאין Clients ישנים שנשברים",
+   "pass": "OAuth2ClientProfileEnabled = True.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "6.5.1"
+   ]
+  },
+  {
+   "id": "p4-mailtips",
+   "pillar": "p4",
+   "priority": "low",
+   "title": "MailTips enabled for end users",
+   "mode": "portal",
+   "portal": "Exchange admin center",
+   "startUrl": "https://admin.exchange.microsoft.com",
+   "minimumRole": "Global Reader (Exchange View-Only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Set-OrganizationConfig -MailTipsAllTipsEnabled $true -MailTipsExternalRecipientsTipsEnabled $true -MailTipsGroupMetricsEnabled $true ; -MailTipsLargeAudienceThreshold 25",
+   "pass": "כל MailTips מופעלים וסף Large audience מוגדר.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "6.5.2"
+   ]
+  },
+  {
+   "id": "p4-owastorage",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "Additional storage providers restricted in Outlook on the web",
+   "mode": "portal",
+   "portal": "Exchange admin center",
+   "startUrl": "https://admin.exchange.microsoft.com",
+   "minimumRole": "Global Reader (Exchange View-Only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Set-OwaMailboxPolicy -Identity OwaMailboxPolicy-Default -AdditionalStorageProvidersAvailable $false ; בדיקה על כל ה-OWA policies",
+   "pass": "AdditionalStorageProvidersAvailable = False בכל המדיניות.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "6.5.3"
+   ]
+  },
+  {
+   "id": "p4-mbxaudit",
+   "pillar": "p4",
+   "priority": "high",
+   "title": "Mailbox auditing enabled with no bypass",
+   "mode": "portal",
+   "portal": "Exchange admin center",
+   "startUrl": "https://admin.exchange.microsoft.com",
+   "minimumRole": "Global Reader (Exchange View-Only)",
+   "check": "הפקודות למטה. נתיב בפורטל: Get-OrganizationConfig | fl AuditDisabled (צריך False) ; Get-MailboxAuditBypassAssociation: אין חשבונות עם AuditBypassEnabled",
+   "pass": "AuditDisabled = False, אין AuditBypassEnabled, וקיימות פעולות Audit לכל סוגי הכניסה.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "6.1.1",
+    "6.1.2",
+    "6.1.3"
+   ]
+  },
+  {
+   "id": "p4-calsharing",
+   "pillar": "p4",
+   "priority": "medium",
+   "title": "External sharing of calendars not available",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Org settings → Calendar, או Get-SharingPolicy. נתיב בפורטל: Settings → Org settings → Calendar ; Let your users share their calendars with people outside of your organization = לא מסומן",
+   "pass": "שיתוף יומנים חיצוני כבוי (או מוגבל ל-Free/Busy).",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.3"
+   ]
+  },
+  {
+   "id": "p6-userapps",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "User owned apps and services restricted",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Org settings → Services → User owned apps and services. נתיב בפורטל: Org settings → Services → User owned apps and services ; בטל: Let users access the Office Store, Let users start trials on behalf of your organization",
+   "pass": "שתי האפשרויות כבויות.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.4"
+   ]
+  },
+  {
+   "id": "p6-forms-phish",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Internal phishing protection for Forms enabled",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Org settings → Services → Microsoft Forms. נתיב בפורטל: Org settings → Services → Microsoft Forms ; Internal phishing protection = On",
+   "pass": "Internal phishing protection מופעל.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.5"
+   ]
+  },
+  {
+   "id": "p6-thirdparty",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Third-party storage services restricted in Microsoft 365 on the web",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Org settings → Services → Microsoft 365 on the web. נתיב בפורטל: Org settings → Services → Microsoft 365 on the web ; בטל: Let users open files stored in third-party storage services in Microsoft 365 on the web",
+   "pass": "האפשרות כבויה.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.7"
+   ]
+  },
+  {
+   "id": "p6-bookings",
+   "pillar": "p6",
+   "priority": "low",
+   "title": "Shared Bookings pages restricted to select users",
+   "mode": "portal",
+   "portal": "Microsoft 365 admin center",
+   "startUrl": "https://admin.microsoft.com/#/Settings/OrganizationSettings",
+   "minimumRole": "Global Reader",
+   "check": "Org settings → Services → Bookings. נתיב בפורטל: Org settings → Services → Bookings ; Allow only selected users to access Bookings = On (+ קבוצה)",
+   "pass": "מוגבל למשתמשים/קבוצה מוגדרת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "1.3.9"
+   ]
+  },
+  {
+   "id": "p6-spo-modernauth",
+   "pillar": "p6",
+   "priority": "high",
+   "title": "Modern authentication for SharePoint applications required",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "SharePoint admin → Policies → Access control, או Get-SPOTenant. נתיב בפורטל: SharePoint admin → Policies → Access control → Apps that do not use modern authentication ; Block access",
+   "pass": "LegacyAuthProtocolsEnabled = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.2.1"
+   ]
+  },
+  {
+   "id": "p6-spo-b2b",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "SharePoint and OneDrive integration with Entra B2B enabled",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "הפקודה למטה או Sharing settings. נתיב בפורטל: Policies → Sharing → More external sharing settings ; ודא שאורחים מזוהים דרך Entra B2B (ברירת מחדל בטננטים חדשים)",
+   "pass": "השילוב מופעל (EnableAzureADB2BIntegration = True או ברירת המחדל הנוכחית).",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.2.2"
+   ]
+  },
+  {
+   "id": "p6-od-sharing",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "OneDrive content sharing restricted",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "SharePoint admin → Policies → Sharing: רמת OneDrive מול SharePoint. נתיב בפורטל: Policies → Sharing → External sharing: OneDrive slider ; OneDrive חייב להיות באותה רמה או מחמירה מ-SharePoint",
+   "pass": "OneDrive אינו מתירים יותר מ-SharePoint; לא Anyone אלא אם מתועד.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "7.2.4"
+   ]
+  },
+  {
+   "id": "p6-spo-reshare",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Guest users cannot share items they do not own",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "הפקודה למטה או Sharing settings. נתיב בפורטל: Policies → Sharing → More external sharing settings ; Allow guests to share items they don't own = לא מסומן",
+   "pass": "PreventExternalUsersFromResharing = True.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.2.5"
+   ]
+  },
+  {
+   "id": "p6-spo-domains",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "External sharing managed through domain allow or block list",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "Get-SPOTenant או Sharing settings. נתיב בפורטל: Policies → Sharing → Limit external sharing by domain ; Allow only specific domains (מועדף) או Block specific domains",
+   "pass": "SharingDomainRestrictionMode = AllowList (או BlockList מנוהל).",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.2.6"
+   ]
+  },
+  {
+   "id": "p6-spo-linkdefault",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Default sharing link type and permission restricted",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "Get-SPOTenant: DefaultSharingLinkType, DefaultLinkPermission. נתיב בפורטל: Policies → Sharing → File and folder links ; Default link type = Specific people",
+   "pass": "DefaultSharingLinkType = Direct, DefaultLinkPermission = View.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.2.7",
+    "7.2.11"
+   ]
+  },
+  {
+   "id": "p6-spo-sgroup",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "External sharing restricted by security group",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "SharePoint admin → Policies → Sharing. נתיב בפורטל: Policies → Sharing → More external sharing settings ; Allow only users in specific security groups to share externally",
+   "pass": "השיתוף החיצוני מוגבל לקבוצה מוגדרת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "7.2.8"
+   ]
+  },
+  {
+   "id": "p6-spo-guestexpire",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Guest access to a site or OneDrive expires automatically",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Policies → Sharing → Guest access to a site or OneDrive will expire automatically after this many days ; ערך 30 ימים או פחות",
+   "pass": "ExternalUserExpirationRequired = True ו-30 יום או פחות.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.2.9"
+   ]
+  },
+  {
+   "id": "p6-spo-otp",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Reauthentication with verification code restricted",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Policies → Sharing → People who use a verification code must reauthenticate after this many days ; ערך 15 ימים או פחות",
+   "pass": "EmailAttestationRequired = True ו-15 ימים או פחות.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.2.10"
+   ]
+  },
+  {
+   "id": "p6-spo-infected",
+   "pillar": "p6",
+   "priority": "high",
+   "title": "Download of infected SharePoint files disallowed",
+   "mode": "portal",
+   "portal": "SharePoint admin center",
+   "startUrl": "https://admin.microsoft.com/sharepoint",
+   "minimumRole": "Global Reader (SharePoint admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Set-SPOTenant -DisallowInfectedFileDownload $true ; דורש Safe Attachments for SharePoint, OneDrive and Teams",
+   "pass": "DisallowInfectedFileDownload = True.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "7.3.1"
+   ]
+  },
+  {
+   "id": "p6-dlp-teams",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "DLP policies cover Microsoft Teams",
+   "mode": "portal",
+   "portal": "Microsoft Purview portal",
+   "startUrl": "https://purview.microsoft.com",
+   "minimumRole": "View-Only DLP Compliance Management",
+   "check": "Purview → DLP → Policies: Location Teams chat and channel messages. נתיב בפורטל: Purview → Data loss prevention → Policies ; Locations: Teams chat and channel messages = On",
+   "pass": "לפחות Policy אחת פעילה (לא Test בלבד) כוללת Teams.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "3.2.2"
+   ]
+  },
+  {
+   "id": "p6-teams-storage",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Teams external file sharing limited to approved storage services",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Teams settings → Files ; כבה: Citrix ShareFile, Dropbox, Box, Google Drive, Egnyte (פרט למאושרים)",
+   "pass": "רק שירותים מאושרים פעילים.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.1.1"
+   ]
+  },
+  {
+   "id": "p6-teams-chanemail",
+   "pillar": "p6",
+   "priority": "low",
+   "title": "Users cannot send emails to a channel email address",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Teams settings → Email integration ; Users can send emails to a channel email address = Off",
+   "pass": "AllowEmailIntoChannel = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.1.2"
+   ]
+  },
+  {
+   "id": "p6-teams-extdomains",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "External domains restricted in Teams",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "Get-CsTenantFederationConfiguration או External access. נתיב בפורטל: Users → External access ; Teams and Skype for Business users in external organizations = Allow only specific external domains",
+   "pass": "AllowedDomains מוגדר (לא Allow all), או External access כבוי.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.2.1"
+   ]
+  },
+  {
+   "id": "p6-teams-unmanaged",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Communication with unmanaged Teams users disabled",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Users → External access → Teams accounts not managed by an organization = Off ; External users with Teams accounts not managed by an organization can contact users in my organization = Off",
+   "pass": "AllowTeamsConsumer ו-AllowTeamsConsumerInbound = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.2.2",
+    "8.2.3"
+   ]
+  },
+  {
+   "id": "p6-teams-trial",
+   "pillar": "p6",
+   "priority": "low",
+   "title": "Communication with accounts in trial Teams tenants blocked",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Users → External access → Block all external trial-only Microsoft 365 tenants ; Set-CsTenantFederationConfiguration -ExternalAccessWithTrialTenants Blocked",
+   "pass": "ExternalAccessWithTrialTenants = Blocked.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.2.4"
+   ]
+  },
+  {
+   "id": "p6-teams-apps",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Teams app permission policies configured",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "Teams admin → Teams apps → Permission policies (Global). נתיב בפורטל: Teams apps → Permission policies → Global ; Third-party apps / Custom apps = Block all או Allow specific",
+   "pass": "אפליקציות צד שלישי ומותאמות חסומות או מותרות לפי רשימה מאושרת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "8.4.1"
+   ]
+  },
+  {
+   "id": "p6-teams-anon",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Anonymous users cannot join or start a meeting",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Meetings → Meeting policies → Global → Meeting join & lobby ; Anonymous users can join a meeting = Off",
+   "pass": "AllowAnonymousUsersToJoinMeeting ו-AllowAnonymousUsersToStartMeeting = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.5.1",
+    "8.5.2"
+   ]
+  },
+  {
+   "id": "p6-teams-lobby",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Only people in my org bypass the lobby; dial-in users wait",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Meeting policies → Global → Meeting join & lobby ; Who can bypass the lobby = People in my org",
+   "pass": "AutoAdmittedUsers = EveryoneInCompanyExcludingGuests ו-AllowPSTNUsersToBypassLobby = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.5.3",
+    "8.5.4"
+   ]
+  },
+  {
+   "id": "p6-teams-chat",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Meeting chat does not allow anonymous or external participants",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Meeting policies → Global → Meeting engagement ; Meeting chat = On for everyone but anonymous users",
+   "pass": "MeetingChatEnabledType = EnabledExceptAnonymous ו-AllowExternalNonTrustedMeetingChat = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.5.5",
+    "8.5.8"
+   ]
+  },
+  {
+   "id": "p6-teams-control",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "External participants cannot give or request control",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Meeting policies → Global → Content sharing ; Allow an external participant to give or request control = Off",
+   "pass": "AllowExternalParticipantGiveRequestControl = False.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.5.7"
+   ]
+  },
+  {
+   "id": "p6-teams-presenter",
+   "pillar": "p6",
+   "priority": "low",
+   "title": "Only organizers and co-organizers can present",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Meeting policies → Global → Content sharing ; Who can present = Only organizers and co-organizers",
+   "pass": "DesignatedPresenterRoleMode = OrganizerOnlyUserOverride.",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.5.6"
+   ]
+  },
+  {
+   "id": "p6-teams-recording",
+   "pillar": "p6",
+   "priority": "low",
+   "title": "Meeting recording off by default",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "הפקודה למטה. נתיב בפורטל: Meeting policies → Global → Recording & transcription ; Meeting recording = Off (הפעלה לפי קבוצות מוגדרות)",
+   "pass": "AllowCloudRecording = False במדיניות Global (הקלטה מופעלת ידנית לקבוצות).",
+   "evidence": "",
+   "powershellAlternative": true,
+   "cis": [
+    "8.5.9"
+   ]
+  },
+  {
+   "id": "p6-teams-report",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Users can report security concerns in Teams",
+   "mode": "portal",
+   "portal": "Teams admin center",
+   "startUrl": "https://admin.teams.microsoft.com",
+   "minimumRole": "Global Reader (Teams admin center is read-only)",
+   "check": "Messaging policies + User reported settings. נתיב בפורטל: Teams admin → Messaging policies → Global: Report a security concern = On ; Defender portal → Settings → Email & collaboration → User reported settings: Monitor reported messages in Microsoft Teams = On",
+   "pass": "שני ההגדרות מופעלות.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "8.6.1"
+   ]
+  },
+  {
+   "id": "p9-dlp-copilot",
+   "pillar": "p9",
+   "priority": "high",
+   "title": "DLP policies published for Copilot users",
+   "mode": "portal",
+   "portal": "Microsoft Purview portal",
+   "startUrl": "https://purview.microsoft.com",
+   "minimumRole": "View-Only DLP Compliance Management",
+   "check": "Purview → DLP → Policies: Location Microsoft 365 Copilot. נתיב בפורטל: Purview → Data loss prevention → Policies → New policy ; Location: Microsoft 365 Copilot and Copilot Chat",
+   "pass": "Policy פעילה אחת לפחות מכסה את Copilot.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "3.2.3"
+   ]
+  },
+  {
+   "id": "p6-fab-guests",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Fabric guest access and content browsing restricted",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings: הגדרות אורחים. נתיב בפורטל: Fabric admin portal → Tenant settings → Export and sharing settings ; Allow Microsoft Entra guest users to access Microsoft Fabric = Off (או קבוצה מוגדרת)",
+   "pass": "מכובה או מוגבל לקבוצה מוגדרת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.1",
+    "9.1.3"
+   ]
+  },
+  {
+   "id": "p6-fab-invite",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Fabric external guest invitations restricted",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → Invite external users. נתיב בפורטל: Tenant settings → Invite external users to your organization ; Off או Specific security groups",
+   "pass": "Off או קבוצה מוגדרת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.2"
+   ]
+  },
+  {
+   "id": "p6-fab-publishweb",
+   "pillar": "p6",
+   "priority": "high",
+   "title": "Public publishing of Fabric reports restricted",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → Publish to web + Embed codes. נתיב בפורטל: Tenant settings → Publish to web ; Disabled או Specific security groups",
+   "pass": "Disabled (או קבוצה מוגדרת), ואין Embed codes פעילים שלא אושרו.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.4"
+   ]
+  },
+  {
+   "id": "p6-fab-visuals",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "R and Python visuals disabled in Fabric",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → R and Python visuals. נתיב בפורטל: Tenant settings → R and Python visuals settings ; Interact with and share R and Python visuals = Disabled",
+   "pass": "Disabled.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.5"
+   ]
+  },
+  {
+   "id": "p6-fab-labels",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Sensitivity labels enabled for Fabric content",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → Information protection. נתיב בפורטל: Tenant settings → Information protection ; Allow users to apply sensitivity labels for content = Enabled",
+   "pass": "Enabled.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.6"
+   ]
+  },
+  {
+   "id": "p6-fab-links",
+   "pillar": "p6",
+   "priority": "low",
+   "title": "Organization-wide Fabric links restricted",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → Export and sharing settings. נתיב בפורטל: Tenant settings → Allow shareable links to grant access to everyone in your organization ; Disabled או Specific security groups",
+   "pass": "Disabled או קבוצה מוגדרת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.7"
+   ]
+  },
+  {
+   "id": "p6-fab-extshare",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "External sharing of semantic models restricted",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → Export and sharing settings. נתיב בפורטל: Tenant settings → Allow specific users to turn on external data sharing ; Disabled או Specific security groups",
+   "pass": "Disabled או קבוצה מוגדרת.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.8"
+   ]
+  },
+  {
+   "id": "p6-fab-reskey",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Resource-key authentication blocked for Fabric datasets",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → Developer settings. נתיב בפורטל: Tenant settings → Block ResourceKey Authentication ; Enabled (חסום)",
+   "pass": "Block ResourceKey Authentication = Enabled.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.9"
+   ]
+  },
+  {
+   "id": "p6-fab-sp",
+   "pillar": "p6",
+   "priority": "medium",
+   "title": "Service principal access to Fabric APIs and profiles restricted",
+   "mode": "portal",
+   "portal": "Microsoft Fabric admin portal",
+   "startUrl": "https://app.fabric.microsoft.com/admin-portal/tenantSettings",
+   "minimumRole": "Fabric Administrator or Global Reader (read-only view of tenant settings; confirm in pilot)",
+   "check": "Tenant settings → Developer settings + Admin API settings. נתיב בפורטל: Tenant settings → Service principals can call Fabric public APIs → Specific security groups ; Allow service principals to create and use profiles → Specific security groups",
+   "pass": "שלוש ההגדרות מוגבלות לקבוצות מוגדרות או כבויות.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "9.1.10",
+    "9.1.11",
+    "9.1.12"
+   ]
+  },
+  {
+   "id": "p8-devicecode",
+   "pillar": "p8",
+   "priority": "high",
+   "title": "CA: device code sign-in flow blocked",
+   "mode": "portal",
+   "portal": "Entra admin center, Conditional Access",
+   "startUrl": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Conditional Access → Policies: Policy עם Authentication flows = Device code flow, Grant = Block, State = On. נתיב בפורטל: Conditional Access → New policy: Block device code flow ; Conditions → Authentication flows → Device code flow = Yes → Block",
+   "pass": "Policy במצב On, All users, למעט Exclusions מתועדים.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.12"
+   ]
+  },
+  {
+   "id": "p8-authtransfer",
+   "pillar": "p8",
+   "priority": "high",
+   "title": "CA: authentication transfer blocked",
+   "mode": "portal",
+   "portal": "Entra admin center, Conditional Access",
+   "startUrl": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Conditional Access → Policies: Authentication flows = Authentication transfer, Block. נתיב בפורטל: Conditional Access → New policy: Block authentication transfer ; Conditions → Authentication flows → Authentication transfer = Yes → Block",
+   "pass": "Policy במצב On.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.17"
+   ]
+  },
+  {
+   "id": "p8-adminsession",
+   "pillar": "p8",
+   "priority": "medium",
+   "title": "CA: sign-in frequency and non-persistent sessions for administrators",
+   "mode": "portal",
+   "portal": "Entra admin center, Conditional Access",
+   "startUrl": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Conditional Access: Policy על Directory roles עם Session controls. נתיב בפורטל: Conditional Access → Policy for Directory roles (Admins) ; Session → Sign-in frequency = 4 שעות (או Every time) + Persistent browser session = Never persistent",
+   "pass": "Sign-in frequency ≤ 4 שעות ו-Never persistent, על כל תפקידי ה-Admin.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.4"
+   ]
+  },
+  {
+   "id": "p8-regsecinfo",
+   "pillar": "p8",
+   "priority": "medium",
+   "title": "CA: managed device required to register security information",
+   "mode": "portal",
+   "portal": "Entra admin center, Conditional Access",
+   "startUrl": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Conditional Access: Policy עם User action = Register security information. נתיב בפורטל: Conditional Access → New policy: User actions → Register security information ; Grant: Require compliant device (או Hybrid joined) OR Trusted location",
+   "pass": "Policy במצב On עם דרישת מכשיר מנוהל או מיקום מהימן.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.10"
+   ]
+  },
+  {
+   "id": "p8-intuneenroll",
+   "pillar": "p8",
+   "priority": "medium",
+   "title": "CA: sign-in frequency for Intune enrollment set to every time",
+   "mode": "portal",
+   "portal": "Entra admin center, Conditional Access",
+   "startUrl": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+   "minimumRole": "Global Reader (Entra)",
+   "check": "Conditional Access: Policy על Microsoft Intune Enrollment. נתיב בפורטל: Conditional Access → New policy: Cloud apps → Microsoft Intune Enrollment ; Session → Sign-in frequency = Every time",
+   "pass": "Sign-in frequency = Every time.",
+   "evidence": "",
+   "powershellAlternative": false,
+   "cis": [
+    "5.2.2.11"
+   ]
   }
  ]
 }
